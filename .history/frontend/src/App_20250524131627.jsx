@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { AnimatePresence, motion } from "framer-motion";
 // import './App.css'
 import Signin from './Pages/Signin'
 import Signup from './Pages/Signup'
@@ -12,12 +13,17 @@ function App() {
 
   return (
     <div className="bg-slate-100 w-screen h-screen ">
+<AnimatePresence mode="wait">
 
   <Routes>
     <Route path="/" element={<Navbar/>}>
-        <Route path="/signin" element={<AuthForm/>}></Route>
-    <Route path="/signup" element={<AuthForm/>}></Route>
+        <Route path="/signin" element={<AuthForm type={"signin"}/>}></Route>
+    <Route path="/signup" element={<AuthForm type={"signup"}/>}></Route>
     
+        {/* <Route path="/signin" element={<Signin/>}></Route>
+    <Route path="/signup" element={<Signup/>}></Route> */}
+
+
  {/* <Route path="/signin" element={<AuthForm/>}></Route> */}
 
     <Route path="/create-blog" element={<CreateBlog/>}></Route>
@@ -28,6 +34,8 @@ function App() {
     </Route>
 
   </Routes>
+  </AnimatePresence>
+
       </div>
 
   )
