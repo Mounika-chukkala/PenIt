@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 // import './App.css'
 import Navbar from './components/Navbar'
 // import Layout from "./Pages/Layout"
-import CreateBlog from './components/CreateBlog'
 import AddBlog from './Pages/AddBlog'
 import AuthForm from './Pages/AuthForm'
 import HomePage from './Pages/HomePage';
@@ -23,7 +22,6 @@ function App() {
     <Route path="/signup" element={<AuthForm type={"signup"}/>}></Route>
     
 
-    <Route path="/create-blog" element={<CreateBlog/>}></Route>
         <Route path="/add-blog" element={<AddBlog/>}></Route>
 
     <Route path="/blog/:id" element={<BlogPage/>}></Route>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import axios from "axios"
+import { Link } from "react-router-dom";
 
  function HomePage() {
     const [blogs,setBlogs]=useState([]);
@@ -17,6 +18,7 @@ setBlogs(res.data.blogs)
     <div className="w-screen flex flex-col items-center justify-center bg-#F0FDF4">
 {
     blogs.map(blog=>(
+      <Link>
         <div key={blog._id} className="w-[90%] lg:w-[50%]">
        {/* border-2 border-[#10B981]/20  */}
 
@@ -46,6 +48,8 @@ setBlogs(res.data.blogs)
         </div>
       </div>
     </div>
+          </Link>
+
     )
 
     )

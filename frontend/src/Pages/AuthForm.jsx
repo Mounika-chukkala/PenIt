@@ -83,7 +83,7 @@ const location = useLocation();
 {type=="signup" &&
           <p className="text-sm text-black/60 mb-3">
             Already have an account?{" "}
-            <Link to="/signin">
+            <Link to={"/signin"}>
               <span className="text-blue-500 font-semibold hover:underline">
                 Login
               </span>
@@ -142,7 +142,7 @@ const location = useLocation();
             type=="signin" &&
                       <p className="text-sm mt-2 ml-2 text-black/60 mb-3">
            Don't have an account?{" "}
-            <Link to="/signup">
+            <Link to={"/signup"}>
               <span className="text-blue-500 font-semibold hover:underline">
                 Sign Up
               </span>
