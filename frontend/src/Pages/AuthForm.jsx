@@ -5,8 +5,7 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-
-
+import axios from "axios"
 function AuthForm({type}) {
   const [userData, setUserData] = useState({
     name: "",
@@ -15,24 +14,32 @@ function AuthForm({type}) {
   });
   const [isVisible, setVisible] = useState(false);
 const location = useLocation();
-  async function handleRegister(e) {
+  async function handleAuthForm(e) {
     e.preventDefault();
-    let data = await fetch("http://localhost:3000/api/v1/signup", {
-      method: "POST",
-      body: JSON.stringify(userData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+    //       let data = await fetch(`http://localhost:3000/api/v1/${type}`, {
+    //   method: "POST",
+    //   body: JSON.stringify(userData),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
 
-    let res = await data.json();
-    alert(res.message);
+    // let res = await data.json();fill={'#10B981'} 
+    const res=await axios.post(`http://localhost:3000/api/v1/${type}`,userData)
+    console.log(res)
+    // alert(res.message);
 
-    if (!res.success) {
-      toast.error(res.message);
+    if (!res.data.success) {
+      toast.error(res.data.message);
     } else {
-      toast.success(res.message);
-      localStorage.setItem("User", JSON.stringify(res.user));
+      toast.success(res.data.message);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+            localStorage.setItem("token", JSON.stringify(res.data.token));
+
+    }
+    } catch (error) {
+      toast.error(error.response.data.message)
     }
   }
 
@@ -83,7 +90,8 @@ const location = useLocation();
             </Link>
           </p>
 }
-          <form onSubmit={handleRegister}>
+          <form onSubmit={handleAuthForm}>
+
             {type=="signup" &&
             <input
               className="w-full my-3 px-4 py-2 border border-[#6EE7B7] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#8cc2b0] transition-all"
@@ -133,7 +141,7 @@ const location = useLocation();
           {
             type=="signin" &&
                       <p className="text-sm mt-2 ml-2 text-black/60 mb-3">
-            Haven't Registered?{" "}
+           Don't have an account?{" "}
             <Link to="/signup">
               <span className="text-blue-500 font-semibold hover:underline">
                 Sign Up

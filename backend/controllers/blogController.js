@@ -7,10 +7,13 @@ const fs=require("fs");
 async function createBlog(req, res) {
   try {
     const creator = req.user;
-
+    const content="hello";
     const { title, description } = req.body;
-    const draft = req.body.draft == "false" ? false : true;
+    const draft = req.body.draft == "true" ?true: false ;
     const image=req.file;
+    console.log(image)
+        console.log("mounik")
+
     if (!title) {
       return res.status(400).json({
         message: "Please fill title field",
@@ -23,17 +26,23 @@ async function createBlog(req, res) {
       });
     }
 
-    if (!content) {
-      return res.status(400).json({
-        message: "Please add some content",
-      });
-    }
+    // if (!content) {
+    //   return res.status(400).json({
+    //     message: "Please add some content",
+    //   });
+    // }
+    console.log("hello")
 
-const {secure_url,public_id}= await uploadImage(image.path)
-
+const x=await uploadImage(image.path)
+// const x= await uploadImage(image.path)
+//     console.log(x)
+const {secure_url,public_id}=x;
+  
 fs.unlinkSync(image.path);
 
     const blog = await Blog.create({
+      blogId:21,
+      content:"hello",
       description,
       title,
       draft,
@@ -77,7 +86,7 @@ async function getBlogs(req, res) {
     return res.status(200).json({
       message: "Blogs fetched Successfully",
       blogs,
-      hasMore: skip + limit < totalBlogs,
+      // hasMore: skip + limit < totalBlogs,
     });
   } catch (error) {
     return res.status(500).json({

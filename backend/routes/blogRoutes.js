@@ -29,15 +29,16 @@ const route = express.Router();
 route.post(
   "/blogs",
   verifyUser,
-  upload.fields([{ name: "image" }, { name: "images" }]),
+  // upload.fields([{ name: "image" }, { name: "images" }]),
+upload.single('image'),
   createBlog
 );
-route.post(
-  "/blogs",
-  verifyUser,
-  upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
-  createBlog
-);
+// route.post(
+//   "/blogs",
+//   verifyUser,
+//   upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
+//   createBlog
+// );
 route.get("/blogs", getBlogs);
 route.get("/blogs/:blogId", getBlog);
 route.patch(

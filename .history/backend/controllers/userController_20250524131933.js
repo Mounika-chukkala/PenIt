@@ -28,11 +28,11 @@ async function createUser(req, res) {
     const checkForexistingUser = await User.findOne({ email });
 if(checkForexistingUser){
     return res.status(400).json({success:false,message:"User already exists"})
-  }
-  console.log("hi")
+}
+console.log("hi")
     const hashedPass = await bcrypt.hash(password, 10);
     // const username = email.split("@")[0] + randomUUID();
-const username="on--=23"
+const username="monka123"
     const newUser = await User.create({
       name,
       email,
@@ -44,14 +44,14 @@ const username="on--=23"
       email: newUser.email,
       id: newUser._id,
     });
-console.log("hello")
+
     //email logic
 
 
     return res.status(200).json({
       success: true,
       message: "Please Check Your Email to verify your account",
-      user:newUser,token:verificationToken
+      user:newUser,verificationToken
     });
   } catch (err) {
     return res.status(500).json({
