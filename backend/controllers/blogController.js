@@ -4,6 +4,8 @@ const User = require("../models/userSchema");
 const {uploadImage,deleteImagefromCloudinary} = require("../utils/uploadImage");
 // safe controllers
 const fs=require("fs");
+const ShortUniqueId=require("short-unique-id")
+const {randomUUID}=new ShortUniqueId({length:7});
 async function createBlog(req, res) {
   try {
     const creator = req.user;
@@ -26,22 +28,22 @@ async function createBlog(req, res) {
       });
     }
 
-    // if (!content) {
-    //   return res.status(400).json({
-    //     message: "Please add some content",
-    //   });
-    // }
+    if (!content) {
+      return res.status(400).json({
+        message: "Please add some content",
+      });
+    }
     console.log("hello")
 
 const x=await uploadImage(image.path)
 // const x= await uploadImage(image.path)
 //     console.log(x)
 const {secure_url,public_id}=x;
-  
+const blogId=title.toLowerCase().split(" ").join("-")+"-"+randomUUID()
 fs.unlinkSync(image.path);
 
     const blog = await Blog.create({
-      blogId:21,
+      blogId,
       content:"hello",
       description,
       title,
@@ -97,10 +99,14 @@ async function getBlogs(req, res) {
 
 async function getBlog(req, res) {
   try {
-    const { blogId } = req.params;
+    const { blogId} = req.params;
+
+    // const blogId = '20';
+    // const id=blogId;
     const blog = await Blog.findOne({ blogId }).populate({
-      path:"comment",populate:{
-        path:"user",select:"name email"}});
+      path:"comments",populate:{
+        path:"user",select:"name email"}}).populate({
+      path:"creator",select:"name email"});
     if (!blog) {
       return res.status(404).json({
         message: "Blog Not found",

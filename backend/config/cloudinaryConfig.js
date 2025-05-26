@@ -1,11 +1,15 @@
 const cloudinary=require("cloudinary").v2;
+const dotenv=require("dotenv")
+dotenv.config();
+
 
 async function cloudinaryConfig(){
+    
  try {
          cloudinary.config({ 
-        cloud_name: 'dozs80pld', 
-        api_key: '614995996113529', 
-        api_secret: 'IH7_zbONlN-j2EFz833tQuz5blI' // Click 'View API Keys' above to copy your API secret
+        cloud_name:process.env.CLOUD_NAME, 
+        api_key: process.env.CLOUD_API_KEY, 
+        api_secret:process.env.CLOUD_API_SECRET
     });
 console.log("cloudinary configuration Successfull")
  } catch (error) {
