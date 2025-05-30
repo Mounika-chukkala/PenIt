@@ -2,45 +2,48 @@ import React from 'react'
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import axios from "axios"
+import { useDispatch } from 'react-redux';
+import { login } from '../utils/userSlice';
 function AuthForm({type}) {
   const [userData, setUserData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  const dispatch=useDispatch()
+
   const [isVisible, setVisible] = useState(false);
 const location = useLocation();
   async function handleAuthForm(e) {
     e.preventDefault();
     try {
-    //       let data = await fetch(`http://localhost:3000/api/v1/${type}`, {
-    //   method: "POST",
-    //   body: JSON.stringify(userData),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
-
-    // let res = await data.json();fill={'#10B981'} 
-    const res=await axios.post(`http://localhost:3000/api/v1/${type}`,userData)
+    const res=await axios.post(`${import.meta.env.VITE_BACKEND_URL}/${type}`,userData)
     console.log(res)
-    // alert(res.message);
 
     if (!res.data.success) {
       toast.error(res.data.message);
     } else {
       toast.success(res.data.message);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-            localStorage.setItem("token", JSON.stringify(res.data.token));
+      // localStorage.setItem("user", JSON.stringify(res.data.user));
+            // localStorage.setItem("token", JSON.stringify(res.data.token));
+            console.log({})
+dispatch(login({  name: res.data.user.name,
+  email: res.data.user.email,
+  token: res.data.user.token,
+  id: res.data.user.id}));
+  <Navigate to={"/"}/>
 
     }
     } catch (error) {
-      toast.error(error.response.data.message)
+      // toast.error(error.response.data.message)
+console.log(error)
     }
+
   }
 
   return (
