@@ -1,20 +1,22 @@
 const Blog = require("../models/blogSchema");
 // const Comment = require("../models/commentSchema");
 const User = require("../models/userSchema");
-const {uploadImage,deleteImagefromCloudinary} = require("../utils/uploadImage");
+const {
+  uploadImage,
+  deleteImagefromCloudinary,
+} = require("../utils/uploadImage");
 // safe controllers
-const fs=require("fs");
-const ShortUniqueId=require("short-unique-id")
-const {randomUUID}=new ShortUniqueId({length:7});
+const fs = require("fs");
+const ShortUniqueId = require("short-unique-id");
+const { randomUUID } = new ShortUniqueId({ length: 7 });
 async function createBlog(req, res) {
   try {
     const creator = req.user;
-    const content="hello";
-    const { title, description } = req.body;
-    const draft = req.body.draft == "true" ?true: false ;
+    const { title, description} = req.body;
+    const draft = req.body.draft == "true" ? true : false;
     const image=req.file;
-    console.log(image)
-        console.log("mounik")
+    const images = req.files;
+    const content=JSON.parse(req.body.content);
 
     if (!title) {
       return res.status(400).json({
@@ -33,24 +35,23 @@ async function createBlog(req, res) {
         message: "Please add some content",
       });
     }
-    console.log("hello")
 
-const x=await uploadImage(image.path)
-// const x= await uploadImage(image.path)
-//     console.log(x)
-const {secure_url,public_id}=x;
-const blogId=title.toLowerCase().split(" ").join("-")+"-"+randomUUID()
-fs.unlinkSync(image.path);
-
+    const x = await uploadImage(image.path);
+    // const x= await uploadImage(image.path)
+    console.log(x);
+    const { secure_url, public_id } = x;
+    const blogId =
+      title.toLowerCase().split(" ").join("-") + "-" + randomUUID();
+    fs.unlinkSync(image.path);
     const blog = await Blog.create({
       blogId,
-      content:"hello",
+      content,
       description,
       title,
       draft,
       creator,
-      image:secure_url,
-      imageId:public_id
+      image: secure_url,
+      imageId: public_id,
     });
 
     await User.findByIdAndUpdate(creator, { $push: { blogs: blog._id } });
@@ -96,17 +97,21 @@ async function getBlogs(req, res) {
     });
   }
 }
-
 async function getBlog(req, res) {
   try {
-    const { blogId} = req.params;
+    const { blogId } = req.params;
 
     // const blogId = '20';
     // const id=blogId;
-    const blog = await Blog.findOne({ blogId }).populate({
-      path:"comments",populate:{
-        path:"user",select:"name email"}}).populate({
-      path:"creator",select:"name email"});
+    const blog = await Blog.findOne({ blogId })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          select: "name  email",
+        },
+      })
+      .populate("creator", "name email image");
     if (!blog) {
       return res.status(404).json({
         message: "Blog Not found",
@@ -126,12 +131,12 @@ async function getBlog(req, res) {
 async function updateBlog(req, res) {
   try {
     const creator = req.user;
-
     const { id } = req.params;
+    const image = req.file;
+    // || req.params;
+    const { title, description ,content} = req.body;
 
-    const { title, description } = req.body;
-
-    const draft = req.body.draft == "false" ? false : true;
+    const draft = req.body.draft == "true" ? true : false;
 
     const blog = await Blog.findOne({ blogId: id });
 
@@ -153,19 +158,23 @@ async function updateBlog(req, res) {
     //   );
     // }
 
-    const updatedBlog = await Blog.updateOne(
-      { _id: id },
-      {
-        title,
-        description,
-        draft,
-      }
-    );
-
+    const updatedBlog = await Blog.updateOne({
+      title,
+      description,
+      content,
+      draft,
+    });
+    if (image) {
+      await deleteImagefromCloudinary(blog.imageId);
+      const x = await uploadImage(image.path);
+      const { secure_url, public_id } = x;
+      blog.imageId = public_id;
+      blog.image = secure_url;
+      fs.unlinkSync(image.path);
+    }
     blog.title = title || blog.title;
     blog.description = description || blog.description;
-    blog.draft = draft;
-    // blog.content = content || blog.content;
+    blog.content =  content || blog.content;
     // blog.tags = tags || blog.tags;
 
     await blog.save();
@@ -262,8 +271,6 @@ async function likeBlog(req, res) {
     });
   }
 }
-
-
 
 // async function saveBlog(req, res) {
 //   try {

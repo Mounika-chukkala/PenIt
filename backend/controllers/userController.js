@@ -29,10 +29,12 @@ async function createUser(req, res) {
 if(checkForexistingUser){
     return res.status(400).json({success:false,message:"User already exists"})
   }
+
+
   console.log("hi")
     const hashedPass = await bcrypt.hash(password, 10);
     // const username = email.split("@")[0] + randomUUID();
-const username="on--=23"
+const username="0`++0"
     const newUser = await User.create({
       name,
       email,
@@ -46,12 +48,12 @@ const username="on--=23"
     });
 console.log("hello")
     //email logic
-
+const user={...newUser,id:newUser._id,token:verificationToken};
 
     return res.status(200).json({
       success: true,
       message: "Please Check Your Email to verify your account",
-      user:newUser,token:verificationToken
+      user:user
     });
   } catch (err) {
     return res.status(500).json({
@@ -204,9 +206,9 @@ async function login(req, res) {
     }
 
     const checkForexistingUser = await User.findOne({ email })
-    // .select(
-    //   "password isVerify name email profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
-    // );
+    .select(
+      "password isVerify name email profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
+    );
 
     if (!checkForexistingUser) {
       return res.status(400).json({
@@ -214,7 +216,6 @@ async function login(req, res) {
         message: "User not exist",
       });
     }
-
     // if (checkForexistingUser.googleAuth) {
     //   return res.status(400).json({
     //     success: true,
@@ -222,11 +223,15 @@ async function login(req, res) {
     //       "This email already registered with google. please try through continue with google",
     //   });
     // }
-
+//     console.log(checkForexistingUser)
+// console.log("Password",password)
+// console.log(      checkForexistingUser.password
+// )
     let checkForPass = await bcrypt.compare(
       password,
       checkForexistingUser.password
     );
+console.log("not verified")
 
     if (!checkForPass) {
       return res.status(400).json({
@@ -258,6 +263,7 @@ async function login(req, res) {
     //     message: "Please verify you email",
     //   });
     // }
+    console.log("verified")
 
     let token = await generateJWT({
       email: checkForexistingUser.email,

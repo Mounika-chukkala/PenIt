@@ -29,8 +29,8 @@ const route = express.Router();
 route.post(
   "/blogs",
   verifyUser,
-  // upload.fields([{ name: "image" }, { name: "images" }]),
-upload.single('image'),
+  upload.fields([{ name: "image" }, { name: "images" }]),
+// upload.single('image'),
   createBlog
 );
 // route.post(
@@ -44,7 +44,8 @@ route.get("/blogs/:blogId", getBlog);
 route.patch(
   "/blogs/:id",
   verifyUser,
-  upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
+  // upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
+  upload.single('image'),
   updateBlog
 );
 route.delete("/blogs/:id", verifyUser, deleteBlog);

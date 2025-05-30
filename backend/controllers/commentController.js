@@ -21,14 +21,20 @@ async function addComment(req, res) {
       });
     }
 
-    const newComment = await Comment.create({ comment,blog:id,user: user});
+    const newComment = await Comment.create({ comment,blog:id,user: user}).then(
+
+ (comment)=>{
+  return comment.populate({
+    path:"user",select:"name email"
+  })
+ }   );
 
     // const addComment = 
     await Blog.findByIdAndUpdate(id, {
       $push: { comments: newComment._id },
     });
       return res.status(200).json({
-        message: "Comment added successfully",
+        message: "Comment added successfully",comment:newComment
       });
 
 
