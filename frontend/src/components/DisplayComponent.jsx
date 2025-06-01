@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import {  Heart, MessageCircle } from "lucide-react";
 
 function DisplayComponent() {
-      const [comment, setComment] = useState("");
+      // const [comment, setComment] = useState("");
   const dispatch = useDispatch();
 
 const [activeReply,setActiveReply]=useState(null);
@@ -50,24 +50,24 @@ async function handleCommentLike(commentId){
     setIsLike((prev)=>!prev);
 }
 
-async function handleComment() {
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/blogs/comment/${blogId}`,
-        { comment },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toast.success(res.data.message);
-      dispatch(setComments(res.data.comment));
-      setComment(""); // Clear the input
-    } catch (error) {
-      console.log(error);
-    }
-  }
+// async function handleComment() {
+//     try {
+//       const res = await axios.post(
+//         `${import.meta.env.VITE_BACKEND_URL}/blogs/comment/${blogId}`,
+//         { comment },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+//       toast.success(res.data.message);
+//       dispatch(setComments(res.data.comment));
+//       setComment(""); // Clear the input
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
 
 
 async function handleReply(parentCommentId) {

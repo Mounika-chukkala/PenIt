@@ -1,5 +1,5 @@
 const Blog = require("../models/blogSchema");
-// const Comment = require("../models/commentSchema");
+const Comment = require("../models/commentSchema");
 const User = require("../models/userSchema");
 const streamifier=require("streamifier")
 const {
@@ -128,20 +128,36 @@ async function getBlog(req, res) {
     const blog = await Blog.findOne({ blogId })
       .populate({
         path: "comments",
-        populate:[ {
-          path: "user",
-          select: "name  email",
-        },
-         {
-          path: "replies",
         populate: {
           path: "user",
           select: "name  email",
-        }        }
-      ],
+        },
+              
       })
-      .populate("creator", "name email image");
-    if (!blog) {
+      .populate({
+          path: "creator",
+          select: "name email",
+        }).lean();
+   async function populateReplies(comments){
+      for(const comment of comments){
+        let populatedComment=await Comment.findById(comment._id).populate({
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "name  email",
+        },
+              
+      }).lean();
+
+comment.replies=populatedComment.replies;
+if(comment.replies.length>0){
+  await populateReplies(comment.replies)
+}
+      }
+      return comments;
+   }
+   blog.comments=await populateReplies(blog.comments)
+      if (!blog) {
       return res.status(404).json({
         message: "Blog Not found",
       });

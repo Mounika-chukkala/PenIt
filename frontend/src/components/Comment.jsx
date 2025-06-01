@@ -12,7 +12,7 @@ function Comment() {
   const dispatch = useDispatch();
 
   const [activeReply, setActiveReply] = useState(null);
-
+const [isLike, setIsLike] = useState(false);
   //   const { _id: blogId, comments }
   dayjs.extend(relativeTime);
   const selectedBlog = useSelector((slice) => slice.selectedBlog);
@@ -23,11 +23,85 @@ function Comment() {
   // console.log("full:",user)
   const token = user.token;
   const userId = user.id;
-  const [isLike, setIsLike] = useState(false);
-  const [reply, setReply] = useState("");
 
-  async function handleActiveReply(commentId) {
+  async function handleComment() {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/blogs/comment/${blogId}`,
+        { comment },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success(res.data.message);
+      dispatch(setComments(res.data.comment));
+      setComment(""); // Clear the input
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
+  return (
+    <div className="mt-10 bg-white p-4 rounded-lg shadow-md w-full">
+      <h1 className="text-xl font-semibold mb-2">
+        Responses ({comments.length})
+      </h1>
+
+      <textarea
+        rows={3}
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Add your comment"
+        className="w-full mt-2 focus:outline-none border rounded-md border-gray-300 p-2"
+      />
+
+      <button
+        onClick={handleComment}
+        className="mt-2 px-4 py-2 bg-[#10B981] text-white rounded-md"
+      >
+        Add Comment
+      </button>
+
+      <div className="mt-4 space-y-2">
+        
+        <DisplayComments comments={comments} userId={userId} blogId={blogId} token={token} activeReply={activeReply} setActiveReply={setActiveReply} setIsLike={setIsLike}  />
+      </div>
+    </div>
+  );
+}
+
+function DisplayComments({comments,userId,blogId,token,activeReply,setActiveReply,setIsLike}){
+ 
+  const user = useSelector((slice) => slice.user);
+ const [reply, setReply] = useState("");
+  
+
+   async function handleActiveReply(commentId) {
     setActiveReply((prev) => (prev === commentId ? null : commentId));
+  }
+async function handleReply(parentCommentId) {
+    try {
+      const res = await axios.post(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/comment/${parentCommentId}/${blogId}`,
+        { reply },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res.data);
+      toast.success(res.data.message);
+      // dispatch(setComments(res.data.comment));
+      // setReply(""); // Clear the input
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function handleCommentLike(commentId) {
@@ -51,71 +125,9 @@ function Comment() {
     }
     setIsLike((prev) => !prev);
   }
-
-  async function handleComment() {
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/blogs/comment/${blogId}`,
-        { comment },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toast.success(res.data.message);
-      dispatch(setComments(res.data.comment));
-      setComment(""); // Clear the input
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function handleReply(parentCommentId) {
-    try {
-      const res = await axios.post(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/comment/${parentCommentId}/${blogId}`,
-        { reply },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(res.data);
-      toast.success(res.data.message);
-      // dispatch(setComments(res.data.comment));
-      // setReply(""); // Clear the input
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   return (
-    <div className="mt-10 bg-white p-4 rounded-lg shadow-md w-full">
-      <h1 className="text-xl font-semibold mb-2">
-        Responses ({comments.length})
-      </h1>
-
-      <textarea
-        rows={3}
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Add your comment"
-        className="w-full mt-2 focus:outline-none border rounded-md border-gray-300 p-2"
-      />
-
-      <button
-        onClick={handleComment}
-        className="mt-2 px-4 py-2 bg-[#10B981] text-white rounded-md"
-      >
-        Add Comment
-      </button>
-
-      <div className="mt-4 space-y-2">
-        {comments.map((c, i) => (
+    <>
+   {comments.map((c, i) => (
           <div key={i} className="p-2  rounded-md bg-gray-50">
             <div className="flex justify-between">
               <div className="flex gap-2 items-center">
@@ -136,19 +148,9 @@ function Comment() {
 
             {c.comment}
             <div className="flex mt-1 justify-between">
-              {/* <div className="flex gap-2">
- <div className="flex gap-1">
-                <Heart size={12} className="mt-1"/><p className="text-sm">300</p>
-               </div>
-                <div className="flex gap-1">
-                <MessageCircle size={12} className="mt-1"/><p className="text-sm">300</p>
-               </div>
-               </div> */}
+              
               <div className="flex gap-4 cursor-pointer ">
                 <div className="flex gap-1">
-                  {/* {console.log("likes:",c.likes)} */}
-                  {/* {console.log("user",user._id)} */}
-                  {/* {console.log(c.likes.includes(user._id))} */}
                   <Heart
                     size={15}
                     fill={c.likes.includes(user.id) ? "red" : "none"}
@@ -165,7 +167,7 @@ function Comment() {
                     className="mt-1"
                   />
 
-                  {comments.length}
+                  {c.replies.length}
                 </div>
               </div>
 
@@ -201,11 +203,15 @@ function Comment() {
                 </div>
               </div>
             )}
+            <div className="ml-7 border-l-1 border-black/30">
+{c.replies.length>0 && <DisplayComments comments={c.replies}  userId={userId} blogId={blogId} token={token} activeReply={activeReply} setActiveReply={setActiveReply} setIsLike={setIsLike} />}
+            </div>
+
+
           </div>
         ))}
-      </div>
-    </div>
-  );
+        </>
+  )
 }
 
 export default Comment;
