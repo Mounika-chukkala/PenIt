@@ -24,11 +24,12 @@ function AddBlog() {
     image: null,
     content: "",
   });
+  const imagesRef = useRef([]);
 
   const editorjsRef = useRef(null);
-const raw=useSelector((state)=>state.selectedBlog)?.content
-const content=raw?JSON.parse(raw):{}
-
+// const raw=useSelector((state)=>state.selectedBlog)?.content
+// const content=raw?JSON.parse(raw):{}
+  const content = useSelector((state) => state.selectedBlog)?.content|| {};
   const { token } = useSelector((slice) => slice.user);
   const navigate = useNavigate();
   const selectedBlog = useSelector((slice) => slice.selectedBlog);
@@ -85,6 +86,7 @@ const content=raw?JSON.parse(raw):{}
           config:{
             uploader:{
               uploadByFile:async (image)=>{
+                  imagesRef.current.push(image);
                 return {
                   success:1,
                   file:{
@@ -101,11 +103,8 @@ const content=raw?JSON.parse(raw):{}
       data:content||{},
       onChange: async () => {
         let data = await editorjs.save();
-        console.log(data)
-        // editorjsRef.current = data;
-        setBlogData((blogData) => ({ ...blogData, content:JSON.stringify(data) }));
+        setBlogData((blogData) => ({ ...blogData, content:data }));
 
-        console.log(blogData)
       },
     });
     editorjsRef.current=editorjs;
@@ -139,17 +138,40 @@ const content=raw?JSON.parse(raw):{}
     const formData = new FormData();
     formData.append("title", blogData.title);
     formData.append("description", blogData.description);
-    formData.append("content", blogData.content);
-    let images=[];
-    blogData?.content?.blocks.forEach((block)=>{
-      if(block.type=="image"){
-        images.push(block.data.file.image)
-      }
-    })
-    formData.append("images", images);
+    console.log("blogData content",blogData.content);
 
+    formData.append("content",JSON.stringify(blogData.content));
+    
     formData.append("image", blogData.image);
-    // console.log("formdata",blogData)
+// imagesRef.current.forEach((image) => {
+ 
+//   formData.append("images", image);
+// });
+
+
+let existingImages=[];
+console.log("blogData content",JSON.stringify(blogData.content));
+
+console.log("formData content",formData.get("content"));
+content?.blocks.forEach((block)=>{
+  if(block.type==="image" ){
+    if(block.data.file.image){
+      formData.append("images",block.data.file.image);
+    }
+    else{
+
+      existingImages.push({
+        url:block.data.file.url,
+        ImageId:block.data.file.ImageId
+      });  
+   
+    }
+    
+  }
+
+});
+formData.append("existingImages",JSON.stringify(existingImages))
+
 
     try {
       const res = await axios.patch(
@@ -167,17 +189,32 @@ const content=raw?JSON.parse(raw):{}
       } else {
         toast.error(res.data.message);
       }
-      console.log("res", res.data);
       navigate(`/blog/${id}`);
     } catch (error) {}
   }
   async function handleBlogCreation(e) {
     e.preventDefault();
+        console.log(blogData)
+
     const formData = new FormData();
     formData.append("title", blogData.title);
     formData.append("description", blogData.description);
     formData.append("image", blogData.image);
-    formData.append("content", blogData.content);
+    formData.append("content", JSON.stringify(blogData.content));
+    // const content=JSON.parse(blogData.content)
+    // content.blocks.forEach((block)=>{
+    //   if(block.type==="image"){
+    //     // images.push(block.data.file.image)
+    //         formData.append("images", block.data.file.image);
+
+    //   }
+    // })
+imagesRef.current.forEach((image) => {
+          console.log("hi")
+
+  formData.append("images", image);
+});
+    console.log("formdata",formData.getAll("images"))
 
     try {
       const res = await axios.post(
@@ -208,8 +245,6 @@ const content=raw?JSON.parse(raw):{}
           "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')",
       }}
     >
-      {console.log(blogData)}
-      {/* <div className="absolute inset-0 bg-[#bbb]/10 backdrop-blur-sm z-0" /> */}
 
       <motion.form
         onSubmit={id ? handleUpdateBlog : handleBlogCreation}
@@ -280,7 +315,7 @@ const content=raw?JSON.parse(raw):{}
             className=""
           />
         </div> */}
-<p >Share your thoughts</p>        <motion.div id="editorjs" className="h-80 bg-white/20 w-full  p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#8eb8aa] transition resize-none overflow-auto "
+<p >Share your thoughts</p>        <motion.div id="editorjs" className=" bg-white/20 w-full  p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#8eb8aa] transition resize-none overflow-auto "
                     whileFocus={{ scale: 1.02 }}
 ></motion.div>
         <div>

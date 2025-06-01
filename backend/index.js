@@ -9,8 +9,7 @@ dotenv.config();
 const PORT=process.env.PORT || 5000
 const app=express()
 app.use(express.json());
-app.use(cors({}));
-
+app.use(cors());
 // app.use(cors({origin:"http://localhost:5173/"}));
 app.get("/",(req,res)=>{
     res.send("Hello bhai welcome to my app")

@@ -65,10 +65,14 @@ if(comment.user!= user && comment.blog.creator!=user ){
       });
 
 }
+    await Comment.deleteMany({_id:{$in:comment.replies}})
+
     // const addComment = 
     await Blog.findByIdAndUpdate(comment.blog._id, {
       $pull: { comments: id },
     });
+     
+
     await Comment.findByIdAndDelete(id);
       return res.status(200).json({
         message: "Comment added successfully",
@@ -147,7 +151,44 @@ async function likeComment(req, res) {
     });
   }
 }
+async function addNestedComment(req, res) {
+  try {
+    const userId = req.user;
+    const { id:blogId,parentCommentId } = req.params;
+const {reply}=req.body;
+    const comment= await Comment.findById(parentCommentId);
+const blog=await Blog.findById(blogId)
+    if (!comment) {
+      return res.status(500).json({
+        message: "Parent Comment is not found",
+      });
+    }
+        if (!blog) {
+      return res.status(500).json({
+        message: "Blog  not found",
+      });
+    }
+
+const newReply=await Comment.create({
+  blog:blogId,
+  comment:reply,
+  parentComment:parentCommentId,
+  user:userId
+});
+
+await Comment.findByIdAndUpdate(parentCommentId,{$push :{replies:newReply._id}})
+      return res.status(200).json({
+        success: true,
+        message: "Reply added successfully",
+        isLiked: false,
+      });
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
 
 
-
-module.exports={addComment,deleteComment,editComment,likeComment}
+module.exports={addComment,deleteComment,editComment,likeComment,addNestedComment}

@@ -5,7 +5,6 @@ const commentSchema=new mongoose.Schema({
         required:true
     },
 blog:{
-
     type:mongoose.Schema.Types.ObjectId,
     ref:"Blog"
 },
@@ -19,6 +18,19 @@ user:{
         ref: "User",
       },
     ],
+
+    // For nested comments.
+    replies:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Comment",
+        }
+    ],
+    parentComment:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Comment",
+        default:null
+    },
 
 
 },{timestamps:true});

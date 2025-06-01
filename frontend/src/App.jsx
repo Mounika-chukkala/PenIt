@@ -10,7 +10,7 @@ import BlogPage from "./components/BlogPage";
 import MyBlogs from "./components/MyBlogs";
 function App() {
   return (
-    <div className=" w-screen h-screen ">
+    <div className="w-screen h-screen overflow-x-hidden">
       <div
         className="min-h-screen bg-cover bg-center "
         style={{

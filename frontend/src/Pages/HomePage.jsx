@@ -31,16 +31,14 @@ setBlogs(res.data.blogs)
   {/* <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-0" /> */}
 {
     blogs.map(blog=>(
-      <Link to={`/blog/${blog.blogId}`}>
-        <div key={blog._id} className="w-[80%] m-auto lg:w-[60%]
+      <Link  key={blog._id} to={`/blog/${blog.blogId}`}>
+        <div className="w-[80%] m-auto lg:w-[60%]
         ">
 
       <div className="
       m-3 flex w-full p-3 rounded-lg">
         <div className="flex w-[80%] flex-col gap-1">
           <div className="flex gap-2">
-            <p>      {console.log(blog)} 
-</p>
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDJHqDvc62-IQh68H-YN-192G4IxstKe4O2w&s" className="w-5 rounded-2xl border-1 border-black/10" alt="" />
             <p className="text-sm">{blog.creator.name}</p>
           </div>
@@ -50,8 +48,6 @@ setBlogs(res.data.blogs)
             {/* blog.createdAt.split("T")[0] */}
             <p>{formatDate(blog.createdAt)}</p> 
             <div className="flex gap-1">
-              {/* {console.log(user.id)}
-                            {console.log(blog.likes)} */}
 
             <Heart size={13}  fill={ blog.likes.some(user => user._id === userId)?'#10B981':"none"} className="mt-1"/>
             <p>{blog.likes.length}</p>

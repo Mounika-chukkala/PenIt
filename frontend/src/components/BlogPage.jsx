@@ -15,18 +15,17 @@ function BlogPage() {
   const dispatch = useDispatch();
   const commentRef = useRef(null);
   const user = useSelector((slice) => slice.user);
-  console.log(user);
 
   const { token, id: userId } = user || {};
   const [blogData, setBlogData] = useState(null);
   const [blogLikeCount, setBlogLike] = useState(0);
   const [isLike, setIsLike] = useState(false);
   const comments = useSelector((state) => state.selectedBlog?.comments || []);
-  const raw = useSelector((state) => state.selectedBlog)?.content;
-  const content = raw ? JSON.parse(raw) : {};
-  console.log(content);
-  const { isOpen } = useSelector((state) => state.comment);
-  console.log("blogData", blogData);
+  // const raw = 
+  // console.log("raw",raw)
+    const content = useSelector((state) => state.selectedBlog)?.content|| {};
+
+    const { isOpen } = useSelector((state) => state.comment);
   async function fetchBlogById() {
     try {
       const res = await axios.get(
@@ -87,7 +86,6 @@ function BlogPage() {
       }
     };
   }, [id]);
-  console.log(blogData);
   return (
     <div className="min-h-screen w-full  text-[#1E293B]  font-serif">
       <div className="sm:max-w-[90%] md:max-w-[70%] mx-auto px-4 py-10 ">
@@ -126,7 +124,6 @@ function BlogPage() {
                 </div>
                 <div className="flex gap-4 cursor-pointer ">
                   <div className="flex gap-1">
-                    {console.log("Liked :", isLike)}
                     <Heart
                       size={15}
                       fill={isLike ? "red" : "none"}
@@ -178,13 +175,25 @@ function BlogPage() {
               >
                 {content?.blocks?.map((block) => {
                   if (block.type == "header") {
-{/* <p>header</p>
-console.log("clg") */}
-                    // if (block.data.level == 3) {
-                     return ( <h1 className="font-bold text-2xl"
+                    if(block.data.level==3){
+                     return ( <h3 className="font-bold my-4 text-2xl"
                         dangerouslySetInnerHTML={{__html:block.data.text}}>
-                        {/* {block.data.text} */}
-                      </h1>)
+                      </h3>)
+
+                    }
+                                      else if(block.data.level==2){
+                     return ( <h2 className="font-bold my-4 text-2xl"
+                        dangerouslySetInnerHTML={{__html:block.data.text}}>
+                      </h2>)
+
+                    }
+                    else if(block.data.level==4){
+                     return ( <h4 className=" my-4 font-bold text-2xl"
+                        dangerouslySetInnerHTML={{__html:block.data.text}}>
+                      </h4>)
+
+                    }
+
                     // }
                   } else if (block.type == "paragraph") {
                     return (
@@ -192,7 +201,17 @@ console.log("clg") */}
                         dangerouslySetInnerHTML={{ __html: block.data.text }}
                       ></p>
                     );
+                  } else if (block.type == "image"){
+                    return (
+                      <div className="my-4">
+                      <img  src={block.data.file.url} className="w-[90%]"
+                        // dangerouslySetInnerHTML={{ __html: block.data.text }}
+                        />
+                        <p>{block.data?.caption}</p>
+                        </div>
+                    );
                   }
+
                 })}
               </motion.section>
 
@@ -227,61 +246,3 @@ console.log("clg") */}
 
 export default BlogPage;
 
-// import axios from 'axios';
-// import React, { useEffect, useState } from 'react'
-// import { Link, useParams } from 'react-router-dom';
-// import toast from "react-hot-toast"
-// import { useDispatch, useSelector } from 'react-redux';
-// import { addSelectedBlog, removeSelectedBlog } from '../utils/selectedBlog';
-
-// function BlogPage() {
-//     const {id}=useParams();
-//     const dispatch=useDispatch();
-//     // const user=JSON.parse(localStorage.getItem("user"));
-
-// const user=useSelector((slice)=>slice.user)
-// const {token}=user;
-// const [blogData,setBlogData]=useState(null);
-//     async function fetchBlogById() {
-//         try {
-//             const res=await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`)
-//             console.log(res)
-//             setBlogData(res.data.blog)
-
-// dispatch(addSelectedBlog(res.data.blog))
-//         } catch (error) {
-//             toast.error(error.response?.data?.message);
-//         }
-//     }
-// useEffect(()=>{
-// fetchBlogById();
-//   return () => {
-//     const currentPath = location.pathname;
-//     if (!currentPath.includes('/edit')) {
-//       dispatch(removeSelectedBlog());
-//     }
-//   };},[id])
-//     return (
-//     <div className='md:w-1/2 p-5 m-auto '>
-// {
-//     blogData?(<div>
-//         <h1 className='text-2xl text-[#1E293B]'>{blogData.title}</h1>
-//         <h5>{blogData.creator.name}</h5>
-
-//         <img className="w-3/4 m-auto" src={blogData.image}/>
-// {/* {        console.log(token,user.email,blogData.creator.email)}
-// {console.log(user)} */}
-//         {token && user._doc.email==blogData.creator.email &&
-
-//         <Link to={`/edit/${blogData.blogId}`}>
-//         <button className='flex gap-1 bg-[#059669]/70 rounded-md px-3 py-2 text-black/80 transform hover:scale-120 transition duration-300 ease-in-out  hover:text-white cursor-pointer'>Edit</button>
-//         </Link>
-// }
-//         </div>):
-//     <h1>Loading....</h1>
-// }
-//     </div>
-//   )
-// }
-
-// export default BlogPage
