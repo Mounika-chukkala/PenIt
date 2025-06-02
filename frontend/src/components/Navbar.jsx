@@ -12,6 +12,7 @@ export default function Navbar() {
     setIsOpen(!isOpen);
   };
 const user=useSelector((slice)=>slice.user);
+console.log(user)
   return (
     <>
       <nav className="bg-white/50 shadow-md px-6 pt-4 flex justify-between items-center rounded-b-lg relative">

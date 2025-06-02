@@ -8,6 +8,7 @@ import AuthForm from "./Pages/AuthForm";
 import HomePage from "./Pages/HomePage";
 import BlogPage from "./components/BlogPage";
 import MyBlogs from "./components/MyBlogs";
+import Profile from "./components/Profile";
 function App() {
   return (
     <div className="w-screen h-screen overflow-x-hidden">
@@ -26,6 +27,7 @@ function App() {
               <Route path="/" element={<HomePage />}></Route>
               <Route path="/add-blog" element={<AddBlog />}></Route>
               <Route path="/my-blogs" element={<MyBlogs />}></Route>
+              <Route path="/profile" element={<Profile />}></Route>
 
               <Route
                 path="/signin"

@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCommentLikes, setComments } from "../utils/selectedBlog";
+import { setCommentLikes, setComments, setReplies } from "../utils/selectedBlog";
 import axios from "axios";
 import dayjs from "dayjs";
 import { MoreHorizontal } from "lucide-react";
 import relativeTime from "dayjs/plugin/relativeTime";
 import toast from "react-hot-toast";
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle ,X} from "lucide-react";
 function Comment() {
   const [comment, setComment] = useState("");
   const dispatch = useDispatch();
+  const [currentPopUp,setCurrentPopUp]=useState(null)
 
   const [activeReply, setActiveReply] = useState(null);
 const [isLike, setIsLike] = useState(false);
@@ -67,18 +68,20 @@ const [isLike, setIsLike] = useState(false);
 
       <div className="mt-4 space-y-2">
         
-        <DisplayComments comments={comments} userId={userId} blogId={blogId} token={token} activeReply={activeReply} setActiveReply={setActiveReply} setIsLike={setIsLike}  />
+        <DisplayComments comments={comments} userId={userId} blogId={blogId} token={token} activeReply={activeReply} setActiveReply={setActiveReply} setIsLike={setIsLike}  currentPopUp={currentPopUp} setCurrentPopUp={setCurrentPopUp} />
       </div>
     </div>
   );
 }
 
-function DisplayComments({comments,userId,blogId,token,activeReply,setActiveReply,setIsLike}){
+function DisplayComments({comments,userId,blogId,token,activeReply,setActiveReply,setIsLike,currentPopUp,setCurrentPopUp}){
  
   const user = useSelector((slice) => slice.user);
- const [reply, setReply] = useState("");
-  
 
+
+ const [reply, setReply] = useState("");
+  const dispatch=useDispatch();
+const [openReply,setOpenReply]=useState(false);
    async function handleActiveReply(commentId) {
     setActiveReply((prev) => (prev === commentId ? null : commentId));
   }
@@ -97,13 +100,17 @@ async function handleReply(parentCommentId) {
       );
       console.log(res.data);
       toast.success(res.data.message);
-      // dispatch(setComments(res.data.comment));
-      // setReply(""); // Clear the input
+         setReply(""); // Clear the input
+      setActiveReply(null)
+
+      dispatch(setReplies(res.data.reply));
     } catch (error) {
       console.log(error);
     }
   }
-
+async function openReplies(e){
+setOpenReply((prev)=>!prev);
+}
   async function handleCommentLike(commentId) {
     // console.log(commentId);
     try {
@@ -120,6 +127,7 @@ async function handleReply(parentCommentId) {
       // console.log(comments);
       toast.success(res.data.message);
       dispatch(setCommentLikes({ commentId, userId }));
+      
     } catch (error) {
       console.log(error);
     }
@@ -129,7 +137,7 @@ async function handleReply(parentCommentId) {
     <>
    {comments.map((c, i) => (
           <div key={i} className="p-2  rounded-md bg-gray-50">
-            <div className="flex justify-between">
+            <div className="flex relative justify-between">
               <div className="flex gap-2 items-center">
                 <img
                   src={
@@ -143,7 +151,14 @@ async function handleReply(parentCommentId) {
                   <p className="text-xs">{dayjs(c.createdAt).fromNow()}</p>
                 </div>
               </div>
-              <MoreHorizontal size={14} />
+           
+           {currentPopUp==c._id?(<div className=" absolute right-0 top-0 rounded-md  bg-[#87999e]/10 " >
+<X size={13} className=" relative left-9 top-1 cursor-pointer " onClick={()=>setCurrentPopUp((prev)=>prev==c._id?null:c._id)}/>
+            <p className="text-sm  hover:bg-[#059669]/20 cursor-pointer px-2 py-1">Edit</p>
+            <p className="text-sm hover:bg-[#059669]/20 px-2 py-1 cursor-pointer">Delete</p>
+
+           </div>):              <MoreHorizontal size={14} onClick={()=>setCurrentPopUp(c._id)}  className="cursor-pointer"/>
+           }
             </div>
 
             {c.comment}
@@ -163,7 +178,7 @@ async function handleReply(parentCommentId) {
                 <div className="flex gap-1">
                   <MessageCircle
                     size={15}
-                    onClick={(e) => scrollToComments(e)}
+                    onClick={(e) => openReplies(e)}
                     className="mt-1"
                   />
 
@@ -203,11 +218,11 @@ async function handleReply(parentCommentId) {
                 </div>
               </div>
             )}
-            <div className="ml-7 border-l-1 border-black/30">
-{c.replies.length>0 && <DisplayComments comments={c.replies}  userId={userId} blogId={blogId} token={token} activeReply={activeReply} setActiveReply={setActiveReply} setIsLike={setIsLike} />}
+            {/* */}
+       
+            <div className="ml-4 border-l-1 border-slate-600/10  ">
+{c.replies.length>0 && <DisplayComments comments={c.replies}  userId={userId} blogId={blogId} token={token} activeReply={activeReply} setActiveReply={setActiveReply} setIsLike={setIsLike} currentPopUp={currentPopUp} setCurrentPopUp={setCurrentPopUp}  />}
             </div>
-
-
           </div>
         ))}
         </>

@@ -28,7 +28,7 @@ async function addComment(req, res) {
     path:"user",select:"name email"
   })
  }   );
-
+ 
     // const addComment = 
     await Blog.findByIdAndUpdate(id, {
       $push: { comments: newComment._id },
@@ -174,13 +174,17 @@ const newReply=await Comment.create({
   comment:reply,
   parentComment:parentCommentId,
   user:userId
-});
+}).then((reply)=>{
+  return reply.populate({
+    path:"user",select:"name email"
+  })
+ }   );;
 
 await Comment.findByIdAndUpdate(parentCommentId,{$push :{replies:newReply._id}})
       return res.status(200).json({
         success: true,
         message: "Reply added successfully",
-        isLiked: false,
+        reply:newReply
       });
     
   } catch (error) {

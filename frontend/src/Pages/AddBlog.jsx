@@ -296,29 +296,9 @@ imagesRef.current.forEach((image) => {
             whileFocus={{ scale: 1.02 }}
           />
         </div>
-        {/* <div>
-          <label
-            htmlFor="Content"
-            className="block mb-1 font-medium text-[#1E293B]"
-          >
-            Share your thoughts..
-          </label>
-          <motion.textarea
-            id="content"
-            rows={5}
-            minLength={500}
-            value={blogData.content}
-            onChange={(e) =>
-              setBlogData({ ...blogData, content: e.target.value })
-            }
-            placeholder="Write here..."
-            className=""
-          />
-        </div> */}
-<p >Share your thoughts</p>        <motion.div id="editorjs" className=" bg-white/20 w-full  p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#8eb8aa] transition resize-none overflow-auto "
-                    whileFocus={{ scale: 1.02 }}
-></motion.div>
-        <div>
+    
+
+   <div>
           <label
             htmlFor="image"
             className="block mb-2 font-medium text-[#1E293B]"
@@ -343,7 +323,7 @@ imagesRef.current.forEach((image) => {
               />
             ) : (
               <div className="text-[#1E293B] bg-transparent  group-hover:text-[#10B981] transition text-xl font-medium">
-                Select Image
+                Select your blog's cover photo
               </div>
             )}
           </label>
@@ -357,6 +337,11 @@ imagesRef.current.forEach((image) => {
             }
           />
         </div>
+
+<p >Share your thoughts</p>        <motion.div id="editorjs" className=" bg-white/20 w-full  p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#8eb8aa] transition resize-none overflow-auto "
+                    whileFocus={{ scale: 1.02 }}
+></motion.div>
+     
 
         <motion.button
           type="submit"

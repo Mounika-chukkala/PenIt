@@ -34,7 +34,7 @@ if(checkForexistingUser){
   console.log("hi")
     const hashedPass = await bcrypt.hash(password, 10);
     // const username = email.split("@")[0] + randomUUID();
-const username="0`++0"
+const username="0+0**."
     const newUser = await User.create({
       name,
       email,
@@ -48,8 +48,8 @@ const username="0`++0"
     });
 console.log("hello")
     //email logic
-const user={...newUser,id:newUser._id,token:verificationToken};
-
+const user={email:newUser.email,name:newUser.name,id:newUser._id,token:verificationToken};
+console.log(user)
     return res.status(200).json({
       success: true,
       message: "Please Check Your Email to verify your account",
