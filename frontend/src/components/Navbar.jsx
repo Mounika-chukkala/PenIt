@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { NotebookPen, Pen, UserPlus, Home, Search, Menu ,User,LogIn,LogOut} from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
+import logo from "../assets/logo.png"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,10 +16,11 @@ const user=useSelector((slice)=>slice.user);
 console.log(user)
   return (
     <>
-      <nav className="bg-white/50 shadow-md px-6 pt-4 flex justify-between items-center rounded-b-lg relative">
-     <div className="flex gap-5">
+      <nav className="bg-white/50 shadow-md px-2 md:px-6 pt-4 flex justify-between items-center rounded-b-lg relative">
+     <div className="flex items-center  md:gap-5 gap-2">
 
-        <h1 className="text-2xl font-bold text-[#10B981]">PenIt</h1>
+        {/* <h1 className="text-2xl font-bold text-[#10B981]">PenIt</h1> */}
+<img src="" alt="Pen It" className="md:w-25 w-20 mb-4 text-2xl font-bold text-[#10B981]"/>
  <div className="relative mb-4">
               <Search size={17} className="absolute left-2 top-3" />
               <input
@@ -85,7 +87,7 @@ console.log(user)
           className="md:hidden text-[#059669] focus:outline-none"
           onClick={toggleMenu}
         >
-          <Menu size={28} />
+          <Menu size={28}  className="mb-4"/>
         </button>
 
         {/* Mobile Dropdown Menu */}

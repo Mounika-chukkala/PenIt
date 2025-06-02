@@ -65,7 +65,18 @@ if(comment.user!= user && comment.blog.creator!=user ){
       });
 
 }
-    await Comment.deleteMany({_id:{$in:comment.replies}})
+
+async function deleteCommentAndReplies(id){
+  let comment=await Comment.findById(id);
+  for(let replyId of comment.replies){
+    await deleteCommentAndReplies(replyId)
+  }    
+  
+  await Comment.findByIdAndDelete(id);
+
+}
+await deleteCommentAndReplies(id);
+    // await Comment.deleteMany({_id:{$in:comment.replies}})
 
     // const addComment = 
     await Blog.findByIdAndUpdate(comment.blog._id, {
@@ -73,7 +84,6 @@ if(comment.user!= user && comment.blog.creator!=user ){
     });
      
 
-    await Comment.findByIdAndDelete(id);
       return res.status(200).json({
         message: "Comment added successfully",
       });
@@ -89,7 +99,7 @@ async function editComment(req, res) {
   try {
     const user = req.user;
     const { id } = req.params;
-    const { updateComment } = req.body;
+    const { updatedCommentContent } = req.body;
     const comment=await Comment.findById(id)
     if(!comment){
               return res.status(200).json({
@@ -101,10 +111,10 @@ async function editComment(req, res) {
       return res.status(500).json({success:false,
         message: "You are not authorized for this action",
       });
-      await Comment.findByIdAndUpdate(id,{comment:updateComment})
-}
+    } 
+      await Comment.findByIdAndUpdate(id,{comment:updatedCommentContent})
     return res.status(200).json({
-        message: "Comment added successfully",
+        message: "Comment updated successfully",
       });
 
 
@@ -189,10 +199,10 @@ await Comment.findByIdAndUpdate(parentCommentId,{$push :{replies:newReply._id}})
     
   } catch (error) {
     return res.status(500).json({
-      message: error.message,
+      message: error. message,
     });
   }
 }
-
+ 
 
 module.exports={addComment,deleteComment,editComment,likeComment,addNestedComment}
