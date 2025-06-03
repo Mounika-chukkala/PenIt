@@ -1,6 +1,7 @@
 const User = require("../models/userSchema");
 const bcrypt = require("bcrypt");
 const { generateJWT, verifyJWT } = require("../utils/generateToken");
+const transporter  = require("../utils/transporter");
 
 async function createUser(req, res) {
   const { name, password, email } = req.body;
@@ -34,7 +35,7 @@ if(checkForexistingUser){
   console.log("hi")
     const hashedPass = await bcrypt.hash(password, 10);
     // const username = email.split("@")[0] + randomUUID();
-const username="0+0**."
+const username="0+__**."
     const newUser = await User.create({
       name,
       email,
@@ -48,6 +49,17 @@ const username="0+0**."
     });
 console.log("hello")
     //email logic
+
+const sendingEmail=await transporter.sendMail({
+  from:"mounikach178@gmail.com",
+  to:email,
+  subject:"Email verification",
+  text:"Please verify yout email",
+  html:`<p>Hey ${name}</p>
+  <h1> Click on the link to verify your email</h1>
+  <a href="http://localhost:5173/verify-email/${verificationToken}">verify Email</a>`
+})
+
 const user={email:newUser.email,name:newUser.name,id:newUser._id,token:verificationToken};
 console.log(user)
     return res.status(200).json({

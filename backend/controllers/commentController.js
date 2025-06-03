@@ -45,7 +45,7 @@ async function addComment(req, res) {
   }
 }
 
-async function deleteComment(req, res) {
+async function deleteComment(req, res) { 
   try {
     const user = req.user;
     const { id } = req.params;
@@ -64,14 +64,19 @@ if(comment.user!= user && comment.blog.creator!=user ){
         message: "You are not authorized for this action",
       });
 
-}
+} 
 
 async function deleteCommentAndReplies(id){
   let comment=await Comment.findById(id);
   for(let replyId of comment.replies){
     await deleteCommentAndReplies(replyId)
-  }    
-  
+  }       
+if(comment.parentComment){
+  await Comment.findByIdAndUpdate(comment.parentComment,{
+    $pull :{replies:id}
+  })
+}
+
   await Comment.findByIdAndDelete(id);
 
 }
@@ -112,9 +117,15 @@ async function editComment(req, res) {
         message: "You are not authorized for this action",
       });
     } 
-      await Comment.findByIdAndUpdate(id,{comment:updatedCommentContent})
+    const updatedComment=await Comment.findByIdAndUpdate(id,{comment:updatedCommentContent},{new:true}).then((comment)=>{
+      return comment.populate({
+        path:"user",
+        select:"name email"
+      })
+    })
     return res.status(200).json({
         message: "Comment updated successfully",
+        updatedComment
       });
 
 
