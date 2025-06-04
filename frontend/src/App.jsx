@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 // import './App.css'
 import Navbar from "./components/Navbar";
+import GetStarted from "./components/GetStarted";
 // import Layout from "./Pages/Layout"
 import AddBlog from "./Pages/AddBlog";
 import AuthForm from "./Pages/AuthForm";
@@ -9,6 +10,7 @@ import HomePage from "./Pages/HomePage";
 import BlogPage from "./components/BlogPage";
 import MyBlogs from "./components/MyBlogs";
 import Profile from "./components/Profile";
+import VerifyUser from "./components/VerifyUser";
 function App() {
   return (
     <div className="w-screen h-screen overflow-x-hidden">
@@ -24,10 +26,12 @@ function App() {
         {/* <AnimatePresence mode="wait"> */}
           <Routes>
             <Route path="/" element={<Navbar />}>
-              <Route path="/" element={<HomePage />}></Route>
+                          <Route path="/home" element={<HomePage />}></Route>
+              <Route path="/" element={<GetStarted />}></Route>
               <Route path="/add-blog" element={<AddBlog />}></Route>
               <Route path="/my-blogs" element={<MyBlogs />}></Route>
               <Route path="/profile" element={<Profile />}></Route>
+              <Route path="/verify-email/:verificationToken" element={<VerifyUser/>}></Route>
 
               <Route
                 path="/signin"

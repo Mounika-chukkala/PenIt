@@ -7,7 +7,7 @@ const {
   updateUser,
   deleteUser,
   login,
-  // verifyEmail,
+  verifyEmail,
 } = require("../controllers/userController");
 const verifyUser = require("../middlewares/auth");
 const upload=require("../utils/multer")
@@ -26,6 +26,6 @@ route.delete("/users/:id", verifyUser, deleteUser);
 
 // verify email/token
 
-// route.get("/verify-email/:verificationToken", verifyEmail);
+route.get("/verify-email/:verificationToken", verifyEmail);
 
 module.exports = route;

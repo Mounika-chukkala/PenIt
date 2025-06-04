@@ -1,34 +1,42 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { NotebookPen, Pen, UserPlus, Home, Search, Menu ,User,LogIn,LogOut} from "lucide-react";
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/logo.png"
+import { logout } from "../utils/userSlice";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const item = localStorage.getItem("User");
-
+const dispatch=useDispatch();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 const user=useSelector((slice)=>slice.user);
-console.log(user)
+const navigate=useNavigate();
+
+async function handleLogout(){
+    dispatch(logout());
+    navigate("/signin")
+}
+
+// console.log(user)
   return (
     <>
       <nav className="bg-white/50 shadow-md px-2 md:px-6 pt-4 flex justify-between items-center rounded-b-lg relative">
      <div className="flex items-center  md:gap-5 gap-2">
 
         {/* <h1 className="text-2xl font-bold text-[#10B981]">PenIt</h1> */}
-<img src="" alt="Pen It" className="md:w-25 w-20 mb-4 text-2xl font-bold text-[#10B981]"/>
- <div className="relative mb-4">
+<img src={logo} alt="Pen It" className="md:w-35 w-35 h-13 mb-4 text-2xl font-bold text-[#10B981]"/>
+ {/* <div className="relative mb-4">
               <Search size={17} className="absolute left-2 top-3" />
               <input
                 type="text"
                 placeholder="Search for blogs"
                 className="w-full px-7 py-2 rounded-md border border-[#4caa8c] focus:outline-none focus:shadow-lg"
               />
-                   </div>
+                   </div> */}
 
             </div>
         {/* Desktop Menu */}
@@ -40,23 +48,23 @@ console.log(user)
                 <Home className="mt-1" size={17} /> Home
               </li>
             </Link>
-            {user.token && <>
-            <Link to={"/add-blog"}>
+                        <Link to={"/add-blog"}>
               <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
                 <Pen className="mt-1" size={15} /> Write
               </li>
             </Link>
 
-            <Link to={"my-blogs"}>
+            {user.token ? <>
+
+            <Link to={"/my-blogs"}>
               <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
                 <NotebookPen className="mt-1" size={15} /> My Blogs
               </li>
             </Link>
-            <Link to={"/logout"}>
-              <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
+              <li onClick={handleLogout}className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
                 <LogOut className="mt-1" size={15} /> Log Out
               </li>
-            </Link>
+            
 
                         <Link to={"/profile"}>
               <li className="flex gap-1 bg-[#059669]/70 rounded-3xl px-3 py-2 text-black/80 transform hover:scale-120 transition duration-300 ease-in-out hover:text-white cursor-pointer">
@@ -64,9 +72,7 @@ console.log(user)
               </li>
             </Link>
 </>
-}
-{
-  !user && <>
+: <>
 <Link to={"/signin"}>
               <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
                 <LogIn className="mt-1" size={15} /> Sign in
@@ -100,7 +106,7 @@ console.log(user)
                   <Home size={17} /> Home
                 </li>
               </Link>
-              {user.token && <>
+              {user.token ?<>
               <Link to={"/add-blog"}>
                 <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
                   <Pen size={15} /> Write
@@ -123,8 +129,8 @@ console.log(user)
               </Link>
 
               </>
-              }
-              {!user && <>
+              
+              :<>
                             <Link to={"/signin"}>
                 <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
                   <LogIn size={15} /> Sign in

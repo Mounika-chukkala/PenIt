@@ -362,6 +362,45 @@ async function likeBlog(req, res) {
   }
 }
 
+// async function getMyBlogs(req,res){
+//   const {userId}=req.params;
+//   console.log(userId)
+//   const user=await User.findById(userId);
+//   if(!user){
+//    return res.status(404).json({success:false,message:"User not exist"});
+//   }
+//     const blogs = await Blog.find({ "creator._id": userId });
+    
+//      return res.status(200).json({ success:true,blogs });
+// }
+
+
+async function getMyBlogs(req, res) {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User does not exist" });
+    }
+
+    const blogs = await Blog.find({ "creator": userId }).populate({
+        path: "creator",
+        select: "-password",
+      })
+      .populate({
+        path: "likes",
+        select: "email name",
+      });;
+    return res.status(200).json({ success: true, blogs });
+  } catch (error) {
+    console.error("Error fetching user's blogs:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
+
+
+
 // async function saveBlog(req, res) {
 //   try {
 //     const user = req.user;
@@ -458,6 +497,7 @@ module.exports = {
   getBlogs,
   updateBlog,
   likeBlog,
+  getMyBlogs
   //   saveBlog,
   //   searchBlogs,
 };

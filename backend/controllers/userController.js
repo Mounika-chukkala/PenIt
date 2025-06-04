@@ -28,14 +28,37 @@ async function createUser(req, res) {
 
     const checkForexistingUser = await User.findOne({ email });
 if(checkForexistingUser){
+  if(checkForexistingUser.isVerify){
     return res.status(400).json({success:false,message:"User already exists"})
-  }
+  }else{
+     let verificationToken = await generateJWT({
+      email: checkForexistingUser.email,
+      id: checkForexistingUser._id,
+    });
+ 
 
+const sendingEmail=await transporter.sendMail({
+  from:"mounikach178@gmail.com",
+  to:email,
+  subject:"Email verification",
+  text:"Please verify yout email",
+  html:`<p>Hey ${name}</p>
+  <h1> Click on the link to verify your email</h1>
+  <a href="http://localhost:5173/verify-email/${verificationToken}">verify Email</a>`
+})
 
-  console.log("hi")
+  return res.status(200).json({
+      success: true,
+      message: "Please Check Your Email to verify your account",
+      user:user
+    });
+}
+
+}
+
     const hashedPass = await bcrypt.hash(password, 10);
     // const username = email.split("@")[0] + randomUUID();
-const username="0+__**."
+const username="0+44__*"
     const newUser = await User.create({
       name,
       email,
@@ -47,8 +70,7 @@ const username="0+__**."
       email: newUser.email,
       id: newUser._id,
     });
-console.log("hello")
-    //email logic
+ 
 
 const sendingEmail=await transporter.sendMail({
   from:"mounikach178@gmail.com",
@@ -76,44 +98,44 @@ console.log(user)
   }
 }
 
-// async function verifyEmail(req, res) {
-//   try {
-//     const { verificationToken } = req.params;
+async function verifyEmail(req, res) {
+  try {
+    const { verificationToken } = req.params;
 
-//     const verifyToken = await verifyJWT(verificationToken);
+    const verifyToken = await verifyJWT(verificationToken);
 
-//     if (!verifyToken) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid Token/Email expired",
-//       });
-//     }
-//     const { id } = verifyToken;
-//     const user = await User.findByIdAndUpdate(
-//       id,
-//       { isVerify: true },
-//       { new: true }
-//     );
+    if (!verifyToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Token/Email expired",
+      });
+    }
+    const { id } = verifyToken;
+    const user = await User.findByIdAndUpdate(
+      id,
+      { isVerify: true },
+      { new: true }
+    );
 
-//     if (!user) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "User not exist",
-//       });
-//     }
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not exist",
+      });
+    }
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Email verified successfully",
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Please try again",
-//       error: error.message,
-//     });
-//   }
-// }
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Please try again",
+      error: error.message,
+    });
+  }
+}
 
 // async function googleAuth(req, res) {
 //   try {
@@ -228,6 +250,29 @@ async function login(req, res) {
         message: "User not exist",
       });
     }
+
+    if (!checkForexistingUser.isVerify) {
+
+       let verificationToken = await generateJWT({
+      email: checkForexistingUser.email,
+      id: checkForexistingUser._id,
+    });
+
+const sendingEmail=await transporter.sendMail({
+  from:"mounikach178@gmail.com",
+  to:checkForexistingUser.email,
+  subject:"Email verification",
+  text:"Please verify yout email",
+  html:`<p>Hey ${checkForexistingUser.name}</p>
+  <h1> Click on the link to verify your email</h1>
+  <a href="http://localhost:5173/verify-email/${verificationToken}">verify Email</a>`
+})
+      return res.status(400).json({
+        success: false,
+        message: "Please verify your email buddy",
+      });
+    }
+
     // if (checkForexistingUser.googleAuth) {
     //   return res.status(400).json({
     //     success: true,
@@ -526,7 +571,7 @@ module.exports = {
   updateUser,
   deleteUser,
   login,
-//   verifyEmail,
+  verifyEmail,
 //   googleAuth,
 //   followUser,
 //   changeSavedLikedBlog,

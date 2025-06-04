@@ -28,11 +28,13 @@
     "dayjs": "^1.11.13",
     "framer-motion": "^12.12.1",
     "lucide-react": "^0.511.0",
+    "nodemailer": "^7.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.0",
+    "react-scroll-parallax": "^3.4.5",
     "relative-time": "^1.0.0"
   },
   "devDependencies": {

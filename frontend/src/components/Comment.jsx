@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  removeCommentandReplies,
   setCommentLikes,
   setComments,
   setReplies,
+  setUpdatedComment,
 } from "../utils/selectedBlog";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -49,6 +51,7 @@ function Comment() {
       setComment(""); // Clear the input
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.message)
     }
   }
 
@@ -176,10 +179,9 @@ try {
           },
         }
       );
-       console.log(res.data);
       toast.success(res.data.message);
      
-
+dispatch(setUpdatedComment(res.data.updatedComment))
 } catch (error) {
   console.log(error)
   toast.error(error.response.data.message)
@@ -207,7 +209,7 @@ try {
       );
        console.log(res.data);
       toast.success(res.data.message);
-     
+dispatch(removeCommentandReplies(id))     
 
 } catch (error) {
   console.log(error)
@@ -249,7 +251,7 @@ finally{
                 c.user._id==userId || userId==creatorId ?(
                 currentPopUp == c._id ? 
                 (
-                  <div className=" absolute right-0 top-0 rounded-md  bg-[#87999e]/10 ">
+                  <div className="z-10 absolute right-0 top-0 rounded-md  bg-[#d2dfe2] ">
                     <X
                       size={13}
                       className=" relative left-9 top-1 cursor-pointer "

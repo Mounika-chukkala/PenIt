@@ -9,6 +9,7 @@ const {
   likeBlog,
 //   saveBlog,
 //   searchBlogs,
+getMyBlogs
 } = require("../controllers/blogController");
 const upload=require("../utils/multer")
 
@@ -51,6 +52,8 @@ route.patch(
   updateBlog
 );
 route.delete("/blogs/:id", verifyUser, deleteBlog);
+
+route.get("/blogs/user/:userId",verifyUser,getMyBlogs);
 
 // Likes
 
