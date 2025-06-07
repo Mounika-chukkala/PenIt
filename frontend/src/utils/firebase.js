@@ -8,18 +8,6 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_MESSAGING_SENDERID,
   appId: import.meta.env.VITE_APPID
 
-//  apiKey: "AIzaSyCK3KLhH0GjOLuct-yESprLFOjNt_f4oKU",
-
-//   authDomain: "pen-it-362c5.firebaseapp.com",
-
-//   projectId: "pen-it-362c5",
-
-//   storageBucket: "pen-it-362c5.firebasestorage.app",
-
-//   messagingSenderId: "89292228304",
-
-//   appId: "1:89292228304:web:8d5fb086cd2986bcd580d5"
-
 
 };
 
