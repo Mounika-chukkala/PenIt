@@ -1,220 +1,205 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { NotebookPen, Pen, UserPlus, Home, Search, Menu ,User,LogIn,LogOut} from "lucide-react";
-import { Outlet } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/logo.png"
+import React, { useState } from "react";
+import { Link, useNavigate, Outlet } from "react-router-dom";
+import {
+  NotebookPen,
+  Pen,
+  UserPlus,
+  Home,
+  Menu,
+  User,
+  LogIn,
+  LogOut,
+  Feather,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../utils/userSlice";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const item = localStorage.getItem("User");
-const dispatch=useDispatch();
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-const user=useSelector((slice)=>slice.user);
-const navigate=useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
 
-async function handleLogout(){
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const handleLogout = () => {
     dispatch(logout());
-    navigate("/signin")
-}
+    navigate("/signin");
+  };
 
-// console.log(user)
   return (
     <>
-      <nav className="bg-white/50 shadow-md px-2 md:px-6 pt-4 flex justify-between items-center rounded-b-lg relative">
-     <div className="flex items-center  md:gap-5 gap-2">
+      <nav className="bg-white shadow-sm px-6 py-3 flex justify-between items-center border-b border-gray-200 sticky top-0 z-50">
+        {/* Brand Name with Gradient */}
+        <Link to="/home">
+        <div
+          onClick={() => navigate("/home")}
+          className="cursor-pointer font-sans flex gap-2 font-extrabold text-2xl select-none"
+          style={{
+            background:
+              "linear-gradient(90deg, #1E3A8A 0%, #2563EB 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            MozBackgroundClip: "text",
+            MozTextFillColor: "transparent",
+            userSelect: "none",
+          }}
+          aria-label="Brand name"
+        >
+          <img src={logo} className="w-8"/>
+          {/* <Feather className="mt-1" size={22} stroke= "#1E3A8A"/> */}
+          <p className="text-4xl">PenIt</p>
+        </div>
+        </Link>
 
-        {/* <h1 className="text-2xl font-bold text-[#10B981]">PenIt</h1> */}
-<img src={logo} alt="Pen It" className="md:w-35 w-35 h-13 mb-4 text-2xl font-bold text-[#10B981]"/>
- {/* <div className="relative mb-4">
-              <Search size={17} className="absolute left-2 top-3" />
-              <input
-                type="text"
-                placeholder="Search for blogs"
-                className="w-full px-7 py-2 rounded-md border border-[#4caa8c] focus:outline-none focus:shadow-lg"
-              />
-                   </div> */}
-
-            </div>
         {/* Desktop Menu */}
-        <div className="hidden md:flex gap-7 items-center">
+        <div className="hidden md:flex items-center gap-5 text-[#111827] font-sans text-base font-semibold">
+          <Link
+            to="/home"
+            className="flex items-center gap-2 hover:text-[#2563EB] transition duration-200"
+          >
+            <Home size={18} />
+            Home
+          </Link>
 
-          <ul className="flex space-x-4 pb-3 font-medium">
-            <Link to={"/"}>
-              <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
-                <Home className="mt-1" size={17} /> Home
-              </li>
-            </Link>
-                        <Link to={"/add-blog"}>
-              <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
-                <Pen className="mt-1" size={15} /> Write
-              </li>
-            </Link>
+          <Link
+            to="/add-blog"
+            className="flex items-center gap-2 hover:text-[#2563EB] transition duration-200"
+          >
+            <Pen size={16} />
+            Write
+          </Link>
 
-            {user.token ? <>
+          {user.token ? (
+            <>
+              <Link
+                to="/my-blogs"
+                className="flex items-center gap-2 hover:text-[#2563EB] transition duration-200"
+              >
+                <NotebookPen size={16} />
+                My Blogs
+              </Link>
 
-            <Link to={"/my-blogs"}>
-              <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
-                <NotebookPen className="mt-1" size={15} /> My Blogs
-              </li>
-            </Link>
-              <li onClick={handleLogout}className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
-                <LogOut className="mt-1" size={15} /> Log Out
-              </li>
-            
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 hover:text-[#1E3A8A] transition duration-200 text-[#111827]"
+              >
+                <LogOut size={16} />
+                Log Out
+              </button>
 
-                        <Link to={"/profile"}>
-              <li className="flex gap-1 bg-[#059669]/70 rounded-3xl px-3 py-2 text-black/80 transform hover:scale-120 transition duration-300 ease-in-out hover:text-white cursor-pointer">
-                <User className="mt-1" size={15} /> {user.name}
-              </li>
-            </Link>
-</>
-: <>
-<Link to={"/signin"}>
-              <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer">
-                <LogIn className="mt-1" size={15} /> Sign in
-              </li>
-            </Link>
-            <Link to={"/signup"}>
-              <li className="flex gap-1 bg-[#059669]/70 rounded-3xl px-3 py-2 text-black/80 transform hover:scale-120 transition duration-300 ease-in-out hover:text-white cursor-pointer">
-                <UserPlus className="mt-1" size={15} /> Sign Up
-              </li>
-            </Link>
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+              >
+                <User size={16} />
+                {user.name}
+              </Link>
             </>
-            }
-          </ul>
+          ) : (
+            <>
+              <Link
+                to="/signin"
+                className="flex items-center gap-2 hover:text-[#2563EB] transition duration-200"
+              >
+                <LogIn size={16} />
+                Sign In
+              </Link>
+
+              <Link
+                to="/signup"
+                className="flex items-center gap-2 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+              >
+                <UserPlus size={16} />
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-[#059669] focus:outline-none"
           onClick={toggleMenu}
+          className="md:hidden text-[#2563EB] focus:outline-none"
+          aria-label="Toggle Menu"
         >
-          <Menu size={28}  className="mb-4"/>
+          <Menu size={28} />
         </button>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown */}
         {isOpen && (
-          <div className="absolute top-16 right-4 bg-white shadow-md rounded-lg p-4 w-50 md:w-64 z-50 md:hidden">
-           
-            <ul className="flex flex-col gap-3 font-medium">
-              <Link to={"/"}>
-                <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
-                  <Home size={17} /> Home
-                </li>
-              </Link>
-              {user.token ?<>
-              <Link to={"/add-blog"}>
-                <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
-                  <Pen size={15} /> Write
-                </li>
-              </Link>
-              <Link to={"my-blogs"}>
-                <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
-                  <NotebookPen size={15} /> My Blogs
-                </li>
-              </Link>
-                            <Link to={"/logout"}>
-                <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
-                  <LogOut size={15} /> Log Out
-                </li>  
-              </Link>
-                            <Link to={"/profile"}>
-                <li className="  flex gap-2 items-center justify-center bg-[#059669]/70 rounded-3xl px-3 py-2 text-black/80 hover:text-white cursor-pointer">
-                  <User size={15} /> {user.name}
-                </li>
+          <div className="absolute top-14 right-4 bg-white shadow-lg rounded-lg p-5 w-56 z-50 md:hidden font-sans font-semibold text-[#111827] border border-gray-200">
+            <ul className="flex flex-col gap-4">
+              <Link
+                to="/home"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+              >
+                <Home size={18} /> Home
               </Link>
 
-              </>
-              
-              :<>
-                            <Link to={"/signin"}>
-                <li className="flex gap-2 items-center hover:text-[#059669] cursor-pointer">
-                  <LogIn size={15} /> Sign in
-                </li>
-              </Link>
+              {user.token ? (
+                <>
+                  <Link
+                    to="/add-blog"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                  >
+                    <Pen size={16} /> Write
+                  </Link>
 
-              <Link to={"/signup"}>
-                <li className="  flex gap-2 items-center justify-center bg-[#059669]/70 rounded-3xl px-3 py-2 text-black/80 hover:text-white cursor-pointer">
-                  <UserPlus size={15} /> Sign Up
-                </li>
-              </Link>
-              </>}
+                  <Link
+                    to="/my-blogs"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                  >
+                    <NotebookPen size={16} /> My Blogs
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="flex items-center gap-3 text-left hover:text-[#1E3A8A] transition duration-200"
+                  >
+                    <LogOut size={16} /> Log Out
+                  </button>
+
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+                  >
+                    <User size={16} /> {user.name}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/signin"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                  >
+                    <LogIn size={16} /> Sign In
+                  </Link>
+
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+                  >
+                    <UserPlus size={16} /> Sign Up
+                  </Link>
+                </>
+              )}
             </ul>
           </div>
         )}
       </nav>
+
       <Outlet />
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-// import { NotebookPen } from "lucide-react";
-// import { Pen} from "lucide-react";
-// import { Outlet } from "react-router-dom";
-// import { UserPlus } from "lucide-react";
-// import { Home } from "lucide-react";
-// import { Search } from "lucide-react";
-// export default function Navbar() {
-//   const [isLogged, setLogged] = useState(false);
-//   const item = localStorage.getItem("User");
-// //   useEffect(()=>{
-// //   // if (item!=null) {
-// //   //   setLogged(true);
-// //   // }
-// // },isLogged)
-//   return (
-//     <>
-//     <nav className="bg-white/50 shadow-md px-6 py-4  flex justify-between items-center rounded-b-lg">
-//     <div className="flex gap-10">
-//       <h1 className="text-2xl mt-1 font-bold text-[#10B981]">PenIt</h1>
-//                   <div className="  relative">
-//                     <Search size={17} className="absolute left-2 mt-3"/>
-//                   <input
-//               type="text"
-//               placeholder="Search for blogs"
-//               className="px-7 py-2 border border-[#4caa8c]  focus:outline-none focus:shadow-lg"
-//               onChange={(e) => searchResultFun(e.target.value)}
-//             />
-//                               </div>
-
-//     </div>
-//       <ul className="flex space-x-6 font-medium">
-//         <Link to={"/"}>
-//         <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer"><Home className="mt-1" size={17}/>Home</li>
-//         </Link>
-//       <Link to={"/add-blog"}>
-//         <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer"><Pen className="mt-1"  size={15}/>Write</li>
-//         </Link>
-// <Link to={"my-blogs"}>
-//         <li className="flex gap-1 hover:text-[#059669] pt-1 cursor-pointer"><NotebookPen className="mt-1" size={15}/>My Blogs</li>
-// </Link>
-//         <Link to={"/signup"}>
-//         <li className="flex gap-1 bg-[#059669]/70 rounded-3xl px-3 py-2 text-black/80 transform hover:scale-120 transition duration-300 ease-in-out  hover:text-white cursor-pointer">
-// {/* {isLogged?"Log out":"Sign up"} */}
-//  <UserPlus className="mt-1" size={15}/>   Sign Up
-//           </li>
-//         </Link>
-//       </ul>
-//     </nav>
-//     <Outlet/>
-//         </>
-
-//   );
-// }

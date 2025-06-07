@@ -15,11 +15,12 @@ function App() {
   return (
     <div className="w-screen h-screen overflow-x-hidden">
       <div
-        className="min-h-screen bg-cover bg-center "
-        style={{
-          backgroundImage:
-            "url('https://wallpapers.com/images/high/pastel-mint-green-wallpaper-h49dbyfgz38o3mu3.webp')",
-        }}
+        className="min-h-screen" 
+        // bg-cover bg-center "
+        // style={{
+        //   backgroundImage:
+        //     "url('https://wallpapers.com/images/high/pastel-mint-green-wallpaper-h49dbyfgz38o3mu3.webp')",
+        // }}
       >
         {/* <div className="absolute inset-0 bg-[#bbb]/10 backdrop-blur-sm z-0"> */}
 

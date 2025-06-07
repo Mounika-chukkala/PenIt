@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -5,17 +6,19 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { addSelectedBlog, removeSelectedBlog } from "../utils/selectedBlog";
+
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
-import NestedList from "@editorjs/nested-list"
-import CodeTool from "@editorjs/code"
-import Marker from  "@editorjs/marker"
-import Underline from "@editorjs/underline"
-import Embed from '@editorjs/embed';
-import RawTool from "@editorjs/raw"
+import NestedList from "@editorjs/nested-list";
+import CodeTool from "@editorjs/code";
+import Marker from "@editorjs/marker";
+import Underline from "@editorjs/underline";
+import Embed from "@editorjs/embed";
+import RawTool from "@editorjs/raw";
 import LinkTool from "@editorjs/link";
 import textVariantTune from "@editorjs/text-variant-tune";
-import ImageTool from "@editorjs/image"
+import ImageTool from "@editorjs/image";
+
 function AddBlog() {
   const { id } = useParams();
   const [blogData, setBlogData] = useState({
@@ -24,20 +27,18 @@ function AddBlog() {
     image: null,
     content: "",
   });
-  const imagesRef = useRef([]);
 
+  const imagesRef = useRef([]);
   const editorjsRef = useRef(null);
-// const raw=useSelector((state)=>state.selectedBlog)?.content
-// const content=raw?JSON.parse(raw):{}
-  const content = useSelector((state) => state.selectedBlog)?.content|| {};
+  const content = useSelector((state) => state.selectedBlog)?.content || {};
   const { token } = useSelector((slice) => slice.user);
-  const navigate = useNavigate();
   const selectedBlog = useSelector((slice) => slice.selectedBlog);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   async function fetchBlogById() {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`);
       dispatch(addSelectedBlog(res.data.blog));
       setBlogData({
         title: res.data.blog.title,
@@ -47,313 +48,215 @@ function AddBlog() {
       });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch blog");
-      console.log(error);
     }
   }
-  const dispatch = useDispatch();
 
-  function initializeEditojs() {
-    if(editorjsRef.current){return;}
+  function initializeEditorjs() {
+    if (editorjsRef.current) return;
     const editorjs = new EditorJS({
       holder: "editorjs",
-      placeholder: "Share your thoughts....",
+      placeholder: "Start writing your story...",
       tools: {
         header: {
           class: Header,
           inlineToolbar: true,
           config: {
             placeholder: "Enter a header",
-           levels: [2, 3, 4],
-        defaultLevel: 3
+            levels: [2, 3, 4],
+            defaultLevel: 3,
           },
         },
-        List:{
-          class:NestedList,
-          config:{
-
-          },
-          inlineToolbar:true
+        List: {
+          class: NestedList,
+          config: {},
+          inlineToolbar: true,
         },
-        code:CodeTool,
-        Marker:Marker,
-        Underline:Underline,
-        Embed:Embed,
-        linkTool:LinkTool,
-        raw:RawTool,
-        textVariant:textVariantTune,
-        image:{
-          class:ImageTool,
-          config:{
-            uploader:{
-              uploadByFile:async (image)=>{
-                  imagesRef.current.push(image);
+        code: CodeTool,
+        Marker: Marker,
+        Underline: Underline,
+        Embed: Embed,
+        linkTool: LinkTool,
+        raw: RawTool,
+        textVariant: textVariantTune,
+        image: {
+          class: ImageTool,
+          config: {
+            uploader: {
+              uploadByFile: async (image) => {
+                imagesRef.current.push(image);
                 return {
-                  success:1,
-                  file:{
-                    url:URL.createObjectURL(image),
-                    image
-                  }
-                }
-              }
-            }
-          }
-        }
+                  success: 1,
+                  file: {
+                    url: URL.createObjectURL(image),
+                    image,
+                  },
+                };
+              },
+            },
+          },
+        },
       },
-      tunes:['textVariant'],
-      data:content||{},
+      tunes: ["textVariant"],
+      data: content || {},
       onChange: async () => {
         let data = await editorjs.save();
-        setBlogData((blogData) => ({ ...blogData, content:data }));
-
+        setBlogData((blogData) => ({ ...blogData, content: data }));
       },
     });
-    editorjsRef.current=editorjs;
+    editorjsRef.current = editorjs;
   }
 
   useEffect(() => {
     if (id) {
       fetchBlogById();
-      return () => {
-        dispatch(removeSelectedBlog());
-      };
+      return () => dispatch(removeSelectedBlog());
     }
   }, [id]);
 
   useEffect(() => {
-      initializeEditojs();
-
-  return () => {
-    if (editorjsRef.current && typeof editorjsRef.current.destroy === "function") {
-      editorjsRef.current.destroy();
-      editorjsRef.current = null;
-    }
-  };
-  }, []); 
-
-
-
+    initializeEditorjs();
+    return () => {
+      if (editorjsRef.current?.destroy) {
+        editorjsRef.current.destroy();
+        editorjsRef.current = null;
+      }
+    };
+  }, []);
 
   async function handleUpdateBlog(e) {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", blogData.title);
     formData.append("description", blogData.description);
-    console.log("blogData content",blogData.content);
-
-    formData.append("content",JSON.stringify(blogData.content));
-    
+    formData.append("content", JSON.stringify(blogData.content));
     formData.append("image", blogData.image);
-// imagesRef.current.forEach((image) => {
- 
-//   formData.append("images", image);
-// });
 
-
-let existingImages=[];
-console.log("blogData content",JSON.stringify(blogData.content));
-
-console.log("formData content",formData.get("content"));
-content?.blocks.forEach((block)=>{
-  if(block.type==="image" ){
-    if(block.data.file.image){
-      formData.append("images",block.data.file.image);
-    }
-    else{
-
-      existingImages.push({
-        url:block.data.file.url,
-        ImageId:block.data.file.ImageId
-      });  
-   
-    }
-    
-  }
-
-});
-formData.append("existingImages",JSON.stringify(existingImages))
-
+    const existingImages = [];
+    content?.blocks.forEach((block) => {
+      if (block.type === "image") {
+        if (block.data.file.image) {
+          formData.append("images", block.data.file.image);
+        } else {
+          existingImages.push({
+            url: block.data.file.url,
+            ImageId: block.data.file.ImageId,
+          });
+        }
+      }
+    });
+    formData.append("existingImages", JSON.stringify(existingImages));
 
     try {
-      const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`,
-        formData,
-        {
-          headers: {
-                "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (res.data.success) {
-        toast.success(res.data.message);
-      } else {
-        toast.error(res.data.message);
-      }
+      const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success(res.data.message);
       navigate(`/blog/${id}`);
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Update failed");
+    }
   }
+
   async function handleBlogCreation(e) {
     e.preventDefault();
-        console.log(blogData)
-
     const formData = new FormData();
     formData.append("title", blogData.title);
     formData.append("description", blogData.description);
     formData.append("image", blogData.image);
     formData.append("content", JSON.stringify(blogData.content));
-    // const content=JSON.parse(blogData.content)
-    // content.blocks.forEach((block)=>{
-    //   if(block.type==="image"){
-    //     // images.push(block.data.file.image)
-    //         formData.append("images", block.data.file.image);
-
-    //   }
-    // })
-imagesRef.current.forEach((image) => {
-          console.log("hi")
-
-  formData.append("images", image);
-});
-    console.log("formdata",formData.getAll("images"))
+    imagesRef.current.forEach((image) => {
+      formData.append("images", image);
+    });
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/blogs`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/blogs`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       toast.success(res.data.message);
       navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to post blog");
-      console.log(error);
     }
   }
 
   return token == null ? (
-    <Navigate to={"/signin"} />
+    <Navigate to="/signin" />
   ) : (
-    <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-4 py-5"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')",
-      }}
+    <form
+      onSubmit={id ? handleUpdateBlog : handleBlogCreation}
+className="w-full min-h-screen px-6 pt-15 pb-28 text-[#111827] bg-[#E0F2FE]/40"
+
     >
+      <div className="w-full max-w-5xl mx-auto space-y-10">
+        {/* Title */}
+        <input
+          type="text"
+          placeholder="Your blog title..."
+          className="w-[80%] mx-auto block text-4xl font-bold outline-none placeholder:text-[#9CA3AF] text-[#1E293B] font-serif"
+          value={blogData.title}
+          onChange={(e) => setBlogData({ ...blogData, title: e.target.value })}
+        />
 
-      <motion.form
-        onSubmit={id ? handleUpdateBlog : handleBlogCreation}
-        className="w-full max-w-2xl bg-white/10 backdrop-blur-md shadow-xl rounded-2xl p-8 flex flex-col gap-6 border border-[#10B981] z-2"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-3xl font-semibold text-center text-[#10B981]">
-          {id ? "Update Blog" : "Create a Blog"}
-        </h2>
+        {/* Description */}
+        <textarea
+          rows={2}
+          placeholder="Short description (optional)..."
+          className="w-[80%] mx-auto block text-xl resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
+          value={blogData.description}
+          onChange={(e) => setBlogData({ ...blogData, description: e.target.value })}
+        />
 
-        <div>
-          <label
-            htmlFor="title"
-            className="block mb-1 font-medium text-[#1E293B]"
-          >
-            Title
-          </label>
-          <motion.input
-            type="text"
-            id="title"
-            onChange={(e) =>
-              setBlogData({ ...blogData, title: e.target.value })
-            }
-            value={blogData.title}
-            placeholder="Title of your blog"
-            className="w-full p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#10B981] transition"
-            whileFocus={{ scale: 1.02 }}
-          />
-        </div>
+        {/* Image */}
+        <label htmlFor="image" className="w-[80%] h-60 mx-auto block cursor-pointer group">
+          {blogData.image ? (
+            <img
+              src={
+                typeof blogData.image === "string"
+                  ? blogData.image
+                  : URL.createObjectURL(blogData.image)
+              }
+              alt="Blog cover"
+              className="w-full h-60 object-cover rounded-xl shadow-sm"
+            />
+          ) : (
+            <div className="w-full h-60 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl text-gray-400 group-hover:text-[#2563EB] transition">
+              Click to add a cover image
+            </div>
+          )}
+        </label>
+        <input
+          type="file"
+          id="image"
+          accept=".png,.jpeg,.jpg"
+          className="hidden"
+          onChange={(e) => setBlogData({ ...blogData, image: e.target.files[0] })}
+        />
 
-        <div>
-          <label
-            htmlFor="description"
-            className="block mb-1 font-medium text-[#1E293B]"
-          >
-            Description
-          </label>
-          <motion.textarea
-            id="description"
-            rows={2}
-            onChange={(e) =>
-              setBlogData({ ...blogData, description: e.target.value })
-            }
-            value={blogData.description}
-            placeholder="What's your blog about?"
-            className="w-full p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#8eb8aa] transition resize-none"
-            whileFocus={{ scale: 1.02 }}
-          />
-        </div>
-    
+        {/* Editor */}
+        <div
+          id="editorjs"
+          className="min-h-[300px] w-[80%] mx-auto mt-6 border border-[#E5E7EB] rounded-xl p-4 bg-white"
+        />
 
-   <div>
-          <label
-            htmlFor="image"
-            className="block mb-2 font-medium text-[#1E293B]"
-          >
-            Image
-          </label>
-          <label
-            htmlFor="image"
-            className="cursor-pointer group flex justify-center items-center h-48 border border-dashed border-[#8eb8aa] rounded-xl overflow-hidden relative bg-white/70 hover:border-[#10B981] transition"
-          >
-            {blogData.image ? (
-              <motion.img
-                src={
-                  typeof blogData.image == "string"
-                    ? blogData.image
-                    : URL.createObjectURL(blogData.image)
-                }
-                alt="preview"
-                className="object-cover w-full h-full rounded-xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              />
-            ) : (
-              <div className="text-[#1E293B] bg-transparent  group-hover:text-[#10B981] transition text-xl font-medium">
-                Select your blog's cover photo
-              </div>
-            )}
-          </label>
-          <input
-            type="file"
-            id="image"
-            accept=".png,.jpeg,.jpg"
-            className="hidden"
-            onChange={(e) =>
-              setBlogData({ ...blogData, image: e.target.files[0] })
-            }
-          />
-        </div>
-
-<p >Share your thoughts</p>        <motion.div id="editorjs" className=" bg-white/20 w-full  p-3 rounded-xl border border-[#6EE7B7] focus:outline-none focus:ring-1 focus:ring-[#8eb8aa] transition resize-none overflow-auto "
-                    whileFocus={{ scale: 1.02 }}
-></motion.div>
-     
-
+        {/* Submit Button */}
         <motion.button
           type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="mt-4 px-6 py-3 bg-[#10B981] text-white rounded-xl hover:bg-[#059669] transition font-semibold text-lg"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="block mx-auto mt-10 px-8 py-3 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold text-base rounded-full shadow-lg"
         >
-          {id ? "Update Blog" : "Post Blog"}
+          {id ? "Update Blog" : "Publish Blog"}
         </motion.button>
-      </motion.form>
-    </div>
+      </div>
+    </form>
   );
 }
 
 export default AddBlog;
+  
+

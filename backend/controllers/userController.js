@@ -2,6 +2,7 @@ const User = require("../models/userSchema");
 const bcrypt = require("bcrypt");
 const { generateJWT, verifyJWT } = require("../utils/generateToken");
 const transporter  = require("../utils/transporter");
+const admin=require("firebase-admin")
 
 async function createUser(req, res) {
   const { name, password, email } = req.body;
