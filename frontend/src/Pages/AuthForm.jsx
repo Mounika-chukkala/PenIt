@@ -414,12 +414,17 @@ function AuthForm({ type }) {
         if (type === "signup") {
           navigate("/signin");
         } else {
+          console.log("res data user",res.data.user)
           dispatch(
             login({
               name: res.data.user.name,
               email: res.data.user.email,
               token: res.data.user.token,
               id: res.data.user.id,
+              bio:res.data.user.bio,
+              profilePic:res.data.user.profilePic,
+              username:res.data.user.username,
+              blogs:res.data.user.blogs
             })
           );
           navigate("/home");
@@ -433,9 +438,23 @@ function AuthForm({ type }) {
   async function handleGoogleAuth() {
     try {
       let data = await googleAuth();
-      console.log(data);
+      // console.log(data.user.accessToken)
+const res=await axios.post(`${import.meta.env.VITE_BACKEND_URL}/google-auth`,{
+  accessToken:data.user.accessToken,
+});
+          dispatch(
+            login({
+              name: res.data.user.name,
+              email: res.data.user.email,
+              token: res.data.user.token,
+              id: res.data.user.id,
+            })
+          );
+          navigate("/home");
+toast.success(res.data.message)
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.message)
     }
   }
 

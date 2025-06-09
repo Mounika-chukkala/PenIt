@@ -3,6 +3,29 @@ const bcrypt = require("bcrypt");
 const { generateJWT, verifyJWT } = require("../utils/generateToken");
 const transporter  = require("../utils/transporter");
 const admin=require("firebase-admin")
+const dotenv=require("dotenv")
+const {getAuth}=require("firebase-admin/auth")
+dotenv.config();
+admin.initializeApp({
+  credential: admin.credential.cert({
+  "type": process.env.FIREBASE_ADMIN_TYPE,
+  "project_id": process.env.FIREBASE_PROJECT_ID,
+  "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+  "private_key": process.env.FIREBASE_PRIVATE_KEY,
+  "client_email":process.env.FIREBASE_CLIENT_EMAIL,
+  "client_id": process.env.FIREBASE_CLIENT_ID,
+  "auth_uri":  process.env. FIREBASE_AUTH_URI,
+  "token_uri": process.env.FIREBASE_TOKEN_URI,
+  "auth_provider_x509_cert_url":process.env.FIREBASE_AUTH_PROVIDER,
+  "client_x509_cert_url": process.env.FIREBASE_CLIENT_CERT_URL,
+  "universe_domain":process.env.FIREBASE_UNIVERSE_DOMAIN
+}
+)
+
+});
+
+  
+
 
 async function createUser(req, res) {
   const { name, password, email } = req.body;
@@ -29,6 +52,13 @@ async function createUser(req, res) {
 
     const checkForexistingUser = await User.findOne({ email });
 if(checkForexistingUser){
+   if(checkForexistingUser.googleAuth){
+      return res.status(400).json({
+          success: true,
+          message:
+            "This email already registered with google. please try to login with google",
+        });
+    } 
   if(checkForexistingUser.isVerify){
     return res.status(400).json({success:false,message:"User already exists"})
   }else{
@@ -84,7 +114,6 @@ const sendingEmail=await transporter.sendMail({
 })
 
 const user={email:newUser.email,name:newUser.name,id:newUser._id,token:verificationToken};
-console.log(user)
     return res.status(200).json({
       success: true,
       message: "Please Check Your Email to verify your account",
@@ -138,89 +167,89 @@ async function verifyEmail(req, res) {
   }
 }
 
-// async function googleAuth(req, res) {
-//   try {
-//     const { accessToken } = req.body;
+async function googleAuth(req, res) {
+  try {
+    const { accessToken } = req.body;
 
-//     const response = await getAuth().verifyIdToken(accessToken);
+    const response = await getAuth().verifyIdToken(accessToken);
 
-//     const { name, email } = response;
+    const { name, email } = response;
 
-//     let user = await User.findOne({ email });
+    let user = await User.findOne({ email });
 
-//     if (user) {
-//       // already registered
-//       if (user.googleAuth) {
-//         let token = await generateJWT({
-//           email: user.email,
-//           id: user._id,
-//         });
+    if (user) {
+      if (user.googleAuth) {
+        let token = await generateJWT({
+          email: user.email,
+          id: user._id,
+        });
 
-//         return res.status(200).json({
-//           success: true,
-//           message: "logged in successfully",
-//           user: {
-//             id: user._id,
-//             name: user.name,
-//             email: user.email,
-//             profilePic: user.profilePic,
-//             username: user.username,
-//             showLikedBlogs: user.showLikedBlogs,
-//             showSavedBlogs: user.showSavedBlogs,
-//             bio: user.bio,
-//             followers: user.followers,
-//             following: user.following,
-//             token,
-//           },
-//         });
-//       } else {
-//         return res.status(400).json({
-//           success: true,
-//           message:
-//             "This email already registered without google. please try through login form",
-//         });
-//       }
-//     }
-//     const username = email.split("@")[0] + randomUUID();
+        return res.status(200).json({
+          success: true,
+          message: "logged in successfully",
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            // profilePic: user.profilePic,
+            username: user.username,
+            // showLikedBlogs: user.showLikedBlogs,
+            // showSavedBlogs: user.showSavedBlogs,
+            // bio: user.bio,
+            // followers: user.followers,
+            // following: user.following,
+            token,
+          },
+        });
+      } else {
+        return res.status(400).json({
+          success: true,
+          message:
+            "This email already registered without google. please try through login form",
+        });
+      }
+    }
+    const username = email.split("@")[0] +"123" 
+    // randomUUID();
 
-//     let newUser = await User.create({
-//       name,
-//       email,
-//       googleAuth: true,
-//       isVerify: true,
-//       username,
-//     });
+    let newUser = await User.create({
+      name,
+      email,
+      googleAuth: true,
+      isVerify: true,
+      username,
+    });
 
-//     let token = await generateJWT({
-//       email: newUser.email,
-//       id: newUser._id,
-//     });
+    let token = await generateJWT({
+      email: newUser.email,
+      id: newUser._id,
+    });
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Registration in successfully",
-//       user: {
-//         id: newUser._id,
-//         name: newUser.name,
-//         email: newUser.email,
-//         profilePic: newUser.profilePic,
-//         username: newUser.username,
-//         showLikedBlogs: newUser.showLikedBlogs,
-//         showSavedBlogs: newUser.showSavedBlogs,
-//         bio: newUser.bio,
-//         followers: newUser.followers,
-//         following: newUser.following,
-//         token,
-//       },
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Please try again",
-//       error: error.message,
-//     });
-//   }
-// }
+    return res.status(200).json({
+      success: true,
+      message: "Registration  successfull",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        // profilePic: newUser.profilePic,
+        username: newUser.username,
+        // showLikedBlogs: newUser.showLikedBlogs,
+        // showSavedBlogs: newUser.showSavedBlogs,
+        // bio: newUser.bio,
+        // followers: newUser.followers,
+        // following: newUser.following,
+        token,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Please try again",
+      error: error.message,
+    });
+  }
+}
 
 async function login(req, res) {
   const { password, email } = req.body;
@@ -242,13 +271,31 @@ async function login(req, res) {
 
     const checkForexistingUser = await User.findOne({ email })
     .select(
-      "password isVerify name email profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
+      "password isVerify name email blogs profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
     );
 
     if (!checkForexistingUser) {
       return res.status(400).json({
         success: false,
         message: "User not exist",
+      });
+    }
+    if(checkForexistingUser.googleAuth){
+      return res.status(400).json({
+          success: true,
+          message:
+            "This email already registered with google. please try to login with google",
+        });
+    } 
+    let checkForPass = await bcrypt.compare(
+      password,
+      checkForexistingUser.password
+    );
+
+    if (!checkForPass) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect password",
       });
     }
 
@@ -274,59 +321,14 @@ const sendingEmail=await transporter.sendMail({
       });
     }
 
-    // if (checkForexistingUser.googleAuth) {
-    //   return res.status(400).json({
-    //     success: true,
-    //     message:
-    //       "This email already registered with google. please try through continue with google",
-    //   });
-    // }
-//     console.log(checkForexistingUser)
-// console.log("Password",password)
-// console.log(      checkForexistingUser.password
-// )
-    let checkForPass = await bcrypt.compare(
-      password,
-      checkForexistingUser.password
-    );
-console.log("not verified")
 
-    if (!checkForPass) {
-      return res.status(400).json({
-        success: false,
-        message: "Incorrect password",
-      });
-    }
-
-    // if (!checkForexistingUser.isVerify) {
-    //   // send verification email
-    //   let verificationToken = await generateJWT({
-    //     email: checkForexistingUser.email,
-    //     id: checkForexistingUser._id,
-    //   });
-
-    //   //email logic
-
-    //   const sendingEmail = transporter.sendMail({
-    //     from: EMAIL_USER,
-    //     to: checkForexistingUser.email,
-    //     subject: "Email Verification",
-    //     text: "Please verify your email",
-    //     html: `<h1>Click on the link to verify your email</h1>
-    //     <a href="${FRONTEND_URL}/verify-email/${verificationToken}">Verify Email</a>`,
-    //   });
-
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Please verify you email",
-    //   });
-    // }
-    console.log("verified")
+    
 
     let token = await generateJWT({
       email: checkForexistingUser.email,
       id: checkForexistingUser._id,
     });
+
 
     return res.status(200).json({
       success: true,
@@ -335,9 +337,10 @@ console.log("not verified")
         id: checkForexistingUser._id,
         name: checkForexistingUser.name,
         email: checkForexistingUser.email,
-        // profilePic: checkForexistingUser.profilePic,
-        // username: checkForexistingUser.username,
-        // bio: checkForexistingUser.bio,
+        profilePic: checkForexistingUser.profilePic,
+        username: checkForexistingUser.username,
+        bio: checkForexistingUser.bio,
+        blogs:checkForexistingUser.blogs,
         // showLikedBlogs: checkForexistingUser.showLikedBlogs,
         // showSavedBlogs: checkForexistingUser.showSavedBlogs,
         // followers: checkForexistingUser.followers,
@@ -465,7 +468,7 @@ async function updateUser(req, res) {
       user: {
         name: user.name,
         // profilePic: user.profilePic,
-        // bio: user.bio,
+        bio: user.bio,
         username: user.username,
       },
     });
@@ -573,7 +576,7 @@ module.exports = {
   deleteUser,
   login,
   verifyEmail,
-//   googleAuth,
+  googleAuth,
 //   followUser,
 //   changeSavedLikedBlog,
 };

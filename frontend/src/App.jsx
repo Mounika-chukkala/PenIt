@@ -11,6 +11,8 @@ import BlogPage from "./components/BlogPage";
 import MyBlogs from "./components/MyBlogs";
 import Profile from "./components/Profile";
 import VerifyUser from "./components/VerifyUser";
+import EditProfile from "./components/EditProfile";
+import Settings from "./components/Settings";
 function App() {
   return (
     <div className="w-screen h-screen overflow-x-hidden">
@@ -33,11 +35,14 @@ function App() {
               <Route path="/my-blogs" element={<MyBlogs />}></Route>
               <Route path="/profile" element={<Profile />}></Route>
               <Route path="/verify-email/:verificationToken" element={<VerifyUser/>}></Route>
+              <Route path="/settings" element={<Settings/>}></Route>
 
               <Route
                 path="/signin"
                 element={<AuthForm type={"signin"} />}
               ></Route>
+                                      <Route path="/profile/edit" element={<EditProfile />}></Route>
+
               <Route
                 path="/signup"
                 element={<AuthForm type={"signup"} />}

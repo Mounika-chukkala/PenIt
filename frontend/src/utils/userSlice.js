@@ -15,12 +15,19 @@ return action.payload;
     logout(state,action ){
           localStorage.removeItem("user");
   return { token: null }; 
-    }
-    }
+    },
+    updateUser(state, action) {
+        console.log(action.payload);
+      const updatedUser = { ...state, ...action.payload };
+      console.log("updateduser :",updatedUser)
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    },
+}
 
 
 })
 
 
-export const {login,logout}=userSlice.actions;
+export const {login,logout,updateUser}=userSlice.actions;
 export default userSlice.reducer;

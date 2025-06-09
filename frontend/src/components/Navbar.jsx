@@ -1,4 +1,4 @@
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
 import React, { useState } from "react";
 import { Link, useNavigate, Outlet } from "react-router-dom";
 import {
@@ -10,6 +10,7 @@ import {
   User,
   LogIn,
   LogOut,
+  Settings,
   Feather,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +21,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-
+const [profileDialog,setProfileDialog]=useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleLogout = () => {
@@ -33,24 +34,23 @@ export default function Navbar() {
       <nav className="bg-white shadow-sm px-6 py-3 flex justify-between items-center border-b border-gray-200 sticky top-0 z-50">
         {/* Brand Name with Gradient */}
         <Link to="/home">
-        <div
-          onClick={() => navigate("/home")}
-          className="cursor-pointer font-sans flex gap-2 font-extrabold text-2xl select-none"
-          style={{
-            background:
-              "linear-gradient(90deg, #1E3A8A 0%, #2563EB 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            MozBackgroundClip: "text",
-            MozTextFillColor: "transparent",
-            userSelect: "none",
-          }}
-          aria-label="Brand name"
-        >
-          <img src={logo} className="w-8"/>
-          {/* <Feather className="mt-1" size={22} stroke= "#1E3A8A"/> */}
-          <p className="text-4xl">PenIt</p>
-        </div>
+          <div
+            onClick={() => navigate("/home")}
+            className="cursor-pointer font-sans flex gap-2 font-extrabold text-2xl select-none"
+            style={{
+              background: "linear-gradient(90deg, #1E3A8A 0%, #2563EB 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              MozBackgroundClip: "text",
+              MozTextFillColor: "transparent",
+              userSelect: "none",
+            }}
+            aria-label="Brand name"
+          >
+            <img src={logo} className="w-8" />
+            {/* <Feather className="mt-1" size={22} stroke= "#1E3A8A"/> */}
+            <p className="text-4xl">PenIt</p>
+          </div>
         </Link>
 
         {/* Desktop Menu */}
@@ -81,21 +81,13 @@ export default function Navbar() {
                 My Blogs
               </Link>
 
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 hover:text-[#1E3A8A] transition duration-200 text-[#111827]"
-              >
-                <LogOut size={16} />
-                Log Out
-              </button>
-
-              <Link
-                to="/profile"
-                className="flex items-center gap-2 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+              <div
+              onClick={()=>setProfileDialog((prev)=>!prev)}
+                className="flex h-10  items-center gap-2 cursor-pointer rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
               >
                 <User size={16} />
-                {user.name}
-              </Link>
+                <p className="md:w-22 line-clamp-1">{user.name}</p>
+              </div>
             </>
           ) : (
             <>
@@ -120,16 +112,34 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          onClick={toggleMenu}
-          className="md:hidden text-[#2563EB] focus:outline-none"
+          className="md:hidden flex gap-2 text-[#2563EB] focus:outline-none"
           aria-label="Toggle Menu"
         >
-          <Menu size={28} />
+          <Menu size={28} onClick={toggleMenu} className="mt-1" />
+          {user.token ? (
+            <Link to="/profile">
+              <img
+                src={
+                  user.image ||
+                  `https://api.dicebear.com/9.x/initials/svg?seed=${user.name}`
+                }
+                className="rounded-full w-8 h-8"
+              />
+            </Link>
+          ) : (
+            <Link
+              to="/signup"
+              onClick={() => setIsOpen(false)}
+              className=" rounded-full p-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+            >
+              <UserPlus size={16} />
+            </Link>
+          )}
         </button>
 
         {/* Mobile Dropdown */}
         {isOpen && (
-          <div className="absolute top-14 right-4 bg-white shadow-lg rounded-lg p-5 w-56 z-50 md:hidden font-sans font-semibold text-[#111827] border border-gray-200">
+          <div className="absolute top-14 right-4 bg-white shadow-lg rounded-lg p-5 w-45 z-50 md:hidden font-sans font-semibold text-[#111827] border border-gray-200">
             <ul className="flex flex-col gap-4">
               <Link
                 to="/home"
@@ -156,24 +166,6 @@ export default function Navbar() {
                   >
                     <NotebookPen size={16} /> My Blogs
                   </Link>
-
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsOpen(false);
-                    }}
-                    className="flex items-center gap-3 text-left hover:text-[#1E3A8A] transition duration-200"
-                  >
-                    <LogOut size={16} /> Log Out
-                  </button>
-
-                  <Link
-                    to="/profile"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
-                  >
-                    <User size={16} /> {user.name}
-                  </Link>
                 </>
               ) : (
                 <>
@@ -184,17 +176,57 @@ export default function Navbar() {
                   >
                     <LogIn size={16} /> Sign In
                   </Link>
-
-                  <Link
-                    to="/signup"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
-                  >
-                    <UserPlus size={16} /> Sign Up
-                  </Link>
                 </>
               )}
+              <Link
+                to="/settings"
+                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+              >
+                <Settings size={16} className="mt-1" />
+                <p>Settings</p>
+              </Link>
+              <div
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+              >
+                <LogOut size={16} className="mt-1" /> Log Out
+              </div>
             </ul>
+
+            <div></div>
+          </div>
+        )}
+
+        {user.token && profileDialog && (
+          <div className="hidden md:flex flex-col absolute right-14 rounded-lg top-13 w-[120px] bg-gray-100 drop-shadow-md  justify-center "
+          >
+            <Link
+              to="/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex gap-1 hover:text-[#768cca] px-2 py-1 text-md transition duration-200 "
+            >
+              <User size={16} className="mt-1" />
+              <p>Profile</p>
+            </Link>
+            <Link
+              to="/settings"
+              className="flex gap-1 px-2 py-1 hover:text-[#768cca]  text-md transition duration-200"
+            >
+              <Settings size={16} className="mt-1" />
+              <p>Settings</p>
+            </Link>
+            <div
+              onClick={() => {
+                handleLogout();
+                setIsOpen(false);
+              }}
+              className="flex text-md gap-1 px-2 py-1 hover:text-[#768cca] transition duration-200"
+            >
+              <LogOut size={16} className="mt-1" /> Log Out
+            </div>{" "}
           </div>
         )}
       </nav>

@@ -56,7 +56,7 @@ const GetStarted = () => {
             Get Started
           </a>
           <a
-            href="/login"
+            href="/signin"
             className="px-8 py-3 rounded-2xl border border-[#E5E7EB] text-[#1E3A8A] font-semibold text-lg font-sans hover:bg-[#1E3A8A]/10 transition duration-300"
           >
             Log In
