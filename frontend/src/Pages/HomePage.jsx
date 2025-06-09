@@ -92,7 +92,6 @@ function HomePage() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Abstract wave SVG overlay for subtle dynamic background */}
       <svg
         className="pointer-events-none absolute top-0 left-0 w-full h-full mix-blend-overlay opacity-20"
         xmlns="http://www.w3.org/2000/svg"
@@ -187,7 +186,7 @@ function HomePage() {
           Discover fresh reads below
         </motion.h2>
 
-        {filteredBlogs.map((blog, index) => (
+        {[...filteredBlogs].reverse().map((blog, index) => (
           <motion.div
             key={blog._id}
             initial={{ opacity: 0, y: 20 }}

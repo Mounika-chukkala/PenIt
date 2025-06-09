@@ -22,6 +22,11 @@ function BlogPage() {
   const comments = useSelector((state) => state.selectedBlog?.comments || []);
   const content = useSelector((state) => state.selectedBlog)?.content || {};
   const { isOpen } = useSelector((state) => state.comment);
+  // const contentRef = useRef();
+  // const [inlineNotes, setInlineNotes] = useState([]);
+  // const [showNoteInput, setShowNoteInput] = useState(false);
+  // const [notePosition, setNotePosition] = useState({ x: 0, y: 0 });
+  // const [selectedText, setSelectedText] = useState("");
 
   async function fetchBlogById() {
     try {
@@ -45,6 +50,42 @@ function BlogPage() {
       commentRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }
+
+// const handleTextSelect = () => {
+//     const selection = window.getSelection();
+//     const text = selection.toString();
+
+//     if (text.trim()) {
+//       const range = selection.getRangeAt(0);
+//       const rect = range.getBoundingClientRect();
+//       setNotePosition({ x: rect.left + window.scrollX, y: rect.top + window.scrollY - 40 });
+//       setSelectedText(text);
+//       setShowNoteInput(true);
+//     }
+//   };
+
+//   const handleAddNote = (note) => {
+//     setInlineNotes([...inlineNotes, { text: selectedText, note }]);
+//     setSelectedText("");
+//     setShowNoteInput(false);
+//   };
+
+//   const renderWithNotes = (blockText) => {
+//     let output = blockText;
+//     inlineNotes.forEach(({ text, note }, i) => {
+//       if (output.includes(text)) {
+//         const span = `<span class="relative group px-1 bg-yellow-100 rounded-md hover:bg-yellow-200 transition">
+//           ${text}
+//           <span class="absolute z-50 left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-white text-sm text-gray-800 px-3 py-2 border border-gray-300 rounded shadow-md w-max max-w-[250px]">
+//             ${note}
+//           </span>
+//         </span>`;
+//         output = output.replace(text, span);
+//       }
+//     });
+//     return <span dangerouslySetInnerHTML={{ __html: output }} />;
+//   };
+
 
   async function handleLike(e) {
     e.preventDefault();
@@ -79,150 +120,11 @@ function BlogPage() {
     };
   }, [id]);
 
-  // return (
-  //   <div className="min-h-screen w-full bg-gradient-to-b from-[#F0F9FF] via-[#E0F2FE]/60 to-[#D1FAE5]/60 text-[#111827] font-serif">
-  //     <div className="sm:max-w-[90%] md:max-w-[70%] mx-auto px-4 py-14">
-  //       {blogData ? (
-  //         <>
-  //           <motion.article
-  //             initial={{ opacity: 0, y: 20 }}
-  //             animate={{ opacity: 1, y: 0 }}
-  //             transition={{ duration: 0.6 }}
-  //             className="space-y-6"
-  //           >
-  //             {/* Title */}
-  //             <h1 className="text-4xl font-bold leading-tight text-[#1E293B] font-sans">
-  //               {blogData.title}
-  //             </h1>
-
-  //             {/* Author + Buttons */}
-  //             <div className="flex justify-between items-center text-sm text-[#334155]">
-  //               <div className="flex items-center gap-2">
-  //                 <img
-  //                   src={
-  //                     blogData.creator.image ||
-  //                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDJHqDvc62-IQh68H-YN-192G4IxstKe4O2w&s"
-  //                   }
-  //                   className="w-8 h-8 rounded-full border shadow-sm object-cover"
-  //                   alt=""
-  //                 />
-  //                 <p>
-  //                   By{" "}
-  //                   <span className="text-[#10B981] font-semibold">
-  //                     {blogData.creator.name}
-  //                   </span>
-  //                 </p>
-  //               </div>
-  //               <div className="flex gap-4 text-[#475569]">
-  //                 <div className="flex items-center gap-1 cursor-pointer hover:text-[#EF4444] transition" onClick={handleLike}>
-  //                   <Heart
-  //                     size={18}
-  //                     fill={isLike ? "#EF4444" : "none"}
-  //                     color={isLike ? "#EF4444" : "#94A3B8"}
-  //                   />
-  //                   {blogLikeCount}
-  //                 </div>
-  //                 <div className="flex items-center gap-1 cursor-pointer hover:text-[#2563EB]" onClick={scrollToComments}>
-  //                   <MessageCircle size={18} />
-  //                   {comments.length}
-  //                 </div>
-  //                 <div className="flex items-center gap-1 cursor-pointer hover:text-[#6366F1]">
-  //                   <Bookmark size={18} /> +
-  //                 </div>
-  //               </div>
-  //             </div>
-
-  //             {/* Image */}
-  //             {blogData.image && (
-  //               <motion.div
-  //                 className="overflow-hidden rounded-xl shadow-md border border-[#E5E7EB]"
-  //                 initial={{ opacity: 0 }}
-  //                 animate={{ opacity: 1 }}
-  //                 transition={{ delay: 0.2 }}
-  //               >
-  //                 <img
-  //                   src={blogData.image}
-  //                   alt="cover"
-  //                   className="w-full object-cover h-[350px] rounded-xl"
-  //                 />
-  //               </motion.div>
-  //             )}
-
-  //             {/* Blog Content */}
-  //             <motion.section
-  //               className="prose lg:prose-lg prose-p:leading-relaxed prose-p:text-[#1F2937] prose-p:tracking-wide"
-  //               initial={{ opacity: 0 }}
-  //               animate={{ opacity: 1 }}
-  //               transition={{ delay: 0.4 }}
-  //             >
-  //               {content?.blocks?.map((block, idx) => {
-  //                 if (block.type === "header") {
-  //                   const Tag = `h${block.data.level}`;
-  //                   return (
-  //                     <Tag
-  //                       key={idx}
-  //                       className="font-bold text-2xl my-4"
-  //                       dangerouslySetInnerHTML={{ __html: block.data.text }}
-  //                     />
-  //                   );
-  //                 } else if (block.type === "paragraph") {
-  //                   return (
-  //                     <p
-  //                       key={idx}
-  //                       dangerouslySetInnerHTML={{ __html: block.data.text }}
-  //                     />
-  //                   );
-  //                 } else if (block.type === "image") {
-  //                   return (
-  //                     <div className="my-6" key={idx}>
-  //                       <img
-  //                         src={block.data.file.url}
-  //                         className="w-full rounded-md"
-  //                         alt=""
-  //                       />
-  //                       {block.data?.caption && (
-  //                         <p className="text-sm text-center text-gray-500 mt-1">
-  //                           {block.data.caption}
-  //                         </p>
-  //                       )}
-  //                     </div>
-  //                   );
-  //                 }
-  //                 return null;
-  //               })}
-  //             </motion.section>
-
-  //             {/* Edit Button */}
-  //             {token && user?.email === blogData.creator.email && (
-  //               <div className="flex justify-end pt-10">
-  //                 <Link to={`/edit/${blogData.blogId}`}>
-  //                   <motion.button
-  //                     whileHover={{ scale: 1.05 }}
-  //                     whileTap={{ scale: 0.95 }}
-  //                     className="px-6 py-2 rounded-full bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
-  //                   >
-  //                     ✏️ Edit Blog
-  //                   </motion.button>
-  //                 </Link>
-  //               </div>
-  //             )}
-  //           </motion.article>
-
-  //           {/* Comments */}
-  //           <div ref={commentRef} className="pt-5">
-  //             <Comment />
-  //           </div>
-  //         </>
-  //       ) : (
-  //         <div className="text-center py-24 text-xl font-medium text-[#111827]">
-  //           Loading blog...
-  //         </div>
-  //       )}
-  //     </div>
-  //   </div>
-  // );
   return (
-  <div className="min-h-screen w-full bg-[#F9FAFB] text-[#111827] font-serif">
+  <div
+    // onMouseUp={handleTextSelect}
+    //   ref={contentRef} 
+  className="min-h-screen w-full bg-[#F9FAFB] text-[#111827] font-serif">
     <div className="max-w-4xl mx-auto px-4 py-10">
       {blogData ? (
         <>
@@ -273,6 +175,7 @@ function BlogPage() {
               </div>
             </div>
 
+
             {/* Blog Image */}
             {blogData.image && (
               <motion.div
@@ -284,7 +187,7 @@ function BlogPage() {
                 <img
                   src={blogData.image}
                   alt="cover"
-                  className="w-full object-cover h-[360px] rounded-2xl"
+                  className="w-full object-contain h-[290px] rounded-2xl"
                 />
               </motion.div>
             )}
@@ -296,7 +199,7 @@ function BlogPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              {content?.blocks?.map((block, idx) => {
+              {/* {content?.blocks?.map((block, idx) => {
                 if (block.type === "header") {
                   const Tag = `h${block.data.level}`;
                   return (
@@ -309,6 +212,10 @@ function BlogPage() {
                 } else if (block.type === "paragraph") {
                   return (
                     <p key={idx} dangerouslySetInnerHTML={{ __html: block.data.text }} />
+            
+                    // <p key={idx} className="relative">
+                    //   {renderWithNotes(block.data.text)}
+                    // </p>
                   );
                 } else if (block.type === "image") {
                   return (
@@ -323,7 +230,25 @@ function BlogPage() {
                   );
                 }
                 return null;
-              })}
+              })} */}
+              {/* <div
+  className="prose prose-lg max-w-none"
+  dangerouslySetInnerHTML={{ __html: content }}
+></div> */}
+
+      {/* <div
+        className="prose prose-invert prose-lg max-w-3xl mx-auto
+          prose-headings:text-white
+          prose-img:w-[70%] prose-img:mx-auto prose-img:my-6 prose-img:rounded-xl prose-img:shadow
+          prose-p:my-4 prose-p:text-[#CBD5E1]
+          prose-h1:mb-6 prose-h2:mt-10 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-2
+          prose-ul:my-4 prose-ol:my-4
+          prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:pl-4 prose-blockquote:text-[#93C5FD] prose-blockquote:italic prose-blockquote:my-6
+        "
+        dangerouslySetInnerHTML={{ __html: content }}
+      ></div> */}
+<div className="blog-content-container" dangerouslySetInnerHTML={{ __html: content }} />
+
             </motion.section>
 
             {/* Edit Button */}
@@ -353,9 +278,41 @@ function BlogPage() {
         </div>
       )}
     </div>
+  {/* {showNoteInput && (
+        <div
+          className="fixed z-50 bg-white border border-gray-300 rounded-xl shadow-lg p-4 w-[300px]"
+          style={{ top: notePosition.y, left: notePosition.x }}
+        >
+          <p className="text-sm text-gray-600 mb-2">Add note for:</p>
+          <p className="text-sm italic text-gray-800 mb-3 line-clamp-2">
+            “{selectedText}”
+          </p>
+          <textarea
+            rows="3"
+            className="w-full p-2 border rounded-md text-sm focus:outline-none"
+            placeholder="Your note here..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleAddNote(e.target.value);
+              }
+            }}
+          />
+          <div className="text-right mt-2">
+            <button
+              onClick={() => setShowNoteInput(false)}
+              className="text-sm text-gray-500 hover:text-gray-700 mr-2"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )} */}
   </div>
 );
 
 }
-
 export default BlogPage;
+
+
+

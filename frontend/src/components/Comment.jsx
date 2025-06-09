@@ -1,3 +1,6 @@
+
+
+
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,7 +29,7 @@ function Comment() {
   const comments = selectedBlog.comments || [];
   const blogId = selectedBlog._id;
   const user = useSelector((slice) => slice.user);
-  const creatorId = selectedBlog.creator._id;
+  const creatorId = selectedBlog.creator?._id;
   const token = user.token;
   const userId = user.id;
 

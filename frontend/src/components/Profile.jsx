@@ -16,11 +16,6 @@ export default function Profile() {
   //   blogs: 12,
   // });
   const user=useSelector((slice)=>slice.user)
-//   const handleEditToggle = () => {
-//   setIsEditing((prev) => !prev);
-//   setFormData(user);
-//   setIsChanged(false);  
-// };
 
 
   const [expandedSection, setExpandedSection] = useState(null);
@@ -52,7 +47,6 @@ export default function Profile() {
                       <div className="mt-2 w-full flex justify-end">
   <Link to="/profile/edit">
   <button
-    // onClick={handleEditToggle}
     className="px-4 py-1.5 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white text-sm font-medium rounded-xl hover:from-[#2563EB] hover:to-[#1E3A8A]  transition-all duration-200 shadow-sm"
   >
     Edit Profile
@@ -63,6 +57,7 @@ export default function Profile() {
           </div>
 
         </div>
+
 
         <div className="mt-8 flex gap-4 border-b border-gray-300">
            <button
@@ -81,9 +76,17 @@ export default function Profile() {
 
         {activeTab === "blogs" && (
           <div className="mt-6 grid grid-cols-1 gap-3">
-            <BlogItem title="Building a Reusable Component Library" />
+            {/* <BlogItem title="Building a Reusable Component Library" />
             <BlogItem title="My Journey into Frontend Development" />
-            <BlogItem title="Dark Mode vs Light Mode: UX Considerations" />
+            <BlogItem title="Dark Mode vs Light Mode: UX Considerations" /> */}
+
+            {user.blogs?.map((blog,i)=>(
+                          <BlogItem key={i} title={blog.title} /> 
+
+            )
+          )
+            }
+
           </div>
         )}
 

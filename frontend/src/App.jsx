@@ -13,7 +13,9 @@ import Profile from "./components/Profile";
 import VerifyUser from "./components/VerifyUser";
 import EditProfile from "./components/EditProfile";
 import Settings from "./components/Settings";
+import { useSelector } from "react-redux";
 function App() {
+  const user=useSelector((slice)=>slice.user);
   return (
     <div className="w-screen h-screen overflow-x-hidden">
       <div
@@ -30,7 +32,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navbar />}>
                           <Route path="/home" element={<HomePage />}></Route>
-              <Route path="/" element={<GetStarted />}></Route>
+              <Route path="/" element={user.token?<HomePage/>:<GetStarted />}></Route>
               <Route path="/add-blog" element={<AddBlog />}></Route>
               <Route path="/my-blogs" element={<MyBlogs />}></Route>
               <Route path="/profile" element={<Profile />}></Route>

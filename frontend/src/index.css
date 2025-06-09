@@ -1,7 +1,66 @@
 @import "tailwindcss";
-
 *{
   font-family: sans-serif;
+}
+.blog-content-container{
+  @apply mt-8;
+}
+.blog-content-container h1 {
+  @apply text-4xl font-bold text-[#1E3A8A] mb-6 mt-10;
+}
+
+.blog-content-container h2 {
+  @apply text-3xl font-semibold text-[#1E40AF] mb-4 mt-8;
+}
+
+.blog-content-container h3 {
+  @apply text-2xl font-semibold text-[#1D4ED8] mb-3 mt-6;
+}
+
+.blog-content-container p {
+  @apply text-lg text-black my-4 leading-relaxed;
+}
+
+.blog-content-container img {
+  @apply w-4/5 mx-auto my-6 rounded-xl shadow-md;
+}
+
+.blog-content-container blockquote {
+  @apply border-l-4 border-blue-500 pl-4 italic text-[#334155] my-6;
+}
+
+.blog-content-container ul {
+  @apply list-disc list-inside my-4;
+}
+
+.blog-content-container li {
+  @apply text-base text-[#1E293B] my-2;
+}
+
+.blog-content-container a {
+  @apply text-[#2563EB] underline hover:text-[#1D4ED8];
+}
+
+
+.ql-container {
+  border: none !important;
+  
+}
+.ql-container p{
+  font-size: 16px;
+  color: black;
+}
+
+.ql-toolbar {
+  border: none !important;
+  border-bottom: 1px solid #e5e7eb !important; /* Optional for light divider */
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.ql-editor {
+  border: none !important;
+  border-radius: 0 0 0.75rem 0.75rem !important;
+  padding: 1rem;
 }
 
 

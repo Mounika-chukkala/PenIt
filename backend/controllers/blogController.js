@@ -2,6 +2,7 @@ const Blog = require("../models/blogSchema");
 const Comment = require("../models/commentSchema");
 const User = require("../models/userSchema");
 const streamifier=require("streamifier")
+const cheerio = require("cheerio"); 
 const {
   uploadImage,
   deleteImagefromCloudinary,
@@ -10,36 +11,45 @@ const {
 const fs = require("fs");
 const ShortUniqueId = require("short-unique-id");
 const { randomUUID } = new ShortUniqueId({ length: 7 });
+
+
+async function uploadImagesInContent(htmlContent, uploadImageFunc) {
+  // Load HTML content into cheerio
+  const $ = cheerio.load(htmlContent);
+
+  // Find all <img> tags with base64 src
+  const images = $("img[src^='data:image']");
+
+  for (let i = 0; i < images.length; i++) {
+    const img = images[i];
+    const base64Str = $(img).attr("src");
+
+    // Remove the prefix `data:image/jpeg;base64,` or similar for upload
+    const base64Data = base64Str.split(",")[1];
+
+    // Upload image base64 data to Cloudinary (your uploadImage function)
+    const { secure_url, public_id } = await uploadImageFunc(base64Data);
+
+    // Replace the base64 src with Cloudinary URL
+    $(img).attr("src", secure_url);
+
+    // Optionally store Cloudinary public_id as data attribute
+    $(img).attr("data-cloudinary-id", public_id);
+  }
+
+  // Return the modified HTML
+  return $.html();
+}
+
+
+
 async function createBlog(req, res) {
   try {
     const creator = req.user;
     const { title, description} = req.body;
     const draft = req.body.draft == "true" ? true : false;
-    // const image=req.file;
-    const {image,images} = req.files;
-    const content=JSON.parse(req.body.content);
-    // console.log(content.blocks)
-    
-for(let i=0;i<content.blocks.length;i++){
- const block=content.blocks[i];
- let ImageIndex=0;
- if(block.type=="image"){
-
-const {secure_url,public_id}=await uploadImage(
-  `data:image/jpeg;base64,${images[ImageIndex].buffer.toString("base64")}`
-); 
-block.data.file={
-  url:secure_url,
-  ImageId:public_id
-}
-ImageIndex++;
- 
-}
-}
-// content.blocks.map((block)=>{
-
-// console.log(block.data.file)
-// })
+    const {image} = req.files;
+    let content=JSON.parse(req.body.content);
     if (!title) {
       return res.status(400).json({
         message: "Please fill title field",
@@ -57,12 +67,12 @@ ImageIndex++;
         message: "Please add some content",
       });
     }
-
+    content = await uploadImagesInContent(content, async (base64Data) => {
+      return await uploadImage(`data:image/jpeg;base64,${base64Data}`);
+    });
     const   { secure_url, public_id } = await uploadImage(  `data:image/jpeg;base64,${image[0].buffer.toString("base64")}`
 );
-    // // const x= await uploadImage(image.path)
-    // console.log(x);
-    // const= x;
+    
     const blogId =title.toLowerCase().split(" ").join("-") + "-" + randomUUID();
     // // fs.unlinkSync(image.path);
     const blog = await Blog.create({
@@ -180,10 +190,10 @@ async function updateBlog(req, res) {
     // const image = req.files;
     // || req.params;
 // console.log("hi")
-    const content=JSON.parse(req.body.content);
+    let content=JSON.parse(req.body.content);
     // console.log(content)
     const { title, description } = req.body;
-const existingImages=JSON.parse(req.body.existingImages)
+// const existingImages=JSON.parse(req.body.existingImages)
     const draft = req.body.draft == "true" ? true : false;
 
     const blog = await Blog.findOne({ blogId: id });
@@ -200,19 +210,23 @@ const existingImages=JSON.parse(req.body.existingImages)
         message: "You are not authorized for this action",
       });
     }
-    console.log("Existing images :",existingImages)
+    // console.log("Existing images :",existingImages)
 // content.blocks.map((block)=>{
 //   if(block.type=="image") console.log(block.data.file);
 // })
 // console.log(content.blocks);
 
-let imagesToDelete = existingImages
-  .filter(({ url }) =>
-    !content.blocks
-      .filter(block => block.type === "image")
-      .some(block => block.data.file.url === url)
-  )
-  .map(({ ImageId }) => ImageId); // get the image IDs to delete
+// let imagesToDelete = existingImages
+//   .filter(({ url }) =>
+//     !content.blocks
+//       .filter(block => block.type === "image")
+//       .some(block => block.data.file.url === url)
+//   )
+//   .map(({ ImageId }) => ImageId); // get the image IDs to delete
+
+    content = await uploadImagesInContent(content, async (base64Data) => {
+      return await uploadImage(`data:image/jpeg;base64,${base64Data}`);
+    });
 
 // let imagesToDelete = content.blocks
 //   .filter(block => block.type === "image")
@@ -222,29 +236,29 @@ let imagesToDelete = existingImages
 //   .map(block => block.data.file.ImageId )
 //   .filter(Boolean); // Remove any undefined/null
 
-console.log(imagesToDelete);
+// console.log(imagesToDelete);
 // if(imagesToDelete.length>0){
 //   await Promise.all(
 //     imagesToDelete.map((id)=>deleteImagefromCloudinary(id))
 //   )
 // }
 
-if(req.files.images){
-  let ImageIndex=0;
- if(block.type=="image" && block.data.file.image){
+// if(req.files.images){
+//   let ImageIndex=0;
+//  if(block.type=="image" && block.data.file.image){
 
-const {secure_url,public_id}=await uploadImage(
-  `data:image/jpeg;base64,${req.files.images[ImageIndex].buffer.toString("base64")}`
-); 
-block.data.file={
-  url:secure_url,
-  ImageId:public_id
-}
-ImageIndex++;
+// const {secure_url,public_id}=await uploadImage(
+//   `data:image/jpeg;base64,${req.files.images[ImageIndex].buffer.toString("base64")}`
+// ); 
+// block.data.file={
+//   url:secure_url,
+//   ImageId:public_id
+// }
+// ImageIndex++;
  
-} 
+// } 
 
-}
+// }
     const updatedBlog = await Blog.updateOne({
       title,
       description,

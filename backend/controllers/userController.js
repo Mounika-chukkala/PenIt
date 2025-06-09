@@ -271,8 +271,8 @@ async function login(req, res) {
 
     const checkForexistingUser = await User.findOne({ email })
     .select(
-      "password isVerify name email blogs profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
-    );
+      "password isVerify name email  profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
+    ).populate("blogs", "title");
 
     if (!checkForexistingUser) {
       return res.status(400).json({
