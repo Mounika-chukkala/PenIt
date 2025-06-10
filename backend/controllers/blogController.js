@@ -415,42 +415,42 @@ async function getMyBlogs(req, res) {
 
 
 
-// async function saveBlog(req, res) {
-//   try {
-//     const user = req.user;
-//     const { id } = req.params;
+async function saveBlog(req, res) {
+  try {
+    const user = req.user;
+    const { id } = req.params;
 
-//     const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id);
 
-//     if (!blog) {
-//       return res.status(500).json({
-//         message: "Blog is not found",
-//       });
-//     }
+    if (!blog) {
+      return res.status(500).json({
+        message: "Blog is not found",
+      });
+    }
 
-//     if (!blog.totalSaves.includes(user)) {
-//       await Blog.findByIdAndUpdate(id, { $set: { totalSaves: user } });
-//       await User.findByIdAndUpdate(user, { $set: { saveBlogs: id } });
-//       return res.status(200).json({
-//         success: true,
-//         message: "Blog has been saved",
-//         isLiked: true,
-//       });
-//     } else {
-//       await Blog.findByIdAndUpdate(id, { $unset: { totalSaves: user } });
-//       await User.findByIdAndUpdate(user, { $unset: { saveBlogs: id } });
-//       return res.status(200).json({
-//         success: true,
-//         message: "Blog Unsaved",
-//         isLiked: false,
-//       });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// }
+    if (!blog.totalSaves.includes(user)) {
+      await Blog.findByIdAndUpdate(id, { $set: { totalSaves: user } });
+      await User.findByIdAndUpdate(user, { $set: { saveBlogs: id } });
+      return res.status(200).json({
+        success: true,
+        message: "Blog has been saved",
+        isLiked: true,
+      });
+    } else {
+      await Blog.findByIdAndUpdate(id, { $unset: { totalSaves: user } });
+      await User.findByIdAndUpdate(user, { $unset: { saveBlogs: id } });
+      return res.status(200).json({
+        success: true,
+        message: "Blog Unsaved",
+        isLiked: false,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
 
 // async function searchBlogs(req, res) {
 //   try {
@@ -511,7 +511,8 @@ module.exports = {
   getBlogs,
   updateBlog,
   likeBlog,
-  getMyBlogs
-  //   saveBlog,
+  getMyBlogs,
+      saveBlog,
   //   searchBlogs,
 };
+

@@ -8,7 +8,7 @@ const {
   deleteUser,
   login,
   verifyEmail,
-  googleAuth
+  googleAuth,
 } = require("../controllers/userController");
 const verifyUser = require("../middlewares/auth");
 const upload=require("../utils/multer")

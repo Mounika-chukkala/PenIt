@@ -8,6 +8,7 @@ import { addSelectedBlog, removeSelectedBlog } from "../utils/selectedBlog";
 import { motion } from "framer-motion";
 import Comment from "./Comment";
 import { setIsOpen } from "../utils/CommentSlice";
+import { handleSaveBlog } from "../utils/blogUtils";
 
 function BlogPage() {
   const { id } = useParams();
@@ -169,9 +170,20 @@ function BlogPage() {
                   <MessageCircle size={18} />
                   {comments.length}
                 </button>
-                <div className=" flex items-center gap-1 hover:text-[#6366F1] transition cursor-pointer">
+                {/* <div className=" flex items-center gap-1 hover:text-[#6366F1] transition cursor-pointer">
                   <Bookmark size={18} />+
-                </div>
+                </div> */}
+                <Bookmark
+                                        size={14}
+                                        onClick={()=> handleSaveBlog(blogData._id,token)}
+                                        fill={
+                
+                                          blogData.totalSaves?.includes(userId)
+                                            ? "#2563EB"
+                                            : "none"
+                                        }
+                                        className="text-[#2563EB] cursor-pointer"
+                                      />
               </div>
             </div>
 
@@ -199,54 +211,7 @@ function BlogPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              {/* {content?.blocks?.map((block, idx) => {
-                if (block.type === "header") {
-                  const Tag = `h${block.data.level}`;
-                  return (
-                    <Tag
-                      key={idx}
-                      className="font-bold text-2xl text-[#1E3A8A] my-4 font-sans"
-                      dangerouslySetInnerHTML={{ __html: block.data.text }}
-                    />
-                  );
-                } else if (block.type === "paragraph") {
-                  return (
-                    <p key={idx} dangerouslySetInnerHTML={{ __html: block.data.text }} />
-            
-                    // <p key={idx} className="relative">
-                    //   {renderWithNotes(block.data.text)}
-                    // </p>
-                  );
-                } else if (block.type === "image") {
-                  return (
-                    <div className="my-6" key={idx}>
-                      <img src={block.data.file.url} className="w-full rounded-xl" alt="" />
-                      {block.data.caption && (
-                        <p className="text-sm text-center text-[#6B7280] mt-1">
-                          {block.data.caption}
-                        </p>
-                      )}
-                    </div>
-                  );
-                }
-                return null;
-              })} */}
-              {/* <div
-  className="prose prose-lg max-w-none"
-  dangerouslySetInnerHTML={{ __html: content }}
-></div> */}
 
-      {/* <div
-        className="prose prose-invert prose-lg max-w-3xl mx-auto
-          prose-headings:text-white
-          prose-img:w-[70%] prose-img:mx-auto prose-img:my-6 prose-img:rounded-xl prose-img:shadow
-          prose-p:my-4 prose-p:text-[#CBD5E1]
-          prose-h1:mb-6 prose-h2:mt-10 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-2
-          prose-ul:my-4 prose-ol:my-4
-          prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:pl-4 prose-blockquote:text-[#93C5FD] prose-blockquote:italic prose-blockquote:my-6
-        "
-        dangerouslySetInnerHTML={{ __html: content }}
-      ></div> */}
 <div className="blog-content-container" dangerouslySetInnerHTML={{ __html: content }} />
 
             </motion.section>

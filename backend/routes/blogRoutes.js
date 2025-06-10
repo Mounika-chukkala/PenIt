@@ -7,7 +7,7 @@ const {
   updateBlog,
   deleteBlog,
   likeBlog,
-//   saveBlog,
+  saveBlog,
 //   searchBlogs,
 getMyBlogs
 } = require("../controllers/blogController");
@@ -70,6 +70,9 @@ route.patch("/blogs/like-comment/:id",verifyUser,likeComment)
 
 route.post("/comment/:parentCommentId/:id",verifyUser,addNestedComment)
 
+
+// route.patch()
+route.patch("/save-blog/:id",verifyUser,saveBlog)
 
 
 module.exports = route;

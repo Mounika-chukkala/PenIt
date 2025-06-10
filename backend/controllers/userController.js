@@ -23,6 +23,9 @@ admin.initializeApp({
 )
 
 });
+const ShortUniqueId = require("short-unique-id");
+const { randomUUID } = new ShortUniqueId({ length: 7 });
+
 
   
 
@@ -88,8 +91,9 @@ const sendingEmail=await transporter.sendMail({
 }
 
     const hashedPass = await bcrypt.hash(password, 10);
-    // const username = email.split("@")[0] + randomUUID();
-const username="0+44__*"
+    // const username = email.split("@")[0] + 123;
+   const username = email.split("@")[0] + randomUUID();
+
     const newUser = await User.create({
       name,
       email,
@@ -209,8 +213,7 @@ async function googleAuth(req, res) {
         });
       }
     }
-    const username = email.split("@")[0] +"123" 
-    // randomUUID();
+    const username = email.split("@")[0] +randomUUID();
 
     let newUser = await User.create({
       name,
@@ -232,12 +235,12 @@ async function googleAuth(req, res) {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
-        // profilePic: newUser.profilePic,
+        profilePic: newUser.profilePic,
         username: newUser.username,
         // showLikedBlogs: newUser.showLikedBlogs,
         // showSavedBlogs: newUser.showSavedBlogs,
         // bio: newUser.bio,
-        // followers: newUser.followers,
+        // followers: newUser.followers,  
         // following: newUser.following,
         token,
       },
@@ -272,7 +275,8 @@ async function login(req, res) {
     const checkForexistingUser = await User.findOne({ email })
     .select(
       "password isVerify name email  profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
-    ).populate("blogs", "title");
+    )
+    // .populate("blogs", "title");
 
     if (!checkForexistingUser) {
       return res.status(400).json({

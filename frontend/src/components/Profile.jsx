@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CameraIcon } from "lucide-react";
 import { ChevronDown,ChevronUp } from "lucide-react";
   import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import axios from "axios";
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("blogs");
   // const [user] = useState({
@@ -23,6 +24,26 @@ export default function Profile() {
   const toggleSection = (section) => {
     setExpandedSection((prev) => (prev === section ? null : section));
   };
+  const [myBlogs,setMyBlogs]=useState([]);
+  useEffect(() => {
+    async function fetchMyBlogs() {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs/user/${user.id}`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+ 
+        const blogs = res.data.blogs;
+        setMyBlogs(blogs);
+       
+      } catch (err) {
+        console.error("Failed to fetch blogs", err);
+      }
+    }
+
+    fetchMyBlogs();
+  }, [user.id, user.token]);
+
+
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-tr from-[#E0EAFC] to-[#CFDEF3] p-4 sm:p-6 flex flex-col items-center">
@@ -40,7 +61,7 @@ export default function Profile() {
             <h1 className="text-2xl sm:text-left text-center sm:text-3xl font-semibold">{user.username}</h1>
             <p className="text-sm  sm:text-left text-center sm:text-base text-gray-600 mt-1">{user.bio}</p>
             <div className="flex gap-6 mt-3 text-sm sm:text-base">
-              <span className="font-medium">{user.blogs?.length ||0} Blogs</span>
+              <span className="font-medium">{myBlogs?.length ||0} Blogs</span>
               <span className="font-medium">{user.followers || 0} Followers</span>
               <span className="font-medium">{user.following ||0} Following</span>
             </div>
@@ -80,7 +101,7 @@ export default function Profile() {
             <BlogItem title="My Journey into Frontend Development" />
             <BlogItem title="Dark Mode vs Light Mode: UX Considerations" /> */}
 
-            {user.blogs?.map((blog,i)=>(
+            {myBlogs.map((blog,i)=>(
                           <BlogItem key={i} title={blog.title} /> 
 
             )

@@ -270,7 +270,7 @@ function AddBlog() {
           id="editorjs"
           className="min-h-[300px] w-[80%] mx-auto mt-6 border border-[#E5E7EB] rounded-xl p-4 bg-white"
         /> */}
-       <div           className="min-h-[300px] w-[80%] mx-auto mt-6 border border-[#E5E7EB] rounded-xl  bg-white"
+       <div           className="min-h-[300px] w-[80%] mx-auto mt-6 border  border-[#E5E7EB] rounded-xl  bg-white"
 >
       <RichTextEditor  value={content} onChange={setContent} />
        </div>

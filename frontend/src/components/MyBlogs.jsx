@@ -132,7 +132,7 @@ const MyBlogsPage = () => {
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+ 
         const blogs = res.data.blogs;
         setMyBlogs(blogs);
 

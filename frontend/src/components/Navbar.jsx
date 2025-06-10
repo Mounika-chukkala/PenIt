@@ -83,9 +83,16 @@ const [profileDialog,setProfileDialog]=useState(false);
 
               <div
               onClick={()=>setProfileDialog((prev)=>!prev)}
-                className="flex h-10  items-center gap-2 cursor-pointer rounded-full px-4 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
+                className="flex h-10  items-center gap-2 cursor-pointer rounded-full px-2 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
               >
-                <User size={16} />
+                              <img
+                src={
+                  user.profilePic ||
+                  `https://api.dicebear.com/9.x/initials/svg?seed=${user.name}`
+                }
+                className="rounded-full w-6 h-6"
+              />
+                {/* <User size={16} /> */}
                 <p className="md:w-22 line-clamp-1">{user.name}</p>
               </div>
             </>
@@ -120,7 +127,7 @@ const [profileDialog,setProfileDialog]=useState(false);
             <Link to="/profile">
               <img
                 src={
-                  user.image ||
+                  user.profilePic ||
                   `https://api.dicebear.com/9.x/initials/svg?seed=${user.name}`
                 }
                 className="rounded-full w-8 h-8"
@@ -201,7 +208,7 @@ const [profileDialog,setProfileDialog]=useState(false);
         )}
 
         {user.token && profileDialog && (
-          <div className="hidden md:flex flex-col absolute right-14 rounded-lg top-13 w-[120px] bg-gray-100 drop-shadow-md  justify-center "
+          <div className="hidden md:flex flex-col absolute right-10 rounded-lg top-13 w-[120px] bg-gray-50 drop-shadow-md  justify-center "
           >
             <Link
               to="/profile"
