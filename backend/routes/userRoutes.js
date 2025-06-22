@@ -9,6 +9,7 @@ const {
   login,
   verifyEmail,
   googleAuth,
+  followUser
 } = require("../controllers/userController");
 const verifyUser = require("../middlewares/auth");
 const upload=require("../utils/multer")
@@ -30,6 +31,10 @@ route.delete("/users/:id", verifyUser, deleteUser);
 route.get("/verify-email/:verificationToken", verifyEmail);
 
 route.post("/google-auth", googleAuth);
+
+// follow - unfollow
+
+route.patch("/follow/:id",verifyUser,followUser);
 
 
 module.exports = route;

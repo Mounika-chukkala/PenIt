@@ -123,7 +123,7 @@ const user=useSelector((slice)=>slice.user)
 
         <div className="flex justify-between mt-6">
           <button
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate(`/${user.username}`)}
             className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg text-sm text-gray-800"
           >
             Cancel
@@ -139,6 +139,8 @@ const user=useSelector((slice)=>slice.user)
     </div>
   );
 }
+
+
 
 
 

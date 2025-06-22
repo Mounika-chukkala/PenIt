@@ -1,3 +1,6 @@
+
+
+
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -8,20 +11,8 @@ import { addSelectedBlog, removeSelectedBlog } from "../utils/selectedBlog";
 import "react-quill/dist/quill.snow.css";
 import RichTextEditor from "../components/RichTextEditor";
 import { Info } from "lucide-react";
+import DraftToggleSwitch from "../components/DraftToggleSwitch";
 
-// import EditorJS from "@editorjs/editorjs";
-// import Header from "@editorjs/header";
-// import NestedList from "@editorjs/nested-list";
-// import CodeTool from "@editorjs/code";
-// import Marker from "@editorjs/marker";
-// import Underline from "@editorjs/underline";
-// import Embed from "@editorjs/embed";
-// import RawTool from "@editorjs/raw";
-// import LinkTool from "@editorjs/link";
-// import textVariantTune from "@editorjs/text-variant-tune";
-// import ImageTool from "@editorjs/image";
-// import Paragraph from "@editorjs/paragraph";
-// import InlineCode from "@editorjs/inline-code";
 
 function AddBlog() {
   const { id } = useParams();
@@ -30,6 +21,8 @@ function AddBlog() {
     description: "",
     image: null,
     content: "",
+    tags:[],
+    draft:false,
   });
 
   const imagesRef = useRef([]);
@@ -39,7 +32,7 @@ function AddBlog() {
   const selectedBlog = useSelector((slice) => slice.selectedBlog);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+const [isDraft, setIsDraft] = useState(false);
   async function fetchBlogById() {
     try {
       const res = await axios.get(
@@ -51,6 +44,8 @@ function AddBlog() {
         description: res.data.blog.description,
         image: res.data.blog.image,
   content: res.data.blog.content,
+  tags:res.data.blog.tags,
+  draft:res.data.blog.draft
       });
           setContent(res.data.blog.content); 
     } catch (error) {
@@ -64,62 +59,6 @@ function AddBlog() {
   }
 }, [selectedBlog]);
 
-  // function initializeEditorjs() {
-  //   if (editorjsRef.current) return;
-  //   const editorjs = new EditorJS({
-  //     holder: "editorjs",
-  //     placeholder: "Start writing your story...",
-  //     tools: {
-  //       header: {
-  //         class: Header,
-  //         inlineToolbar: true,
-  //         config: {
-  //           placeholder: "Enter a header",
-  //           levels: [2, 3, 4],
-  //           defaultLevel: 3,
-  //         },
-  //       },
-       
-  //       List: {
-  //         class: NestedList,
-  //         config: {},
-  //         inlineToolbar: true,
-  //       },
-  //       code: CodeTool,
-  //       Marker: Marker,
-  //       Underline: Underline,
-  //       Embed: Embed,
-  //       linkTool: LinkTool,
-  //       raw: RawTool,
-  //       textVariant: textVariantTune,
-  //       image: {
-  //         class: ImageTool,
-  //         config: {
-  //           uploader: {
-  //             uploadByFile: async (image) => {
-  //               imagesRef.current.push(image);
-  //               return {
-  //                 success: 1,
-  //                 file: {
-  //                   url: URL.createObjectURL(image),
-  //                   image,
-  //                 },
-  //               };
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     tunes: ["textVariant"],
-  //     data: content || {},
-  //     onChange: async () => {
-  //       let data = await editorjs.save();
-  //       setBlogData((blogData) => ({ ...blogData, content: data }));
-  //     },
-  //   });
-  //   editorjsRef.current = editorjs;
-  // }
-
   useEffect(() => {
     if (id) {
       fetchBlogById();
@@ -127,15 +66,7 @@ function AddBlog() {
     }
   }, [id]);
 
-  // useEffect(() => {
-  //   initializeEditorjs();
-  //   return () => {
-  //     if (editorjsRef.current?.destroy) {
-  //       editorjsRef.current.destroy();
-  //       editorjsRef.current = null;
-  //     }
-  //   };
-  // }, []);
+
 
   async function handleUpdateBlog(e) {
     e.preventDefault();
@@ -144,21 +75,8 @@ function AddBlog() {
     formData.append("description", blogData.description);
     formData.append("content", JSON.stringify(content));
     formData.append("image", blogData.image);
-
-    // const existingImages = [];
-    // content?.blocks.forEach((block) => {
-    //   if (block.type === "image") {
-    //     if (block.data.file.image) {
-    //       formData.append("images", block.data.file.image);
-    //     } else {
-    //       existingImages.push({
-    //         url: block.data.file.url,
-    //         ImageId: block.data.file.ImageId,
-    //       });
-    //     }
-    //   }
-    // });
-    // formData.append("existingImages", JSON.stringify(existingImages));
+formData.append("draft",isDraft);
+   formData.append("tags",blogData.tags);
 
     try {
       const res = await axios.patch(
@@ -184,6 +102,7 @@ function AddBlog() {
     formData.append("description", blogData.description);
     formData.append("image", blogData.image);
     formData.append("content", JSON.stringify(content));
+formData.append("draft",isDraft);
 
     imagesRef.current.forEach((image) => {
       formData.append("images", image);
@@ -211,33 +130,16 @@ function AddBlog() {
   ) : (
     <form
       onSubmit={id ? handleUpdateBlog : handleBlogCreation}
-      className="w-full min-h-screen px-6 pt-15 pb-28 text-[#111827] bg-[#E0F2FE]/40"
+      className="w-full min-h-screen px-3 pt-10   pb-28 text-[#111827] bg-[#E0F2FE]/40"
     >
       <div className="w-full max-w-5xl mx-auto space-y-5">
         {/* Title */}
-        <input
-          type="text"
-          placeholder="Your blog title..."
-          className="w-[80%] mx-auto block text-4xl font-bold outline-none placeholder:text-[#9CA3AF] text-[#1E293B] font-serif"
-          value={blogData.title}
-          onChange={(e) => setBlogData({ ...blogData, title: e.target.value })}
-        />
-
-        {/* Description */}
-        <textarea
-          rows={2}
-          placeholder="Short description (optional)..."
-          className="w-[80%] mx-auto block text-xl resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
-          value={blogData.description}
-          onChange={(e) =>
-            setBlogData({ ...blogData, description: e.target.value })
-          }
-        />
-
+        <div className="w-full sm:flex items-center">
+          <div className="w-[80%] mx-auto sm:w-[40%]">
         {/* Image */}
         <label
           htmlFor="image"
-          className="w-[80%] h-60 mx-auto block cursor-pointer group"
+          className="w-full h-60 mx-auto block cursor-pointer group"
         >
           {blogData.image ? (
             <img
@@ -247,10 +149,10 @@ function AddBlog() {
                   : URL.createObjectURL(blogData.image)
               }
               alt="Blog cover"
-              className="w-full h-60 object-contain rounded-xl shadow-sm"
+              className="w-full h-60 object-contain rounded-md shadow-sm"
             />
           ) : (
-            <div className="w-full h-60 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl text-gray-400 group-hover:text-[#2563EB] transition">
+            <div className="w-full h-60 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md text-gray-400 group-hover:text-[#2563EB] transition">
               Click to add a cover image
             </div>
           )}
@@ -264,15 +166,55 @@ function AddBlog() {
             setBlogData({ ...blogData, image: e.target.files[0] })
           }
         />
+</div>
+          <div className="w-full my-10 flex flex-col items-center sm:my-1 sm:w-[60%] space-y-5"> 
+        <input
+          type="text"
+          placeholder="Your blog title..."
+          className="w-[80%] mx-auto block text-xl md:text-4xl font-bold outline-none placeholder:text-[#9CA3AF] text-[#1E293B] font-serif"
+          value={blogData.title}
+          onChange={(e) => setBlogData({ ...blogData, title: e.target.value })}
+        />
 
+        {/* Description */}
         
+        <input
+          placeholder="Add related tags (optional)..."
+          className="w-[80%] mx-auto block text-sm resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
+          value={blogData.tags}
+          onChange={(e) =>
+            setBlogData({ ...blogData, tags: e.target.value })
+          }
+        />
+        {/* <div           className=" flex w-[80%] mx-auto  text-sm resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
+>
+        <h1 >Draft</h1>
+        <select></select>
+        </div> */}
+
+        <DraftToggleSwitch isDraft={isDraft} setIsDraft={setIsDraft} onChange={(e)=>setBlogData({...blogData,draft:e.target.value=="true"?true:false})} />
+
+        </div>
+
+</div>
+        <textarea
+          rows={4}
+          maxLength={150}
+          placeholder="Short description (optional)..."
+          className="w-full mx-auto block text-md resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
+          value={blogData.description}
+          onChange={(e) =>
+            setBlogData({ ...blogData, description: e.target.value })
+          }
+        />
         {/* <div
           id="editorjs"
           className="min-h-[300px] w-[80%] mx-auto mt-6 border border-[#E5E7EB] rounded-xl p-4 bg-white"
         /> */}
-       <div           className="min-h-[300px] w-[80%] mx-auto mt-6 border  border-[#E5E7EB] rounded-xl  bg-white"
+       <div           className="min-h-[300px] w-full mx-auto mt-6 " 
 >
-      <RichTextEditor  value={content} onChange={setContent} />
+  {/* <h1 className="font-medium text-slate-800 text-xl py-3">Your content goes here...</h1> */}
+      <RichTextEditor  value={content} onChange={setContent}  />
        </div>
         {/* Submit Button */}
         <motion.button
@@ -281,7 +223,7 @@ function AddBlog() {
           whileTap={{ scale: 0.97 }}
           className="block mx-auto mt-10 px-8 py-3 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold text-base rounded-full shadow-lg"
         >
-          {id ? "Update Blog" : "Publish Blog"}
+          {blogData.draft?"Save as draft":(id? "Update Blog" : "Publish Blog")}
         </motion.button>
       </div>
     <div className="flex justify-center items-center gap-2 mt-7 text-slate-700 text-sm"><Info size={16}/> Please note that the blog will be same as the preview here.</div>

@@ -14,6 +14,7 @@ import VerifyUser from "./components/VerifyUser";
 import EditProfile from "./components/EditProfile";
 import Settings from "./components/Settings";
 import { useSelector } from "react-redux";
+import Search from "./components/Search";
 function App() {
   const user=useSelector((slice)=>slice.user);
   return (
@@ -35,20 +36,22 @@ function App() {
               <Route path="/" element={user.token?<HomePage/>:<GetStarted />}></Route>
               <Route path="/add-blog" element={<AddBlog />}></Route>
               <Route path="/my-blogs" element={<MyBlogs />}></Route>
-              <Route path="/profile" element={<Profile />}></Route>
+              {/* <Route path="/profile" element={<Profile />}></Route> */}
               <Route path="/verify-email/:verificationToken" element={<VerifyUser/>}></Route>
               <Route path="/settings" element={<Settings/>}></Route>
+                            <Route path="/:username" element={<Profile/>}></Route>
 
               <Route
                 path="/signin"
                 element={<AuthForm type={"signin"} />}
               ></Route>
-                                      <Route path="/profile/edit" element={<EditProfile />}></Route>
+                                      <Route path="/edit-profile" element={<EditProfile />}></Route>
 
               <Route
                 path="/signup"
                 element={<AuthForm type={"signup"} />}
               ></Route>
+              <Route path="/explore" element={<Search />}></Route>
 
               <Route path="/add-blog" element={<AddBlog />}></Route>
               <Route path="/edit/:id" element={<AddBlog />}></Route>

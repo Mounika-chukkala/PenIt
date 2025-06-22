@@ -67,6 +67,11 @@ async function createBlog(req, res) {
         message: "Please add some content",
       });
     }
+    if (!content.length<200) {
+      return res.status(400).json({
+        message: "Please add some more content",
+      });
+    }
     content = await uploadImagesInContent(content, async (base64Data) => {
       return await uploadImage(`data:image/jpeg;base64,${base64Data}`);
     });
@@ -107,7 +112,11 @@ async function createBlog(req, res) {
 }
 
 async function getBlogs(req, res) {
+
   try {
+       const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const skip = (page - 1) * limit;
     const blogs = await Blog.find({ draft: false })
       .populate({
         path: "creator",
@@ -116,12 +125,16 @@ async function getBlogs(req, res) {
       .populate({
         path: "likes",
         select: "email name",
-      });
+      }).sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+      const totalBlogs=await Blog.countDocuments({draft:false})
 
     return res.status(200).json({
       message: "Blogs fetched Successfully",
       blogs,
-      // hasMore: skip + limit < totalBlogs,
+      hasMore: skip + limit < totalBlogs,
     });
   } catch (error) {
     return res.status(500).json({
@@ -146,7 +159,7 @@ async function getBlog(req, res) {
       })
       .populate({
           path: "creator",
-          select: "name email",
+          select: "name email followers username ",
         }).lean();
    async function populateReplies(comments){
       for(const comment of comments){
@@ -452,57 +465,57 @@ async function saveBlog(req, res) {
   }
 }
 
-// async function searchBlogs(req, res) {
-//   try {
-//     const { search, tag } = req.query;
+async function searchBlogs(req, res) {
+  try {
+    const { search, tag } = req.query;
 
-//     const page = parseInt(req.query.page);
-//     const limit = parseInt(req.query.limit);
-//     const skip = (page - 1) * limit;
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const skip = (page - 1) * limit;
 
-//     let query;
+    let query;
 
-//     if (tag) {
-//       query = { tags: tag };
-//     } else {
-//       query = {
-//         $or: [
-//           { title: { $regex: search, $options: "i" } },
-//           { description: { $regex: search, $options: "i" } },
-//         ],
-//       };
-//     }
+    if (tag) {
+      query = { tags: tag };
+    } else {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
 
-//     const blogs = await Blog.find(query, { draft: false })
-//       .sort({ createdAt: -1 })
-//       .skip(skip)
-//       .limit(limit)
-//       .populate({
-//         path: "creator",
-//         select: "name email followers username profilePic",
-//       });
-//     if (blogs.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           "Make sure all words are spelled correctly.Try different keywords . Try more general keywords",
-//         hasMore: false,
-//       });
-//     }
+    const blogs = await Blog.find(query, { draft: false })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "creator",
+        select: "name email followers username profilePic",
+      });
+    if (blogs.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Make sure all words are spelled correctly.Try different keywords . Try more general keywords",
+        hasMore: false,
+      });
+    }
 
-//     const totalBlogs = await Blog.countDocuments(query, { draft: false });
+    const totalBlogs = await Blog.countDocuments(query, { draft: false });
 
-//     return res.status(200).json({
-//       success: true,
-//       blogs,
-//       hasMore: skip + limit < totalBlogs,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// }
+    return res.status(200).json({
+      success: true,
+      blogs,
+      hasMore: skip + limit < totalBlogs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
 
 module.exports = {
   createBlog,
@@ -513,6 +526,6 @@ module.exports = {
   likeBlog,
   getMyBlogs,
       saveBlog,
-  //   searchBlogs,
+    searchBlogs,
 };
 

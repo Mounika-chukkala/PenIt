@@ -382,21 +382,20 @@ async function getAllUsers(req, res) {
 async function getUserById(req, res) {
   try {
     const username = req.params.username;
-const id=req.params.id;
-    const user = await User.findOne({id })
-    //   .populate("blogs following likeBlogs saveBlogs")
-    //   .populate({
-    //     path: "followers following",
-    //     select: "name username profilePic",
-    //   })
-    //   .populate({
-    //     path: "blogs likeBlogs saveBlogs",
-    //     populate: {
-    //       path: "creator",
-    //       select: "name username profilePic",
-    //     },
-    //   })
-    //   .select("-password -isVerify -__v -email -googleAuth");
+    const user = await User.findOne({username})
+      .populate("blogs following likeBlogs saveBlogs")
+      .populate({
+        path: "followers following",
+        select: "name username profilePic",
+      })
+      .populate({
+        path: "blogs likeBlogs saveBlogs",
+        populate: {
+          path: "creator",
+          select: "name username profilePic",
+        },
+      })
+      .select("-password -isVerify -__v -email -googleAuth");
 
     if (!user) {
       return res.status(200).json({
@@ -510,42 +509,42 @@ async function deleteUser(req, res) {
   }
 }
 
-// async function followUser(req, res) {
-//   try {
-//     const followerId = req.user;
-//     const { id } = req.params;
+async function followUser(req, res) {
+  try {
+    const followerId = req.user;
+    const { id } = req.params;
 
-//     const user = await User.findById(id);
+    const user = await User.findById(id);
 
-//     if (!user) {
-//       return res.status(500).json({
-//         message: "User is not found",
-//       });
-//     }
+    if (!user) {
+      return res.status(500).json({
+        message: "User is not found",
+      });
+    }
 
-//     if (!user.followers.includes(followerId)) {
-//       await User.findByIdAndUpdate(id, { $set: { followers: followerId } });
+    if (!user.followers.includes(followerId)) {
+      await User.findByIdAndUpdate(id, { $set: { followers: followerId } });
 
-//       await User.findByIdAndUpdate(followerId, { $set: { following: id } });
-//       return res.status(200).json({
-//         success: true,
-//         message: "Follow",
-//       });
-//     } else {
-//       await User.findByIdAndUpdate(id, { $unset: { followers: followerId } });
+      await User.findByIdAndUpdate(followerId, { $set: { following: id } });
+      return res.status(200).json({
+        success: true,
+        message: "Followed successfully",
+      });
+    } else {
+      await User.findByIdAndUpdate(id, { $unset: { followers: followerId } });
 
-//       await User.findByIdAndUpdate(followerId, { $unset: { following: id } });
-//       return res.status(200).json({
-//         success: true,
-//         message: "Unfollow",
-//       });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// }
+      await User.findByIdAndUpdate(followerId, { $unset: { following: id } });
+      return res.status(200).json({
+        success: true,
+        message: "Unfollowed successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
 // async function changeSavedLikedBlog(req, res) {
 //   try {
 //     const userId = req.user;
@@ -581,6 +580,6 @@ module.exports = {
   login,
   verifyEmail,
   googleAuth,
-//   followUser,
+  followUser,
 //   changeSavedLikedBlog,
 };

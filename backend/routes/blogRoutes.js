@@ -8,7 +8,7 @@ const {
   deleteBlog,
   likeBlog,
   saveBlog,
-//   searchBlogs,
+  searchBlogs,
 getMyBlogs
 } = require("../controllers/blogController");
 const upload=require("../utils/multer")
@@ -75,4 +75,5 @@ route.post("/comment/:parentCommentId/:id",verifyUser,addNestedComment)
 route.patch("/save-blog/:id",verifyUser,saveBlog)
 
 
+route.get("/search-blogs", searchBlogs)
 module.exports = route;

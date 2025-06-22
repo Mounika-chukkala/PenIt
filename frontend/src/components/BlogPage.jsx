@@ -8,7 +8,10 @@ import { addSelectedBlog, removeSelectedBlog } from "../utils/selectedBlog";
 import { motion } from "framer-motion";
 import Comment from "./Comment";
 import { setIsOpen } from "../utils/CommentSlice";
-import { handleSaveBlog } from "../utils/blogUtils";
+import { handleFollowCreator, handleSaveBlog } from "../utils/blogUtils";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { formatDate } from "../utils/formatDate";
 
 function BlogPage() {
   const { id } = useParams();
@@ -23,17 +26,16 @@ function BlogPage() {
   const comments = useSelector((state) => state.selectedBlog?.comments || []);
   const content = useSelector((state) => state.selectedBlog)?.content || {};
   const { isOpen } = useSelector((state) => state.comment);
-  // const contentRef = useRef();
-  // const [inlineNotes, setInlineNotes] = useState([]);
-  // const [showNoteInput, setShowNoteInput] = useState(false);
-  // const [notePosition, setNotePosition] = useState({ x: 0, y: 0 });
-  // const [selectedText, setSelectedText] = useState("");
+  const [isSave,setIsSave]=useState(false);
+const [isFollow,setIsFollow]=useState(blogData?.creator?.followers?.some((f)=>f._id==userId) || false);
+
 
   async function fetchBlogById() {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`
       );
+      console.log("res",res);
       setBlogData(res.data.blog);
       setBlogLike(res.data.blog.likes.length);
       if (res.data.blog.likes.includes(userId)) {
@@ -52,42 +54,13 @@ function BlogPage() {
     }, 100);
   }
 
-// const handleTextSelect = () => {
-//     const selection = window.getSelection();
-//     const text = selection.toString();
 
-//     if (text.trim()) {
-//       const range = selection.getRangeAt(0);
-//       const rect = range.getBoundingClientRect();
-//       setNotePosition({ x: rect.left + window.scrollX, y: rect.top + window.scrollY - 40 });
-//       setSelectedText(text);
-//       setShowNoteInput(true);
-//     }
-//   };
-
-//   const handleAddNote = (note) => {
-//     setInlineNotes([...inlineNotes, { text: selectedText, note }]);
-//     setSelectedText("");
-//     setShowNoteInput(false);
-//   };
-
-//   const renderWithNotes = (blockText) => {
-//     let output = blockText;
-//     inlineNotes.forEach(({ text, note }, i) => {
-//       if (output.includes(text)) {
-//         const span = `<span class="relative group px-1 bg-yellow-100 rounded-md hover:bg-yellow-200 transition">
-//           ${text}
-//           <span class="absolute z-50 left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-white text-sm text-gray-800 px-3 py-2 border border-gray-300 rounded shadow-md w-max max-w-[250px]">
-//             ${note}
-//           </span>
-//         </span>`;
-//         output = output.replace(text, span);
-//       }
-//     });
-//     return <span dangerouslySetInnerHTML={{ __html: output }} />;
-//   };
-
-
+async function handleSave(e){
+  e.preventDefault();
+  await handleSaveBlog(blogData._id,token);
+  setIsSave((prev)=>!prev);
+  
+}
   async function handleLike(e) {
     e.preventDefault();
     if (token) {
@@ -111,22 +84,33 @@ function BlogPage() {
     }
   }
 
-  useEffect(() => {
-    fetchBlogById();
-    dispatch(setIsOpen(false));
-    return () => {
-      if (!location.pathname.includes("/edit")) {
-        dispatch(removeSelectedBlog());
-      }
-    };
-  }, [id]);
+
+useEffect(() => {
+   fetchBlogById();
+  dispatch(setIsOpen(false));
+
+  return () => {
+    if (!location.pathname.includes("/edit")) {
+      dispatch(removeSelectedBlog());
+    }
+  };
+}, [id]);
+
+useEffect(() => {
+  if (blogData && userId) {  setIsSave(blogData?.totalSaves?.includes(userId));
+
+      setIsSave(blogData?.totalSaves?.includes(userId));
+
+    setIsFollow(blogData.creator?.followers?.some((f) => f._id === userId));
+  }
+}, [blogData, userId]);
+
+
 
   return (
   <div
-    // onMouseUp={handleTextSelect}
-    //   ref={contentRef} 
-  className="min-h-screen w-full bg-[#F9FAFB] text-[#111827] font-serif">
-    <div className="max-w-4xl mx-auto px-4 py-10">
+  className="min-h-screen w-full p-1 bg-[#F9FAFB] text-[#111827] font-serif">
+    <div className="max-w-3xl mx-auto px-4 py-7">
       {blogData ? (
         <>
           <motion.article
@@ -135,26 +119,45 @@ function BlogPage() {
             transition={{ duration: 0.6 }}
             className="space-y-4"
           >
-            {/* Title */}
             <h1 className="text-4xl font-bold leading-tight text-[#1E3A8A] font-sans">
               {blogData.title}
             </h1>
 
-            {/* Author Info + Buttons */}
             <div className="flex justify-between items-center text-sm text-[#475569]">
               <div className="flex items-center gap-3">
                 <img
                   src={
                     blogData.creator.image ||
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDJHqDvc62-IQh68H-YN-192G4IxstKe4O2w&s"
+                    `https://api.dicebear.com/9.x/initials/svg?seed=${blogData.creator.name}`
                   }
-                  className="w-9 h-9 rounded-full border object-cover shadow"
+                  className="w-9 h-9 rounded-full object-cover"
                   alt="avatar"
                 />
-                <p>
-                  By <span className="font-semibold text-[#2563EB]">{blogData.creator.name}</span>
-                </p>
-              </div>
+                <div>
+                  <Link to={`/${blogData.creator.username}`}>
+                    <p className="font-semibold text-[#2563EB] hover:underline">
+                      {blogData.creator.name}
+                    </p>
+                  </Link>
+                  <p className="text-xs text-gray-500">
+                    {formatDate(blogData.createdAt)}
+                  </p>
+                </div>{
+                userId!==blogData.creator._id &&
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleFollowCreator(blogData.creator._id, token);
+                    setIsFollow((prev)=>!prev);
+                  }}
+                  className="-ml-1 text-xs text-green-700 hover:underline"
+                >
+                  {isFollow
+                    ? "Following"
+                    : "Follow"}
+                </button>
+}</div>
+
               <div className="flex items-center gap-5 text-[#6B7280]">
                 <button
                   className="cursor-pointer flex items-center gap-1 hover:text-[#EF4444] transition"
@@ -170,19 +173,13 @@ function BlogPage() {
                   <MessageCircle size={18} />
                   {comments.length}
                 </button>
-                {/* <div className=" flex items-center gap-1 hover:text-[#6366F1] transition cursor-pointer">
-                  <Bookmark size={18} />+
-                </div> */}
+                
                 <Bookmark
                                         size={14}
-                                        onClick={()=> handleSaveBlog(blogData._id,token)}
-                                        fill={
-                
-                                          blogData.totalSaves?.includes(userId)
-                                            ? "#2563EB"
-                                            : "none"
-                                        }
-                                        className="text-[#2563EB] cursor-pointer"
+                                        onClick={handleSave}
+                                        color={isSave ? "#2563EB" : "#94A3B8"}
+                                        fill={isSave ? "#2563EB" : "none"}
+                                        className=" cursor-pointer"
                                       />
               </div>
             </div>
@@ -204,7 +201,6 @@ function BlogPage() {
               </motion.div>
             )}
 
-            {/* Blog Content */}
             <motion.section
               className="prose lg:prose-lg prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[#1F2937]"
               initial={{ opacity: 0 }}
@@ -216,7 +212,6 @@ function BlogPage() {
 
             </motion.section>
 
-            {/* Edit Button */}
             {token && user?.email === blogData.creator.email && (
               <div className="flex justify-end pt-10">
                 <Link to={`/edit/${blogData.blogId}`}>
@@ -243,41 +238,15 @@ function BlogPage() {
         </div>
       )}
     </div>
-  {/* {showNoteInput && (
-        <div
-          className="fixed z-50 bg-white border border-gray-300 rounded-xl shadow-lg p-4 w-[300px]"
-          style={{ top: notePosition.y, left: notePosition.x }}
-        >
-          <p className="text-sm text-gray-600 mb-2">Add note for:</p>
-          <p className="text-sm italic text-gray-800 mb-3 line-clamp-2">
-            “{selectedText}”
-          </p>
-          <textarea
-            rows="3"
-            className="w-full p-2 border rounded-md text-sm focus:outline-none"
-            placeholder="Your note here..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleAddNote(e.target.value);
-              }
-            }}
-          />
-          <div className="text-right mt-2">
-            <button
-              onClick={() => setShowNoteInput(false)}
-              className="text-sm text-gray-500 hover:text-gray-700 mr-2"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )} */}
+  
   </div>
+
 );
 
 }
 export default BlogPage;
+
+
 
 
 

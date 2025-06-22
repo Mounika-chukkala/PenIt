@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Heart, MessageCircle, ArrowUp, Bookmark } from "lucide-react";
 import axios from "axios";
@@ -6,7 +8,7 @@ import { useSelector } from "react-redux";
 import { formatDate } from "../utils/formatDate";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleSaveBlog } from "../utils/blogUtils";
-
+import usePagination from "../hooks/UsePagination";
 const slides = [
   {
     title: "Welcome to Pen It 🌊",
@@ -29,65 +31,73 @@ const slides = [
 ];
 
 function HomePage() {
-  const [blogs, setBlogs] = useState([]);
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
+const [displayedBlogs, setDisplayedBlogs] = useState([]);  // const [blogs, setblogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const { id: userId,token } = useSelector((slice) => slice.user);
+  const { id: userId, token } = useSelector((slice) => slice.user);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  async function fetchBlogs() {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs`);
-      setBlogs(res.data.blogs);
-      setFilteredBlogs(res.data.blogs);
-    } catch (err) {
-      console.error("Error fetching blogs:", err);
-    }
-  }
-
+  // const [hasMore,setHasMore]=useState(true);
+const [page,setPage]=useState(1);
+  const { blogs, hasMore, isLoading } = usePagination("blogs", {}, 4, page);
   useEffect(() => {
-    fetchBlogs();
+  setDisplayedBlogs(blogs);
+}, [blogs]);
 
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 100);
-    };
 
-    const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+  // async function fetchBlogs() {
+  //   try {
+  //     const params={page,limit:2}
+  //     const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs`,{params},);
+  //     // setBlogs((prev)=>[...prev,...res.data.blogs]);
+  //     setblogs((prev)=>[...prev,...res.data.blogs]);
+  //     // setHasMore(res.data.hasMore)
+  //   } catch (err) {
+  //     console.error("Error fetching blogs:", err);
+  //   }
+  // }
 
-    window.addEventListener("scroll", handleScroll);
+  // useEffect(() => {
+  //   fetchBlogs();
 
-    return () => {
-      clearInterval(slideInterval);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  //   const handleScroll = () => {
+  //     setShowScrollTop(window.scrollY > 100);
+  //   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
-    const filtered = blogs.filter(
-      (b) =>
-        b.title.toLowerCase().includes(value) ||
-        b.creator.name.toLowerCase().includes(value)
-    );
-    setFilteredBlogs(filtered);
-  };
+  //   const slideInterval = setInterval(() => {
+  //     setCurrentSlide((prev) => (prev + 1) % slides.length);
+  //   }, 5000);
+
+  //   window.addEventListener("scroll", handleScroll);
+
+  //   return () => {
+  //     clearInterval(slideInterval);
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [page]);
+
+  // const handleSearch = (e) => {
+  //   const value = e.target.value.toLowerCase();
+  //   setSearchTerm(value);
+  //   const filtered = blogs.filter(
+  //     (b) =>
+  //       b.title.toLowerCase().includes(value) ||
+  //       b.creator.name.toLowerCase().includes(value)
+  //   );
+  //   setblogs(filtered);
+  // };
 
   const handleSort = (type) => {
-    let sorted = [...filteredBlogs];
+    let sorted = [...blogs];
     if (type === "latest") {
-      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).reverse();
     } else if (type === "likes") {
-      sorted.sort((a, b) => b.likes.length - a.likes.length);
+      sorted.sort((a, b) => b.likes.length - a.likes.length).reverse();
     }
-    setFilteredBlogs(sorted);
-  };
+  setDisplayedBlogs(sorted);  };
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start relative text-white font-sans overflow-x-hidden"
+    <div
+      className="w-full min-h-screen flex flex-col scroll-smooth items-center justify-start relative text-white font-sans overflow-x-hidden"
       style={{
         background: `linear-gradient(135deg, #0a1f44 10%, #1e3a8a 60%, #2563eb 90%)`,
         backgroundAttachment: "fixed",
@@ -107,11 +117,7 @@ function HomePage() {
       </svg>
 
       {!userId && (
-        <section
-          aria-label="Get Started Carousel"
-          className="relative w-full max-w-5xl h-[380px] sm:h-[420px] mt-12 px-6 flex items-center justify-center overflow-hidden rounded-xl shadow-xl bg-gradient-to-br from-[#1c2a57] via-[#254e9a] to-[#2f6de3]"
-          style={{ boxShadow: "0 8px 30px rgba(41, 56, 104, 0.7)" }}
-        >
+        <section className="relative w-full max-w-5xl h-[380px] sm:h-[420px] mt-12 px-6 flex items-center justify-center overflow-hidden rounded-xl shadow-xl bg-gradient-to-br from-[#1c2a57] via-[#254e9a] to-[#2f6de3]">
           <AnimatePresence mode="wait">
             {slides.map(
               (slide, i) =>
@@ -124,7 +130,7 @@ function HomePage() {
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                     className="absolute inset-0 flex flex-col justify-center items-center px-10 text-center"
                   >
-                    <h1 className="text-white font-extrabold drop-shadow-md text-4xl sm:text-5xl mb-4 tracking-wide">
+                    <h1 className="text-white font-extrabold drop-shadow-xl text-4xl sm:text-5xl mb-4 tracking-tight leading-snug">
                       {slide.title}
                     </h1>
                     <p className="text-[#dbeafe] max-w-xl text-lg sm:text-xl mb-6 font-light drop-shadow-sm">
@@ -132,7 +138,7 @@ function HomePage() {
                     </p>
                     <Link
                       to={slide.to}
-                      className="inline-block px-8 py-3 bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] hover:from-[#2563eb] hover:to-[#3b82f6] transition rounded-full font-semibold shadow-lg text-white drop-shadow-md"
+                      className="inline-block px-8 py-3 bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] hover:from-[#2563eb] hover:to-[#1e40af] transition-all duration-300 rounded-full font-semibold shadow-md text-white tracking-wide hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:ring-[#3b82f6]"
                     >
                       {slide.button}
                     </Link>
@@ -140,18 +146,13 @@ function HomePage() {
                 )
             )}
           </AnimatePresence>
-
-          {/* Navigation dots */}
           <div className="absolute bottom-6 flex gap-3 justify-center w-full">
             {slides.map((_, idx) => (
               <button
                 key={idx}
-                aria-label={`Go to slide ${idx + 1}`}
                 onClick={() => setCurrentSlide(idx)}
                 className={`w-4 h-4 rounded-full transition-colors duration-300 ${
-                  idx === currentSlide
-                    ? "bg-white shadow-lg"
-                    : "bg-white/40 hover:bg-white/70"
+                  idx === currentSlide ? "bg-white" : "bg-white/40 hover:bg-white/70"
                 }`}
               ></button>
             ))}
@@ -159,109 +160,118 @@ function HomePage() {
         </section>
       )}
 
-      {/* Search & sort + Blog listing container */}
       <div className="w-[95%] max-w-5xl mt-16 mb-20 z-10">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-8">
-          <input
+          {/* <input
             type="text"
             placeholder="Search blogs..."
             value={searchTerm}
             onChange={handleSearch}
-            className="w-full sm:w-[60%] p-3 rounded-md border border-[#3b82f6] bg-[#1e293b] text-white placeholder-[#93c5fd] text-base focus:outline-none focus:ring-2 focus:ring-[#2563eb]"
-          />
+            className="w-full sm:w-[60%] p-3 rounded-lg bg-[#0f172a] text-white placeholder:text-[#93c5fd] border border-transparent focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition placeholder:italic tracking-wide"
+          /> */}
+           <motion.h2
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-white text-2xl font-semibold mb-2"
+        >
+          Discover fresh reads below
+        </motion.h2>
           <select
             onChange={(e) => handleSort(e.target.value)}
-            className="bg-[#3b82f6] text-white rounded-md px-4 py-3 text-base hover:bg-[#2563eb] transition"
+            className="bg-[#3b82f6] text-white rounded-md px-2 mx-3 py-3 text-base hover:bg-[#2563eb] transition"
           >
             <option value="latest">Latest</option>
             <option value="likes">Most Liked</option>
           </select>
         </div>
 
-        <motion.h2
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-white text-2xl font-semibold mb-8"
-        >
-          Discover fresh reads below
-        </motion.h2>
+       
 
-        {[...filteredBlogs].reverse().map((blog, index) => (
-          <motion.div
-            key={blog._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.08 }}
-          >
-            <Link to={`/blog/${blog.blogId}`}>
-              <article className="cursor-pointer hover:scale-[1.03] hover:shadow-xl transition-all duration-300 bg-white text-[#1E293B] p-4 mb-5 rounded-xl shadow-md flex flex-col sm:flex-row gap-5 items-center">
-                <div className="w-[40%] sm:w-[28%] flex-shrink-0">
+        <div className="divide-y divide-[#cbd5e1]/30">
+          {[...displayedBlogs].map((blog, index) => (
+            <motion.div
+              key={blog._id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.06 }}
+            >
+              <Link to={`/blog/${blog.blogId}`} className="block  hover:bg-white/5 transition">
+                <div className="flex gap-5 items-start py-6 px-2 w-full">
                   <img
                     src={blog.image}
                     alt="blog"
-                    className="w-full h-28 object-cover rounded-md"
-                    loading="lazy"
+                    className="w-[30%] sm:w-[20%] h-30 object-cover rounded-md flex-shrink-0"
                   />
-                </div>
-                <div className="flex-1 flex flex-col gap-2 w-[50%]">
-                  <div className="flex gap-3 items-center  text-sm text-[#2563EB] font-semibold">
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDJHqDvc62-IQh68H-YN-192G4IxstKe4O2w&s"
-                      alt="creator"
-                      className="w-6 h-6 rounded-full border border-[#cbd5e1]"
-                    />
-                    <p>{blog.creator.name}</p>
-                  </div>
-                  <h3 className="font-bold text-[#1E3A8A] text-lg truncate">
-                    {blog.title}
-                  </h3>
-                  <p className="text-sm text-[#475569] line-clamp-1">
-                    {blog.description}
-                  </p>
-                  <div className="flex items-center gap-5 text-xs text-[#64748B] mt-1">
-                    <time>{formatDate(blog.createdAt)}</time>
-                    <div className="flex items-center gap-1">
-                      <Heart
-                        size={14}
-                        fill={
-                          blog.likes.some((user) => user._id === userId)
-                            ? "#2563EB"
-                            : "none"
+                  <div className="flex flex-col w-full">
+                    <div className="flex items-center gap-2 text-sm text-[#60a5fa] mb-1">
+                      <img
+                        src={
+                          blog.creator.profilePic ||
+                          `https://api.dicebear.com/9.x/initials/svg?seed=${blog.creator.name}`
                         }
-                        className="text-[#2563EB]"
+                        alt="creator"
+                        className="w-5 h-5 rounded-full"
                       />
-                      <span>{blog.likes.length}</span>
+                      <Link to={`/${blog.creator.username}`} className="hover:underline">
+                        {blog.creator.name}
+                      </Link>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle size={14} className="text-[#2563EB]" />
-                      <span>{blog.comments.length}</span>
+                    <h3 className="text-xl text-[#dbeafe] font-semibold truncate">{blog.title}</h3>
+                    <p className="text-sm text-[#cbd5e1] mt-1 line-clamp-2">
+                      {blog.description}
+                    </p>
+                    <div className="mt-3 flex gap-4 text-xs text-[#93c5fd]">
+                      <span>{formatDate(blog.createdAt)}</span>
+                      <span className="flex items-center gap-1">
+                        <Heart
+                          size={14}
+                          fill={
+                            blog.likes.some((user) => user._id === userId)
+                              ? "#2563EB"
+                              : "none"
+                          }
+                          className="text-[#2563EB]"
+                        />
+                        {blog.likes.length}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MessageCircle size={14} className="text-[#2563EB]" />
+                        {blog.comments.length}
+                      </span>
+                      <Bookmark
+                        size={14}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSaveBlog(blog._id, token);
+                        }}
+                        fill={
+                          blog.totalSaves?.includes(userId) ? "#2563EB" : "none"
+                        }
+                        className="text-[#2563EB] cursor-pointer"
+                      />
                     </div>
-                     <Bookmark
-                                        size={14}
-                                        onClick={(e)=>{
-                                            e.preventDefault();
-                                         handleSaveBlog(blog._id,token)}
-                     } fill={
-                
-                                          blog.totalSaves?.includes(userId)
-                                            ? "#2563EB"
-                                            : "none"
-                                        }
-                                        className="text-[#2563EB] cursor-pointer"
-                                      />
                   </div>
                 </div>
-              </article>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+        {
+          hasMore ?
+         <button
+                onClick={() => setPage((prev) => prev + 1)}
+                className="rounded-3xl mx-auto bg-blue-500 text-white px-7 py-2
+        ">
+                Load more
+              </button>
+              :<p className="text-white text-sm">You've reached the end buddy.</p>
+}</div>
 
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-5 right-5 bg-[#2563EB] text-white p-3 rounded-full shadow-xl hover:bg-[#1E40AF] transition z-50"
+          className="fixed bottom-6 right-6 bg-gradient-to-br from-[#2563EB] to-[#1E3A8A] text-white p-3 rounded-full shadow-lg hover:scale-110 hover:shadow-2xl transition-all z-50 animate-bounce"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} />

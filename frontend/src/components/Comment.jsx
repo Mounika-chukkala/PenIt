@@ -185,7 +185,7 @@ function DisplayComments({
 
   return (
     <>
-      {[...comments].reverse().map((c, i) => (
+      {[...comments]?.reverse().map((c, i) => (
         <div key={i} className="py-2 px-3 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
           <div className="flex relative justify-between">
             <div className="flex gap-3 items-center">

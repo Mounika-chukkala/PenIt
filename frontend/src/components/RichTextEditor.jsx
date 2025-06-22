@@ -1,36 +1,3 @@
-// import React from "react";
-// import ReactQuill from "react-quill";
-// import "react-quill/dist/quill.snow.css";
-
-// const RichTextEditor = ({ value, onChange }) => {
-//   return (
-//     <div className="">
-//       <ReactQuill
-//         theme="snow"
-//         value={value}
-//         onChange={onChange}
-//         className=" text-base  border-none"
-//         placeholder="Start writing your blog here..."
-//         modules={{
-//           toolbar: [
-//             [{ header: [1, 2, 3, false] }],
-//             ["bold", "italic", "underline", "strike"],
-//                 [{ color: [] }, { background: [] }],
-//             [{ list: "ordered" }, { list: "bullet" }],
-//             ["blockquote", "code-block"],
-//                 ["image"], 
-//             ["clean"],
-//           ],
-//         }}
-//       />
-//     </div>
-//   );
-// };
-
-// export default RichTextEditor;
-
-
-
 
 
 

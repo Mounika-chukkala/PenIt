@@ -158,11 +158,11 @@ const MyBlogsPage = () => {
   }, [userId, token]);
 
   return (
-    <div className="min-h-screen w-full bg-[#F9FAFB] flex-col justify-center items-center px-4 py-10">
-      <div className="w-full md:w-[60%] mx-auto ">
-        <h1 className="text-3xl font-bold text-[#1E3A8A] mb-8 font-sans tracking-tight">
+    // <div className="min-h-screen w-full bg-[#F9FAFB] flex-col justify-center items-center px-4 py-10">
+      <div className="w-full mx-2 my-5 ">
+        {/* <h1 className="text-3xl font-bold text-[#1E3A8A] mb-8 font-sans tracking-tight">
           My Blogs Dashboard
-        </h1>
+        </h1> */}
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
           <StatCard label="📝 Blogs" value={stats.total} />
@@ -181,12 +181,12 @@ const MyBlogsPage = () => {
       className="w-full"
     >
       <Link to={`/blog/${blog.blogId}`} className="block">
-        <div className="flex flex-col sm:flex-row gap-3 p-2 pl-4 bg-white border border-[#E5E7EB] hover:border-[#CBD5E1] shadow-sm hover:shadow-md transition rounded-2xl">
+        <div className="flex flex-col sm:flex-row gap-2 p-2 pl-4 bg-white  hover:border-[#CBD5E1] shadow-sm hover:shadow-md transition ">
           <div className="w-full sm:w-[30%]">
             <img
               src={blog.image}
               alt="blog"
-              className="w-full h-40 sm:h-32 object-cover rounded-xl border"
+              className="w-full h-40 sm:h-32 object-cover "
             />
           </div>
 
@@ -200,7 +200,7 @@ const MyBlogsPage = () => {
               <p className="font-medium">{blog.creator.name}</p>
             </div>
 
-            <h2 className="text-xl font-bold text-[#1E3A8A] font-sans line-clamp-1">
+            <h2 className="text-md font-semibold text-[#1E3A8A] font-sans line-clamp-1">
               {blog.title}
             </h2>
 
@@ -227,7 +227,7 @@ const MyBlogsPage = () => {
 </div>
 
         </div>
-      </div>
+      // </div>
     
   );
 };
