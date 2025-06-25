@@ -39,7 +39,11 @@ function App() {
               {/* <Route path="/profile" element={<Profile />}></Route> */}
               <Route path="/verify-email/:verificationToken" element={<VerifyUser/>}></Route>
               <Route path="/settings" element={<Settings/>}></Route>
-                            <Route path="/:username" element={<Profile/>}></Route>
+                            <Route path="/:username" element={<Profile key={window.location.pathname}/>}></Route>
+                            <Route path="/:username/saved-blogs" element={<Profile/>}></Route>
+                            <Route path="/:username/liked-blogs" element={<Profile/>}></Route>
+                            <Route path="/:username/draft-blogs" element={<Profile/>}></Route>
+                            <Route path="/:username/private-blogs" element={<Profile/>}></Route>
 
               <Route
                 path="/signin"
@@ -51,7 +55,8 @@ function App() {
                 path="/signup"
                 element={<AuthForm type={"signup"} />}
               ></Route>
-              <Route path="/explore" element={<Search />}></Route>
+              <Route path="/search" element={<Search />}></Route>
+
 
               <Route path="/add-blog" element={<AddBlog />}></Route>
               <Route path="/edit/:id" element={<AddBlog />}></Route>

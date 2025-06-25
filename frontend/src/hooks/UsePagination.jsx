@@ -2,40 +2,39 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-// import useLoader from "./useLoader";
 
-function usePagination(path, queryParams = {}, limit = 1, page = 1) {
+function usePagination(path, queryParams = {}, limit = 4, page = 1) {
   const [hasMore, setHasMore] = useState(true);
   const [blogs, setBlogs] = useState([]);
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  // const [isLoading, startLoading, stopLoading] = useLoader();
+
   useEffect(() => {
-    async function fetchSeachBlogs() {
+    async function fetchData() {
       try {
-        // startLoading();
-        let res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/${path}`,
-          {
-            params: { ...queryParams, limit, page },
-          }
-        );
-        setBlogs((prev) => [...prev, ...res.data.blogs]);
-        setHasMore(res?.data?.hasMore);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/${path}`, {
+          params: { ...queryParams, limit, page },
+        });
+
+        if (path.includes("blogs")) {
+          setBlogs(res.data.blogs || []);
+        } else if (path.includes("users")) {
+          setUsers(res.data.users || []);
+        }
+
+        setHasMore(res?.data?.hasMore || false);
       } catch (error) {
+        toast.error(error?.response?.data?.message || "Failed to fetch data");
         navigate(-1);
         setBlogs([]);
-        toast.error(error?.response?.data?.message);
+        setUsers([]);
         setHasMore(false);
-      } finally {
-        // stopLoading();
       }
     }
-    fetchSeachBlogs();
-  }, [page]);
+    fetchData();
+  }, [path, JSON.stringify(queryParams), limit, page]);
 
-  return { blogs, hasMore} 
-  // ,
-    //  isLoading};
+  return { blogs, users, hasMore };
 }
 
 export default usePagination;

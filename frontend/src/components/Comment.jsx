@@ -1,6 +1,3 @@
-
-
-
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -118,7 +115,9 @@ function DisplayComments({
   async function handleReply(parentCommentId) {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/comment/${parentCommentId}/${blogId}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/comment/${parentCommentId}/${blogId}`,
         { reply },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -186,7 +185,10 @@ function DisplayComments({
   return (
     <>
       {[...comments]?.reverse().map((c, i) => (
-        <div key={i} className="py-2 px-3 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
+        <div
+          key={i}
+          className="py-2 px-3 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]"
+        >
           <div className="flex relative justify-between">
             <div className="flex gap-3 items-center">
               <img
@@ -206,8 +208,8 @@ function DisplayComments({
               </div>
             </div>
 
-            {(c.user._id === userId || userId === creatorId) && (
-              currentPopUp === c._id ? (
+            {(c.user._id === userId || userId === creatorId) &&
+              (currentPopUp === c._id ? (
                 <div className="absolute right-0 top-0 bg-white border border-[#E5E7EB] rounded-xl shadow-md z-10">
                   <X
                     size={14}
@@ -241,8 +243,7 @@ function DisplayComments({
                   className="cursor-pointer text-gray-600"
                   onClick={() => setCurrentPopUp(c._id)}
                 />
-              )
-            )}
+              ))}
           </div>
 
           {currentEditComment === c._id ? (
@@ -269,7 +270,9 @@ function DisplayComments({
               </div>
             </div>
           ) : (
-            <p className="mt-2 text-[#111827] text-[16px] leading-relaxed">{c.comment}</p>
+            <p className="mt-2 text-[#111827] text-[16px] leading-relaxed">
+              {c.comment}
+            </p>
           )}
 
           <div className="flex justify-between mt-3 items-center">

@@ -22,7 +22,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-const [profileDialog,setProfileDialog]=useState(false);
+  const [profileDialog, setProfileDialog] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleLogout = () => {
@@ -81,23 +81,23 @@ const [profileDialog,setProfileDialog]=useState(false);
                 <NotebookPen size={16} />
                 My Blogs
               </Link> */}
-<Link
-                    to="/explore"
-                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
-                  >
-                    <Search size={16} /> Explore
-                  </Link>
+              <Link
+                to="/search"
+                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+              >
+                <Search size={16} /> Explore
+              </Link>
               <div
-              onClick={()=>setProfileDialog((prev)=>!prev)}
+                onClick={() => setProfileDialog((prev) => !prev)}
                 className="flex h-10  items-center gap-2 cursor-pointer rounded-full px-2 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white hover:from-[#2563EB] hover:to-[#1E3A8A] transition duration-300"
               >
-                              <img
-                src={
-                  user.profilePic ||
-                  `https://api.dicebear.com/9.x/initials/svg?seed=${user.name}`
-                }
-                className="rounded-full w-6 h-6"
-              />
+                <img
+                  src={
+                    user.profilePic ||
+                    `https://api.dicebear.com/9.x/initials/svg?seed=${user.name}`
+                  }
+                  className="rounded-full w-6 h-6"
+                />
                 {/* <User size={16} /> */}
                 <p className="md:w-22 line-clamp-1">{user.name}</p>
               </div>
@@ -131,6 +131,7 @@ const [profileDialog,setProfileDialog]=useState(false);
           <Menu size={28} onClick={toggleMenu} className="mt-1" />
           {user.token ? (
             <Link to={`/${user.username}`}>
+              {console.log(user)}
               <img
                 src={
                   user.profilePic ||
@@ -179,31 +180,30 @@ const [profileDialog,setProfileDialog]=useState(false);
                   >
                     <NotebookPen size={16} /> My Blogs
                   </Link> */}
-                   <Link
-                    to="/explore"
+                  <Link
+                    to="/search"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
                   >
                     <Search size={16} /> Explore
                   </Link>
-                   <Link
-                to="/settings"
-                                    onClick={() => setIsOpen(false)}
-
-                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
-              >
-                <Settings size={16} className="mt-1" />
-                <p>Settings</p>
-              </Link>
-              <div
-                onClick={() => {
-                  handleLogout();
-                  setIsOpen(false);
-                }}
-                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
-              >
-                <LogOut size={16} className="mt-1" /> Log Out
-              </div>
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                  >
+                    <Settings size={16} className="mt-1" />
+                    <p>Settings</p>
+                  </Link>
+                  <div
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                  >
+                    <LogOut size={16} className="mt-1" /> Log Out
+                  </div>
                 </>
               ) : (
                 <>
@@ -216,7 +216,6 @@ const [profileDialog,setProfileDialog]=useState(false);
                   </Link>
                 </>
               )}
-             
             </ul>
 
             <div></div>
@@ -224,22 +223,21 @@ const [profileDialog,setProfileDialog]=useState(false);
         )}
 
         {user.token && profileDialog && (
-          <div className="hidden md:flex flex-col absolute right-10 rounded-lg top-11 w-[120px] bg-gray-50 drop-shadow-md  justify-center "
-          >
+          <div className="hidden md:flex flex-col absolute right-10 rounded-lg top-11 w-[120px] bg-gray-50 drop-shadow-md  justify-center ">
             <Link
               to={`/${user.username}`}
-              onClick={() =>{
-                setProfileDialog((prev)=>!prev)
-}}
+              onClick={() => {
+                setProfileDialog((prev) => !prev);
+              }}
               className="flex gap-1 hover:text-[#768cca] px-2 py-1 text-md transition duration-200 "
             >
               <User size={16} className="mt-1" />
               <p>Profile</p>
             </Link>
             <Link
-            onClick={() =>{
-                setProfileDialog((prev)=>!prev)
-}}
+              onClick={() => {
+                setProfileDialog((prev) => !prev);
+              }}
               to="/settings"
               className="flex gap-1 px-2 py-1 hover:text-[#768cca]  text-md transition duration-200"
             >
@@ -249,8 +247,7 @@ const [profileDialog,setProfileDialog]=useState(false);
             <div
               onClick={() => {
                 handleLogout();
-                                setProfileDialog((prev)=>!prev)
-
+                setProfileDialog((prev) => !prev);
               }}
               className="flex text-md gap-1 px-2 py-1 hover:text-[#768cca] transition duration-200"
             >

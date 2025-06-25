@@ -195,13 +195,13 @@ async function googleAuth(req, res) {
             id: user._id,
             name: user.name,
             email: user.email,
-            // profilePic: user.profilePic,
+            profilePic: user.profilePic,
             username: user.username,
-            // showLikedBlogs: user.showLikedBlogs,
-            // showSavedBlogs: user.showSavedBlogs,
-            // bio: user.bio,
-            // followers: user.followers,
-            // following: user.following,
+            showLikedBlogs: user.showLikedBlogs,
+            showSavedBlogs: user.showSavedBlogs,
+            bio: user.bio,
+            followers: user.followers,
+            following: user.following,
             token,
           },
         });
@@ -237,11 +237,11 @@ async function googleAuth(req, res) {
         email: newUser.email,
         profilePic: newUser.profilePic,
         username: newUser.username,
-        // showLikedBlogs: newUser.showLikedBlogs,
-        // showSavedBlogs: newUser.showSavedBlogs,
-        // bio: newUser.bio,
-        // followers: newUser.followers,  
-        // following: newUser.following,
+        showLikedBlogs: newUser.showLikedBlogs,
+        showSavedBlogs: newUser.showSavedBlogs,
+        bio: newUser.bio,
+        followers: newUser.followers,  
+        following: newUser.following,
         token,
       },
     });
@@ -345,10 +345,10 @@ const sendingEmail=await transporter.sendMail({
         username: checkForexistingUser.username,
         bio: checkForexistingUser.bio,
         blogs:checkForexistingUser.blogs,
-        // showLikedBlogs: checkForexistingUser.showLikedBlogs,
-        // showSavedBlogs: checkForexistingUser.showSavedBlogs,
-        // followers: checkForexistingUser.followers,
-        // following: checkForexistingUser.following,
+        showLikedBlogs: checkForexistingUser.showLikedBlogs,
+        showSavedBlogs: checkForexistingUser.showSavedBlogs,
+        followers: checkForexistingUser.followers,
+        following: checkForexistingUser.following,
         token,
       },
     });
@@ -509,34 +509,90 @@ async function deleteUser(req, res) {
   }
 }
 
+// async function followUser(req, res) {
+//   try {
+//     const followerId = req.user;
+//     const { id } = req.params;
+
+//     const user = await User.findById(id);
+
+//     if (!user) {
+//       return res.status(500).json({
+//         message: "User is not found",
+//       });
+//     }
+
+//     if (!user.followers.includes(followerId)) {
+//       await User.findByIdAndUpdate(id, { $set: { followers: followerId } });
+
+//       await User.findByIdAndUpdate(followerId, { $set: { following: id } });
+//     //  const user=await User.findById(followerId);
+//       return res.status(200).json({
+//         success: true,
+//         message: "Followed successfully",
+//         // followers:user.followers,
+//       });
+//     } else {
+//       await User.findByIdAndUpdate(id, { $unset: { followers: followerId } });
+
+//       await User.findByIdAndUpdate(followerId, { $unset: { following: id } });
+//       return res.status(200).json({
+//         success: true,
+//         message: "Unfollowed successfully",
+//                 // followers:user.followers,
+
+//       });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message,
+//     });
+//   }
+// }
+
 async function followUser(req, res) {
   try {
-    const followerId = req.user;
+    const followerId = req.user; // This should be req.user.id ideally
     const { id } = req.params;
 
     const user = await User.findById(id);
+    const follower = await User.findById(followerId);
 
-    if (!user) {
-      return res.status(500).json({
-        message: "User is not found",
-      });
+    if (!user || !follower) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     if (!user.followers.includes(followerId)) {
-      await User.findByIdAndUpdate(id, { $set: { followers: followerId } });
+      // ✅ Add follower
+      await User.findByIdAndUpdate(id, {
+        $addToSet: { followers: followerId }
+      });
 
-      await User.findByIdAndUpdate(followerId, { $set: { following: id } });
+      await User.findByIdAndUpdate(followerId, {
+        $addToSet: { following: id }
+      });
+
+      const updatedUser = await User.findById(id); // To get updated follower count
       return res.status(200).json({
         success: true,
         message: "Followed successfully",
+        followers: updatedUser.followers,
       });
     } else {
-      await User.findByIdAndUpdate(id, { $unset: { followers: followerId } });
+      // ✅ Remove follower
+      await User.findByIdAndUpdate(id, {
+        $pull: { followers: followerId }
+      });
 
-      await User.findByIdAndUpdate(followerId, { $unset: { following: id } });
+      await User.findByIdAndUpdate(followerId, {
+        $pull: { following: id }
+      });
+
+      const updatedUser = await User.findById(id);
       return res.status(200).json({
         success: true,
         message: "Unfollowed successfully",
+        followers: updatedUser.followers,
       });
     }
   } catch (error) {
@@ -545,31 +601,63 @@ async function followUser(req, res) {
     });
   }
 }
-// async function changeSavedLikedBlog(req, res) {
-//   try {
-//     const userId = req.user;
-//     const { showLikedBlogs, showSavedBlogs } = req.body;
 
-//     const user = await User.findById(userId);
 
-//     if (!user) {
-//       return res.status(500).json({
-//         message: "User is not found",
-//       });
-//     }
 
-//     await User.findByIdAndUpdate(userId, { showSavedBlogs, showLikedBlogs });
+async function changeSavedLikedBlog(req, res) {
+  try {
+    const userId = req.user;
+    const { showLikedBlogs, showSavedBlogs,private:isPrivate } = req.body;
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Visibilty updated",
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// }
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(500).json({
+        message: "User is not found",
+      });
+    }
+
+    await User.findByIdAndUpdate(userId, { showSavedBlogs, showLikedBlogs,private: isPrivate, });
+
+    return res.status(200).json({
+      success: true,
+      message: "Visibilty updated",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+}
+
+
+async function searchUsers(req, res){
+  try {
+    const { search = "", limit = 4, page = 1 } = req.query;
+    const skip = (page - 1) * limit;
+
+    const query = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { username: { $regex: search, $options: "i" } },
+        { bio: { $regex: search, $options: "i" } },
+      ],
+    };
+
+    const users = await User.find(query)
+      .select("-password") // don't send password hash
+      .limit(parseInt(limit))
+      .skip(skip);
+
+    const totalCount = await User.countDocuments(query);
+    const hasMore = skip + users.length < totalCount;
+
+    res.json({ users, hasMore });
+  } catch (err) {
+    res.status(500).json({ message: "Error searching users" });
+  }
+};
+
 
 module.exports = {
   createUser,
@@ -581,5 +669,6 @@ module.exports = {
   verifyEmail,
   googleAuth,
   followUser,
-//   changeSavedLikedBlog,
+  searchUsers,
+  changeSavedLikedBlog,
 };

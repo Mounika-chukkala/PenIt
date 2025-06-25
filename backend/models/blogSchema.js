@@ -55,7 +55,10 @@ const blogSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-
+    private: {
+      type: Boolean,
+      default: false,
+    },
     tags: {
       type: [String],
     },

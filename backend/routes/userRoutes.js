@@ -9,7 +9,9 @@ const {
   login,
   verifyEmail,
   googleAuth,
-  followUser
+  followUser,
+  searchUsers,
+  changeSavedLikedBlog
 } = require("../controllers/userController");
 const verifyUser = require("../middlewares/auth");
 const upload=require("../utils/multer")
@@ -35,6 +37,8 @@ route.post("/google-auth", googleAuth);
 // follow - unfollow
 
 route.patch("/follow/:id",verifyUser,followUser);
+route.get("/search-users", searchUsers)
 
+route.patch("/change-saved-liked-blog-visibility" , verifyUser , changeSavedLikedBlog)
 
 module.exports = route;

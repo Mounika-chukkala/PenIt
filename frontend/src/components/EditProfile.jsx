@@ -8,14 +8,14 @@ import toast from "react-hot-toast";
 export default function EditProfile() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-const dispatch=useDispatch();
-const user=useSelector((slice)=>slice.user)
+  const dispatch = useDispatch();
+  const user = useSelector((slice) => slice.user);
 
   const [formData, setFormData] = useState({
     name: user.name,
     username: user.username,
-    bio:user.bio ,
-    profilePic:user.profilePic||"",
+    bio: user.bio,
+    profilePic: user.profilePic || "",
   });
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -34,34 +34,36 @@ const user=useSelector((slice)=>slice.user)
     reader.readAsDataURL(file);
   };
 
-  const handleSave =async () => {
-  if (!formData.username || formData.username.length < 6) {
-  return toast.error("Username must be at least 3 characters.");
-}
+  const handleSave = async () => {
+    if (!formData.username || formData.username.length < 6) {
+      return toast.error("Username must be at least 3 characters.");
+    }
     try {
-    const res = await axios.patch(
-      `${import.meta.env.VITE_BACKEND_URL}/users/${user.id}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      }
-    );
-    // Update redux + localStorage in real-time
-    dispatch(updateUser(res.data.user));
-    toast.success(res.data.message);
-    navigate("/profile");
-  } catch (error) {
-    console.error("Failed to update profile", error);
-    toast.error(error.response.data.message);
-  }
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/users/${user.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      // Update redux + localStorage in real-time
+      dispatch(updateUser(res.data.user));
+      toast.success(res.data.message);
+      navigate("/profile");
+    } catch (error) {
+      console.error("Failed to update profile", error);
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-tr from-[#F5F7FA] to-[#E4ECF5] p-6 flex items-center justify-center">
       <div className="w-full max-w-xl bg-white/70 backdrop-blur-md rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-semibold text-[#1E293B] mb-6">Edit Profile</h2>
+        <h2 className="text-2xl font-semibold text-[#1E293B] mb-6">
+          Edit Profile
+        </h2>
 
         <div className="flex flex-col items-center gap-3">
           <div className="relative">
@@ -99,7 +101,9 @@ const user=useSelector((slice)=>slice.user)
           </div>
 
           <div>
-            <label className="block text-sm text-[#1E293B] mb-1">Username</label>
+            <label className="block text-sm text-[#1E293B] mb-1">
+              Username
+            </label>
             <input
               type="text"
               name="username"
@@ -139,8 +143,3 @@ const user=useSelector((slice)=>slice.user)
     </div>
   );
 }
-
-
-
-
-

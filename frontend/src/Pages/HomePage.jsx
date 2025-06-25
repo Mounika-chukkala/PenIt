@@ -1,7 +1,16 @@
 
 
+
+
 import React, { useEffect, useState } from "react";
-import { Heart, MessageCircle, ArrowUp, Bookmark } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  ArrowUp,
+  Bookmark,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -9,6 +18,7 @@ import { formatDate } from "../utils/formatDate";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleSaveBlog } from "../utils/blogUtils";
 import usePagination from "../hooks/UsePagination";
+
 const slides = [
   {
     title: "Welcome to Pen It 🌊",
@@ -31,60 +41,19 @@ const slides = [
 ];
 
 function HomePage() {
-const [displayedBlogs, setDisplayedBlogs] = useState([]);  // const [blogs, setblogs] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [displayedBlogs, setDisplayedBlogs] = useState([]);
+  // const [searchTerm, setSearchTerm] = useState("");
   const { id: userId, token } = useSelector((slice) => slice.user);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  // const [hasMore,setHasMore]=useState(true);
-const [page,setPage]=useState(1);
+  const [page, setPage] = useState(1);
   const { blogs, hasMore, isLoading } = usePagination("blogs", {}, 4, page);
+function handleTag(){
+
+}
   useEffect(() => {
-  setDisplayedBlogs(blogs);
-}, [blogs]);
-
-
-  // async function fetchBlogs() {
-  //   try {
-  //     const params={page,limit:2}
-  //     const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogs`,{params},);
-  //     // setBlogs((prev)=>[...prev,...res.data.blogs]);
-  //     setblogs((prev)=>[...prev,...res.data.blogs]);
-  //     // setHasMore(res.data.hasMore)
-  //   } catch (err) {
-  //     console.error("Error fetching blogs:", err);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchBlogs();
-
-  //   const handleScroll = () => {
-  //     setShowScrollTop(window.scrollY > 100);
-  //   };
-
-  //   const slideInterval = setInterval(() => {
-  //     setCurrentSlide((prev) => (prev + 1) % slides.length);
-  //   }, 5000);
-
-  //   window.addEventListener("scroll", handleScroll);
-
-  //   return () => {
-  //     clearInterval(slideInterval);
-  //     window.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, [page]);
-
-  // const handleSearch = (e) => {
-  //   const value = e.target.value.toLowerCase();
-  //   setSearchTerm(value);
-  //   const filtered = blogs.filter(
-  //     (b) =>
-  //       b.title.toLowerCase().includes(value) ||
-  //       b.creator.name.toLowerCase().includes(value)
-  //   );
-  //   setblogs(filtered);
-  // };
+    setDisplayedBlogs(blogs);
+  }, [blogs]);
 
   const handleSort = (type) => {
     let sorted = [...blogs];
@@ -93,11 +62,12 @@ const [page,setPage]=useState(1);
     } else if (type === "likes") {
       sorted.sort((a, b) => b.likes.length - a.likes.length).reverse();
     }
-  setDisplayedBlogs(sorted);  };
+    setDisplayedBlogs(sorted);
+  };
 
   return (
     <div
-      className="w-full min-h-screen flex flex-col scroll-smooth items-center justify-start relative text-white font-sans overflow-x-hidden"
+      className="w-full min-h-screen flex flex-col scroll-smooth items-center justify-between relative text-white font-sans overflow-x-hidden"
       style={{
         background: `linear-gradient(135deg, #0a1f44 10%, #1e3a8a 60%, #2563eb 90%)`,
         backgroundAttachment: "fixed",
@@ -152,7 +122,9 @@ const [page,setPage]=useState(1);
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
                 className={`w-4 h-4 rounded-full transition-colors duration-300 ${
-                  idx === currentSlide ? "bg-white" : "bg-white/40 hover:bg-white/70"
+                  idx === currentSlide
+                    ? "bg-white"
+                    : "bg-white/40 hover:bg-white/70"
                 }`}
               ></button>
             ))}
@@ -160,113 +132,142 @@ const [page,setPage]=useState(1);
         </section>
       )}
 
-      <div className="w-[95%] max-w-5xl mt-16 mb-20 z-10">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-8">
-          {/* <input
-            type="text"
-            placeholder="Search blogs..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full sm:w-[60%] p-3 rounded-lg bg-[#0f172a] text-white placeholder:text-[#93c5fd] border border-transparent focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition placeholder:italic tracking-wide"
-          /> */}
-           <motion.h2
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-white text-2xl font-semibold mb-2"
-        >
-          Discover fresh reads below
-        </motion.h2>
+      <div className="w-full max-w-6xl px-4 sm:px-6 mt-10 mb-20 z-10">
+        <div className="w-full flex flex-row justify-between items-start sm:items-center gap-3 mb-8">
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-white text-sm mt-1 sm:text-xl font-semibold"
+          >
+            Discover fresh reads below
+          </motion.h2>
           <select
             onChange={(e) => handleSort(e.target.value)}
-            className="bg-[#3b82f6] text-white rounded-md px-2 mx-3 py-3 text-base hover:bg-[#2563eb] transition"
+            className="bg-[#3b82f6] text-white rounded-md px-3 py-2 text-sm hover:bg-[#2563eb] transition"
           >
             <option value="latest">Latest</option>
             <option value="likes">Most Liked</option>
           </select>
         </div>
 
-       
-
-        <div className="divide-y divide-[#cbd5e1]/30">
-          {[...displayedBlogs].map((blog, index) => (
-            <motion.div
-              key={blog._id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.06 }}
-            >
-              <Link to={`/blog/${blog.blogId}`} className="block  hover:bg-white/5 transition">
-                <div className="flex gap-5 items-start py-6 px-2 w-full">
-                  <img
-                    src={blog.image}
-                    alt="blog"
-                    className="w-[30%] sm:w-[20%] h-30 object-cover rounded-md flex-shrink-0"
-                  />
-                  <div className="flex flex-col w-full">
-                    <div className="flex items-center gap-2 text-sm text-[#60a5fa] mb-1">
-                      <img
-                        src={
-                          blog.creator.profilePic ||
-                          `https://api.dicebear.com/9.x/initials/svg?seed=${blog.creator.name}`
-                        }
-                        alt="creator"
-                        className="w-5 h-5 rounded-full"
-                      />
-                      <Link to={`/${blog.creator.username}`} className="hover:underline">
-                        {blog.creator.name}
-                      </Link>
-                    </div>
-                    <h3 className="text-xl text-[#dbeafe] font-semibold truncate">{blog.title}</h3>
-                    <p className="text-sm text-[#cbd5e1] mt-1 line-clamp-2">
-                      {blog.description}
-                    </p>
-                    <div className="mt-3 flex gap-4 text-xs text-[#93c5fd]">
-                      <span>{formatDate(blog.createdAt)}</span>
-                      <span className="flex items-center gap-1">
-                        <Heart
-                          size={14}
-                          fill={
-                            blog.likes.some((user) => user._id === userId)
-                              ? "#2563EB"
-                              : "none"
+        <div className="flex flex-col-reverse gap-6 md:flex-row md:items-start">
+          <div className="w-full md:w-[70%] flex flex-col items-center">
+            <div className="w-full divide-y divide-[#cbd5e1]/30">
+              {displayedBlogs.map((blog, index) => (
+                <motion.div
+                  key={blog._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.06 }}
+                  className="w-full"
+                >
+                  <div className="flex gap-4 flex-col sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
+                    <img
+                      src={blog.image}
+                      alt="blog"
+                      className="w-full sm:w-[100px] h-[200px] sm:h-[100px] object-cover rounded-md"
+                    />
+                    <div className="flex flex-col sm:w-[60%] flex-grow">
+                      <div className="flex items-center gap-2 text-sm text-[#60a5fa] mb-1">
+                        <img
+                          src={
+                            blog.creator.profilePic ||
+                            `https://api.dicebear.com/9.x/initials/svg?seed=${blog.creator.name}`
                           }
-                          className="text-[#2563EB]"
+                          alt="creator"
+                          className="w-5 h-5 rounded-full"
                         />
-                        {blog.likes.length}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageCircle size={14} className="text-[#2563EB]" />
-                        {blog.comments.length}
-                      </span>
-                      <Bookmark
-                        size={14}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSaveBlog(blog._id, token);
-                        }}
-                        fill={
-                          blog.totalSaves?.includes(userId) ? "#2563EB" : "none"
-                        }
-                        className="text-[#2563EB] cursor-pointer"
-                      />
+                        <Link to={`/${blog.creator.username}`} className="hover:underline">
+                          {blog.creator.name}
+                        </Link>
+                      </div>
+                      <h3 className="text-lg text-[#dbeafe] font-semibold line-clamp-1">
+                        {blog.title}
+                      </h3>
+                      <div className="flex  flex-wrap w-[90%] sm:w-[85%]">
+                        <p className="text-xs text-[#cbd5e1] mt-1  line-clamp-2">
+                          {blog.description}
+                        </p>
+                        <Link to={`/blog/${blog.blogId}`} className="ml-1 text-blue-400 text-xs mt-1">
+                          <span>...continue</span>
+                        </Link>
+                      </div>
+                      <div className="mt-3 flex gap-4 text-xs text-[#93c5fd]">
+                        <span>{formatDate(blog.createdAt)}</span>
+                        <span className="flex items-center gap-1">
+                          <Heart
+                            size={14}
+                            fill={blog.likes.some((user) => user._id === userId) ? "#2563EB" : "none"}
+                            className="text-[#2563EB]"
+                          />
+                          {blog.likes.length}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle size={14} className="text-[#2563EB]" />
+                          {blog.comments.length}
+                        </span>
+                        <Bookmark
+                          size={14}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSaveBlog(blog._id, token);
+                          }}
+                          fill={blog.totalSaves?.includes(userId) ? "#2563EB" : "none"}
+                          className="text-[#2563EB] cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-        {
-          hasMore ?
-         <button
-                onClick={() => setPage((prev) => prev + 1)}
-                className="rounded-3xl mx-auto bg-blue-500 text-white px-7 py-2
-        ">
-                Load more
+                </motion.div>
+              ))}
+            </div>
+            {/* <div className="flex w-full justify-end gap-2 mt-10 self-start">
+              <button
+                onClick={() => setPage((prev) => prev - 1)}
+                className={`rounded-3xl text-black w-20 ${page > 1 ? "bg-blue-300" : "bg-slate-300"} p-1`}
+                disabled={page === 1}
+              >
+                Prev
               </button>
-              :<p className="text-white text-sm">You've reached the end buddy.</p>
-}</div>
+              <button
+                onClick={() => setPage((prev) => prev + 1)}
+                className={`rounded-3xl text-black w-20 ${hasMore ? "bg-blue-300" : "bg-slate-400"} p-1`}
+                disabled={!hasMore}
+              >
+                Next
+              </button>
+            </div> */}
+<div className="text-center w-full flex justify-end gap-1">
+            <button disabled={page==1}>
+<ChevronLeft size={30}  onClick={() => setPage((prev) => prev - 1)}
+                  className={`rounded-full ${page==1 ? "text-slate-600": "text-white"} font-extrabold text-3xl`}/>
+                </button>    
+                <button disabled={!hasMore}>
+
+<ChevronRight size={30}  onClick={() => setPage((prev) => prev + 1)}
+                  className={` ${!hasMore ? "text-slate-600": "text-white"} font-extrabold  text-3xl`} />        
+                  </button>
+              </div>
+          </div>
+
+          <div className="w-full  md:w-[30%] p-2">
+            <div>
+              <h1 className="font-bold pb-1">Recommended Topics</h1>
+                 <div className="flex flex-wrap">
+                            {["React","Mounika","Node Js","Express","MongoDb","HTML","CSS","JavaScript","Java","Python"].map((tag, index) => (
+                             <Link to={`/search?q=${tag}`}>
+                              {/* .toLowerCase().replace(" ","-") */}
+                                <p   key={index} className="text-xs border m-1 cursor-pointer py-2 px-4 rounded-2xl hover:bg-blue-500 hover:opacity-80
+ text-white">{tag}</p>
+                              </Link>
+                            ))}
+                          </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
 
       {showScrollTop && (
         <button

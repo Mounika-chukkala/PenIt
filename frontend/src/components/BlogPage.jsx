@@ -26,16 +26,17 @@ function BlogPage() {
   const comments = useSelector((state) => state.selectedBlog?.comments || []);
   const content = useSelector((state) => state.selectedBlog)?.content || {};
   const { isOpen } = useSelector((state) => state.comment);
-  const [isSave,setIsSave]=useState(false);
-const [isFollow,setIsFollow]=useState(blogData?.creator?.followers?.some((f)=>f._id==userId) || false);
-
+  const [isSave, setIsSave] = useState(false);
+  const [isFollow, setIsFollow] = useState(
+    blogData?.creator?.followers?.some((f) => f._id == userId) || false
+  );
 
   async function fetchBlogById() {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`
       );
-      console.log("res",res);
+      console.log("res", res);
       setBlogData(res.data.blog);
       setBlogLike(res.data.blog.likes.length);
       if (res.data.blog.likes.includes(userId)) {
@@ -54,13 +55,11 @@ const [isFollow,setIsFollow]=useState(blogData?.creator?.followers?.some((f)=>f.
     }, 100);
   }
 
-
-async function handleSave(e){
-  e.preventDefault();
-  await handleSaveBlog(blogData._id,token);
-  setIsSave((prev)=>!prev);
-  
-}
+  async function handleSave(e) {
+    e.preventDefault();
+    await handleSaveBlog(blogData._id, token);
+    setIsSave((prev) => !prev);
+  }
   async function handleLike(e) {
     e.preventDefault();
     if (token) {
@@ -84,169 +83,162 @@ async function handleSave(e){
     }
   }
 
+  useEffect(() => {
+    fetchBlogById();
+    dispatch(setIsOpen(false));
 
-useEffect(() => {
-   fetchBlogById();
-  dispatch(setIsOpen(false));
+    return () => {
+      if (!location.pathname.includes("/edit")) {
+        dispatch(removeSelectedBlog());
+      }
+    };
+  }, [id]);
 
-  return () => {
-    if (!location.pathname.includes("/edit")) {
-      dispatch(removeSelectedBlog());
-    }
-  };
-}, [id]);
-
-useEffect(() => {
-  if (blogData && userId) {  setIsSave(blogData?.totalSaves?.includes(userId));
+  useEffect(() => {
+    if (blogData && userId) {
+      setIsSave(blogData?.totalSaves?.includes(userId));
 
       setIsSave(blogData?.totalSaves?.includes(userId));
 
-    setIsFollow(blogData.creator?.followers?.some((f) => f._id === userId));
-  }
-}, [blogData, userId]);
-
-
+      setIsFollow(blogData.creator?.followers?.some((f) => f._id === userId));
+    }
+  }, [blogData, userId]);
 
   return (
-  <div
-  className="min-h-screen w-full p-1 bg-[#F9FAFB] text-[#111827] font-serif">
-    <div className="max-w-3xl mx-auto px-4 py-7">
-      {blogData ? (
-        <>
-          <motion.article
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-4"
-          >
-            <h1 className="text-4xl font-bold leading-tight text-[#1E3A8A] font-sans">
-              {blogData.title}
-            </h1>
+    <div className="min-h-screen w-full p-1 bg-[#F9FAFB] text-[#111827] font-serif">
+      <div className="max-w-3xl mx-auto px-4 py-7">
+        {blogData ? (
+          <>
+            <motion.article
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-4"
+            >
+              {/* 1E3A8A */}
+              <h1 className="text-4xl font-bold leading-tight text-blue/80 font-sans">
+                {blogData.title}
+              </h1>
 
-            <div className="flex justify-between items-center text-sm text-[#475569]">
-              <div className="flex items-center gap-3">
-                <img
-                  src={
-                    blogData.creator.image ||
-                    `https://api.dicebear.com/9.x/initials/svg?seed=${blogData.creator.name}`
-                  }
-                  className="w-9 h-9 rounded-full object-cover"
-                  alt="avatar"
-                />
-                <div>
-                  <Link to={`/${blogData.creator.username}`}>
-                    <p className="font-semibold text-[#2563EB] hover:underline">
-                      {blogData.creator.name}
+              <div className="flex justify-between items-center text-sm text-[#475569]">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={
+                      blogData.creator.image ||
+                      `https://api.dicebear.com/9.x/initials/svg?seed=${blogData.creator.name}`
+                    }
+                    className="w-9 h-9 rounded-full object-cover"
+                    alt="avatar"
+                  />
+                  <div>
+                    <Link to={`/${blogData.creator.username}`}>
+                      <p className="font-semibold text-[#2563EB] hover:underline">
+                        {blogData.creator.name}
+                      </p>
+                    </Link>
+                    <p className="text-xs text-gray-500">
+                      {formatDate(blogData.createdAt)}
                     </p>
-                  </Link>
-                  <p className="text-xs text-gray-500">
-                    {formatDate(blogData.createdAt)}
-                  </p>
-                </div>{
-                userId!==blogData.creator._id &&
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleFollowCreator(blogData.creator._id, token);
-                    setIsFollow((prev)=>!prev);
-                  }}
-                  className="-ml-1 text-xs text-green-700 hover:underline"
-                >
-                  {isFollow
-                    ? "Following"
-                    : "Follow"}
-                </button>
-}</div>
+                  </div>
+                  {userId !== blogData.creator._id && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleFollowCreator(blogData.creator._id, token);
+                        setIsFollow((prev) => !prev);
+                      }}
+                      className="-ml-1 text-xs text-green-700 hover:underline"
+                    >
+                      {isFollow ? "Following" : "Follow"}
+                    </button>
+                  )}
+                </div>
 
-              <div className="flex items-center gap-5 text-[#6B7280]">
-                <button
-                  className="cursor-pointer flex items-center gap-1 hover:text-[#EF4444] transition"
-                  onClick={handleLike}
-                >
-                  <Heart size={18} fill={isLike ? "#EF4444" : "none"} color={isLike ? "#EF4444" : "#94A3B8"} />
-                  {blogLikeCount}
-                </button>
-                <button
-                  className="cursor-pointer flex items-center gap-1 hover:text-[#2563EB] transition"
-                  onClick={scrollToComments}
-                >
-                  <MessageCircle size={18} />
-                  {comments.length}
-                </button>
-                
-                <Bookmark
-                                        size={14}
-                                        onClick={handleSave}
-                                        color={isSave ? "#2563EB" : "#94A3B8"}
-                                        fill={isSave ? "#2563EB" : "none"}
-                                        className=" cursor-pointer"
-                                      />
+                <div className="flex items-center gap-5 text-[#6B7280]">
+                  <button
+                    className="cursor-pointer flex items-center gap-1 hover:text-[#EF4444] transition"
+                    onClick={handleLike}
+                  >
+                    <Heart
+                      size={18}
+                      fill={isLike ? "#EF4444" : "none"}
+                      color={isLike ? "#EF4444" : "#94A3B8"}
+                    />
+                    {blogLikeCount}
+                  </button>
+                  <button
+                    className="cursor-pointer flex items-center gap-1 hover:text-[#2563EB] transition"
+                    onClick={scrollToComments}
+                  >
+                    <MessageCircle size={18} />
+                    {comments.length}
+                  </button>
+
+                  <Bookmark
+                    size={14}
+                    onClick={handleSave}
+                    color={isSave ? "#2563EB" : "#94A3B8"}
+                    fill={isSave ? "#2563EB" : "none"}
+                    className=" cursor-pointer"
+                  />
+                </div>
               </div>
-            </div>
 
+              {/* Blog Image */}
+              {blogData.image && (
+                <motion.div
+                  className="overflow-hidden rounded-2xl border border-[#E5E7EB] shadow-md"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <img
+                    src={blogData.image}
+                    alt="cover"
+                    className="w-full object-contain h-[290px] rounded-2xl"
+                  />
+                </motion.div>
+              )}
 
-            {/* Blog Image */}
-            {blogData.image && (
-              <motion.div
-                className="overflow-hidden rounded-2xl border border-[#E5E7EB] shadow-md"
+              <motion.section
+                className="prose lg:prose-lg prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[#1F2937]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.4 }}
               >
-                <img
-                  src={blogData.image}
-                  alt="cover"
-                  className="w-full object-contain h-[290px] rounded-2xl"
+                <div
+                  className="blog-content-container"
+                  dangerouslySetInnerHTML={{ __html: content }}
                 />
-              </motion.div>
-            )}
+              </motion.section>
 
-            <motion.section
-              className="prose lg:prose-lg prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[#1F2937]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
+              {token && user?.email === blogData.creator.email && (
+                <div className="flex justify-end pt-10">
+                  <Link to={`/edit/${blogData.blogId}`}>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-6 py-2 rounded-full bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
+                    >
+                      ✏️ Edit Blog
+                    </motion.button>
+                  </Link>
+                </div>
+              )}
+            </motion.article>
 
-<div className="blog-content-container" dangerouslySetInnerHTML={{ __html: content }} />
-
-            </motion.section>
-
-            {token && user?.email === blogData.creator.email && (
-              <div className="flex justify-end pt-10">
-                <Link to={`/edit/${blogData.blogId}`}>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-6 py-2 rounded-full bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
-                  >
-                    ✏️ Edit Blog
-                  </motion.button>
-                </Link>
-              </div>
-            )}
-          </motion.article>
-
-          {/* Comments */}
-          <div ref={commentRef} className="pt-6">
-            <Comment />
+            {/* Comments */}
+            <div ref={commentRef} className="pt-6">
+              <Comment />
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-24 text-xl font-medium text-[#1E3A8A]">
+            Loading blog...
           </div>
-        </>
-      ) : (
-        <div className="text-center py-24 text-xl font-medium text-[#1E3A8A]">
-          Loading blog...
-        </div>
-      )}
+        )}
+      </div>
     </div>
-  
-  </div>
-
-);
-
+  );
 }
 export default BlogPage;
-
-
-
-
-

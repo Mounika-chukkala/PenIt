@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function DraftToggleSwitch({ isDraft, setIsDraft }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex px-14 gap-3">
       <span className="text-sm font-medium text-gray-700">Draft</span>
       <button
         type="button"

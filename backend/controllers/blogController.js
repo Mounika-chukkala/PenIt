@@ -49,6 +49,9 @@ async function createBlog(req, res) {
     const { title, description} = req.body;
     const draft = req.body.draft == "true" ? true : false;
     const {image} = req.files;
+    const private = req.body.private === "true"
+
+    const tags=JSON.parse(req.body.tags);
     let content=JSON.parse(req.body.content);
     if (!title) {
       return res.status(400).json({
@@ -67,11 +70,11 @@ async function createBlog(req, res) {
         message: "Please add some content",
       });
     }
-    if (!content.length<200) {
-      return res.status(400).json({
-        message: "Please add some more content",
-      });
-    }
+    // if (!content.length<200) {
+    //   return res.status(400).json({
+    //     message: "Please add some more content",
+    //   });
+    // }
     content = await uploadImagesInContent(content, async (base64Data) => {
       return await uploadImage(`data:image/jpeg;base64,${base64Data}`);
     });
@@ -87,6 +90,8 @@ async function createBlog(req, res) {
       title,
       draft,
       creator,
+      tags,
+      private,
       image: secure_url,
       imageId: public_id,
     });
@@ -117,7 +122,7 @@ async function getBlogs(req, res) {
        const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const skip = (page - 1) * limit;
-    const blogs = await Blog.find({ draft: false })
+    const blogs = await Blog.find({ draft: false ,private:false})
       .populate({
         path: "creator",
         select: "-password",
@@ -129,7 +134,7 @@ async function getBlogs(req, res) {
       .skip(skip)
       .limit(limit);
 
-      const totalBlogs=await Blog.countDocuments({draft:false})
+      const totalBlogs=await Blog.countDocuments({draft:false,private:false})
 
     return res.status(200).json({
       message: "Blogs fetched Successfully",
@@ -200,9 +205,8 @@ async function updateBlog(req, res) {
   try {
     const creator = req.user;
     const { id } = req.params;
-    // const image = req.files;
-    // || req.params;
-// console.log("hi")
+        let tags=JSON.parse(req.body.tags);
+
     let content=JSON.parse(req.body.content);
     // console.log(content)
     const { title, description } = req.body;
@@ -272,12 +276,12 @@ async function updateBlog(req, res) {
 // } 
 
 // }
-    const updatedBlog = await Blog.updateOne({
-      title,
-      description,
-      content,
-      draft,
-    });
+    // const updatedBlog = await Blog.updateOne({
+    //   title,
+    //   description,
+    //   content,
+    //   draft,
+    // });
     if (req.files.image){
       await deleteImagefromCloudinary(blog.imageId);
 
@@ -291,8 +295,8 @@ async function updateBlog(req, res) {
     blog.title = title || blog.title;
     blog.description = description || blog.description;
     blog.content =  content || blog.content;
-    // blog.tags = tags || blog.tags;
-
+    blog.tags = tags || blog.tags;
+blog.draft = draft;
 
     await blog.save();
 
@@ -466,55 +470,122 @@ async function saveBlog(req, res) {
 }
 
 async function searchBlogs(req, res) {
-  try {
-    const { search, tag } = req.query;
+//   try {
+//     const { search, tag ,type} = req.query;
 
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
+//     const page = parseInt(req.query.page);
+//     const limit = parseInt(req.query.limit);
+//     const skip = (page - 1) * limit;
+
+//     let query;
+
+//     if (tag) {
+//       query = { tags: tag };
+//     } else {
+//       query =        type=="blogs"?{ 
+//         $or: [
+//           { title: { $regex: search, $options: "i" } },
+//           { description: { $regex: search, $options: "i" } },
+//         ],
+//       }:{username:{$regex:search,$options:"i"}};
+//     }
+// if(type=="blogs"){
+//     const blogs = await Blog.find(query, { draft: false })
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit)
+//       .populate({
+//         path: "creator",
+//         select: "name email followers username profilePic",
+//       });
+//     if (blogs.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message:
+//           "Make sure all words are spelled correctly.Try different keywords . Try more general keywords",
+//         hasMore: false,
+//       });
+//     }
+
+//     const totalBlogs = await Blog.countDocuments(query, { draft: false });
+
+//     return res.status(200).json({
+//       success: true,
+//       blogs,
+//       hasMore: skip + limit < totalBlogs,
+//     });
+//   }
+//   else{
+//     const users = await User.find(query)
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit)
+//       .populate({
+//         path: "creator",
+//         select: "name email followers username profilePic",
+//       });
+//     if (users.length === 0) {
+//       return res.status(200).json({
+//         success: false,
+//         message:
+//           "Make sure all words are spelled correctly.Try different keywords . Try more general keywords",
+//         hasMore: false,
+//       });
+//     }
+
+//     const totalUsers = await User.countDocuments(query);
+//     return res.status(200).json({
+//       success: true,
+//       users,
+//       // hasMore: skip + limit < totalBlogs,
+//     });
+//   }
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message,
+//     });
+//   }
+// const { search = "", tag = "", limit = 4, page = 1 } = req.query;
+//   const skip = (page - 1) * limit;
+
+//   if (req.query.type === "users") {
+//     const users = await User.find({ username: new RegExp(search, "i") }).limit(limit).skip(skip);
+//     return res.json({ users, hasMore: users.length === parseInt(limit) });
+//   }
+
+//   const filter = tag ? { tags: tag } : { title: new RegExp(search, "i") };
+//   const blogs = await Blog.find(filter).limit(limit).skip(skip);
+
+//   res.json({ blogs, hasMore: blogs.length === parseInt(limit) });
+
+try {
+    const { search = "", tag = "", limit = 4, page = 1 } = req.query;
     const skip = (page - 1) * limit;
 
-    let query;
+    const query = tag
+      ? { tags: tag.toLowerCase() }
+      : { $or:[
+          { title: { $regex: search, $options: "i" }},
+          { description: { $regex: search, $options: "i" }},
+          { content: { $regex: search, $options: "i" }}
+        ]};
 
-    if (tag) {
-      query = { tags: tag };
-    } else {
-      query = {
-        $or: [
-          { title: { $regex: search, $options: "i" } },
-          { description: { $regex: search, $options: "i" } },
-        ],
-      };
-    }
-
-    const blogs = await Blog.find(query, { draft: false })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate({
+    const blogs = await Blog.find({...query,draft:false ,private:false}).populate({
         path: "creator",
-        select: "name email followers username profilePic",
-      });
-    if (blogs.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Make sure all words are spelled correctly.Try different keywords . Try more general keywords",
-        hasMore: false,
-      });
-    }
+        select: "-password",
+      })
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(skip);
 
-    const totalBlogs = await Blog.countDocuments(query, { draft: false });
+    const totalCount = await Blog.countDocuments(query);
+    const hasMore = skip + blogs.length < totalCount;
 
-    return res.status(200).json({
-      success: true,
-      blogs,
-      hasMore: skip + limit < totalBlogs,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
+    res.json({ blogs, hasMore });
+  } catch (err) {
+    res.status(500).json({ message: "Error searching blogs" });
   }
+
 }
 
 module.exports = {

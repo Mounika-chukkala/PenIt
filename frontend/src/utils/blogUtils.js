@@ -25,6 +25,7 @@ export async function handleFollowCreator(id,token) {
           }
     );
     toast.success(res.data.message);
+    return res.data.followers;
   } catch (error) {
     toast.error(error.response?.data?.message || "Failed to fetch blog");
   }

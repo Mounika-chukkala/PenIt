@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    followRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    requested: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     password: {
       type: String,
       select: false,
@@ -44,7 +46,7 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
-      default:"Hey there , I am using Pen It"
+      default: "Hey there , I am using Pen It",
     },
     followers: [
       {
@@ -52,6 +54,10 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    private: {
+      type: Boolean,
+      default: false,
+    },
     following: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -59,6 +65,12 @@ const userSchema = new mongoose.Schema(
       },
     ],
     saveBlogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
+    ],
+    privateBlogs: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Blog",
