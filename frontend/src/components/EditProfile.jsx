@@ -51,7 +51,7 @@ export default function EditProfile() {
       // Update redux + localStorage in real-time
       dispatch(updateUser(res.data.user));
       toast.success(res.data.message);
-      navigate("/profile");
+      navigate(`/${user.username}`);
     } catch (error) {
       console.error("Failed to update profile", error);
       toast.error(error.response.data.message);

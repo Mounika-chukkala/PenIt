@@ -218,9 +218,9 @@ function BlogPage() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-6 py-2 rounded-full bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
+                      className="px-4 py-1 rounded-md bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
                     >
-                      ✏️ Edit Blog
+                       Edit Blog
                     </motion.button>
                   </Link>
                 </div>

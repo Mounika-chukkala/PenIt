@@ -2,19 +2,28 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
-import { handleFollowCreator } from "../utils/blogUtils";
+// import { handleFollowCreator } from "../utils/blogUtils";
 import { useSelector, useDispatch } from "react-redux";
 import DisplayBlogs from "../components/DisplayBlogs";
-import MyBlogsPage from "./MyBlogs";
-import { MoreHorizontal } from "lucide-react";
+import { Lock, MoreHorizontal } from "lucide-react";
+import FollowButton from "./FollowButton";
+
+import { useNavigate } from "react-router-dom";
+function isSmallScreen() {
+  return window.innerWidth < 1024;
+}
+
 
 function ProfilePage() {
   const { username } = useParams();
   const [userData, setUserData] = useState(null);
   const { token, id: userId, following } = useSelector((state) => state.user);
   const location = useLocation();
+    const [initialStatus, setInitialStatus] = useState("none");
+    const [followerSection,setFollowerSection]=useState("following");
   const dispatch = useDispatch();
-const [refresh, setRefresh] = useState(false);
+  const navigate = useNavigate();
+// const [refresh, setRefresh] = useState(false);
   function renderComponent() {
     if (location.pathname === `/${username}`) {
   if (userData.private) {
@@ -61,24 +70,34 @@ const [refresh, setRefresh] = useState(false);
       );
     }
   }
-
-  useEffect(() => {
-    async function fetchUserDetails() {
+   async function fetchUserDetails() {
       try {
         let res = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/users/${username}`
         );
-        setUserData(res.data.user);
+        const user=res.data.user;
+        setUserData(user);
+        // some((f)=>f._id==
+        // some((f)=>f._id==
+          if (user?.followers?.some((f)=>f._id==userId)) {
+        setInitialStatus("following");
+      } else if (user?.followRequests?.some((f)=>f._id==userId)) {
+        setInitialStatus("requested");
+      }
+      else{
+        setInitialStatus("follow")
+      }
       } catch (error) {
         toast.error(error.response.data.message);
       }
     }
+  useEffect(() => {
+    
     fetchUserDetails();
-  }, [username,refresh]);
+  }, [username]);
 
   return (
     <div className="w-full flex justify-center p-2 text-sm text-[#111827]">
-        {console.log("h")}
 
       {userData ? (
     <div className="w-[90%]  max-w-6xl flex max-lg:flex-col-reverse justify-start">
@@ -169,7 +188,7 @@ const [refresh, setRefresh] = useState(false);
 
           {/* LEft Side part don't disturb dudeeeeee  */}
 
-          <div className="  py-5 w-full  lg:w-[40%]  max-lg:flex lg:pl-10">
+          <div className="py-5 w-full  lg:w-[40%]  max-lg:flex lg:pl-10">
             <div className="my-6 ">
               <div className="w-16 h-16 rounded-full overflow-hidden">
                 <img
@@ -183,14 +202,18 @@ const [refresh, setRefresh] = useState(false);
                 />
               </div>
               <div className="flex my-2 gap-2">
-              <p className="text-base font-semibold ">{userData?.name}</p>
-              <p className="my-1 text-slate-500 text-xs "> . {userData?.private?"Private Account":"Public Account"}</p>
+              <p className="text-base line-clamp-1 font-semibold ">{userData?.name}</p>
+              <p className="my-1 text-slate-500 line-clamp-1 text-xs "> . {userData?.private?"Private":"Public "}</p>
               </div>
               <div className="flex gap-3">
-                <p className="text-gray-600 text-xs mb-1">
+                <p className="text-gray-600 text-xs mb-1 cursor-pointer" onClick={()=>isSmallScreen()
+      ? navigate(`/followers/${username}`)
+      : setFollowerSection("followers")}>
                   {userData?.followers?.length} Followers
                 </p>
-                <p className="text-gray-600 text-xs mb-1">
+                <p className="text-gray-600 text-xs cursor-pointer mb-1" onClick={()=>isSmallScreen()
+      ? navigate(`/followers/${username}`)
+      : setFollowerSection("following")}>
                   {userData?.following?.length} Following
                 </p>
               </div>{" "}
@@ -204,38 +227,47 @@ const [refresh, setRefresh] = useState(false);
                   </button>
                 </Link>
               ) : (
-                <button
-                  // onClick={() =>
-                  //   handleFollowCreator(userData?._id, token, dispatch)
-                  // }
-                  onClick={async () => {
-                    try {
-                      // const updatedFollowers =
-                       await handleFollowCreator(
-                        userData?._id,
-                        token,
-                        dispatch
-                      );
-                      // setUserData((prev) => ({
-                      //   ...prev,
-                      //   followers: updatedFollowers,
-                      // }));
-                          setRefresh((prev) => !prev); 
-                    } catch (error) {
-                      toast.error("Follow failed");
-                    }
-                  }}
-                  className={`${userData.followers?.some((f) => f._id == userId)?"bg-green-600":"bg-[#2563EB]"} px-4 py-1 rounded-full text-white text-xs shadow-sm hover:bg-[#252d44] w-full`}
-                >
-                  {!userData.followers?.some((f) => f._id == userId)
-                    ? "Follow"
-                    : "Following"}
-                </button>
+                // <button
+                //   // onClick={() =>
+                //   //   handleFollowCreator(userData?._id, token, dispatch)
+                //   // }
+                //   onClick={async () => {
+                //     try {
+                //       // const updatedFollowers =
+                //        await handleFollowCreator(
+                //         userData?._id,
+                //         token,
+                //         dispatch
+                //       );
+                //       // setUserData((prev) => ({
+                //       //   ...prev,
+                //       //   followers: updatedFollowers,
+                //       // }));
+                //           setRefresh((prev) => !prev); 
+                //     } catch (error) {
+                //       toast.error("Follow failed");
+                //     }
+                //   }}
+                //   className={`${userData.followers?.some((f) => f._id == userId)?"bg-green-600":"bg-[#2563EB]"} px-4 py-1 rounded-full text-white text-xs shadow-sm hover:bg-[#252d44] w-full`}
+                // >
+                //   {!userData.followers?.some((f) => f._id == userId)
+                //     ? "Follow"
+                //     : "Following"}
+                // </button>
+ <FollowButton
+            targetUserId={userData._id}
+            isPrivate={userData.private}
+            initialStatus={initialStatus}
+            refresh={fetchUserDetails}
+          />
+
               )}
               <div className="my-4 hidden lg:block">
-                <h2 className="text-sm font-medium mb-2">Following</h2>
-                {userData?.following?.length > 0 ? (
-                  userData?.following?.map((user) => (
+                <h2 className="text-sm font-medium mb-2">{followerSection=="followers"?"Followers":"Following"}</h2>
+              
+ {userData?.showFollowers ?( !userData.private || (userData.private && userData?.followers?.some((f)=>f._id==userId))?                
+((followerSection=="following"?userData?.following?.length > 0 :userData?.followers?.length>0) ? (
+                (followerSection=="following" ?userData?.following:userData?.followers)?.map((user) => (
                     <div className="flex justify-between items-center py-1">
                       <Link
                         to={`/${user.username}`}
@@ -262,8 +294,15 @@ const [refresh, setRefresh] = useState(false);
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-gray-400">No following found</p>
-                )}
+                  <p className="text-xs text-gray-400">No {followerSection} found</p>
+                )
+                ):( <div className="flex flex-col gap-5 items-center justify-center">
+                    <Lock size={30} className="text-slate-700"/>
+                    <div>
+                    <p className="text-xs text-center">This is a Private Account </p>
+                    <p className="text-center text-xs">Follow to see the followers.</p>
+                    </div>
+                  </div>)):(<p className="text-xs text-slate-500 mx-auto"><span className="text-green-600 font-bold ">{userData.name}</span> don't want to disclose his followers and following...</p>)}
               </div>
             </div>
           </div>

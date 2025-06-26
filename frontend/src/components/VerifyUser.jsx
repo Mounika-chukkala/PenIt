@@ -18,7 +18,7 @@ function VerifyUser() {
         toast.success(res.data.message);
         navigate("/signin");
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast.error(error.response.data.message);
       } finally {
       }

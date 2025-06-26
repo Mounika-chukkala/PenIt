@@ -13,6 +13,7 @@ import {
   Settings,
   Feather,
   Search,
+  CheckCircle,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../utils/userSlice";
@@ -131,7 +132,6 @@ export default function Navbar() {
           <Menu size={28} onClick={toggleMenu} className="mt-1" />
           {user.token ? (
             <Link to={`/${user.username}`}>
-              {console.log(user)}
               <img
                 src={
                   user.profilePic ||
@@ -153,16 +153,22 @@ export default function Navbar() {
 
         {/* Mobile Dropdown */}
         {isOpen && (
-          <div className="absolute top-14 right-4 bg-white shadow-lg rounded-lg p-5 w-45 z-50 md:hidden font-sans font-semibold text-[#111827] border border-gray-200">
+          <div className="absolute top-10 right-15 p-3  bg-white shadow-lg rounded-sm  w-40 z-50 md:hidden font-sans font-medium text-[#111827] border border-gray-200">
             <ul className="flex flex-col gap-4">
               <Link
                 to="/home"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                className="flex items-center  gap-3 hover:text-[#2563EB] transition duration-200"
               >
                 <Home size={18} /> Home
               </Link>
-
+ <Link
+                to="/requests"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+              >
+                <CheckCircle size={18}  /> Requests
+              </Link>
               {user.token ? (
                 <>
                   <Link
@@ -223,7 +229,7 @@ export default function Navbar() {
         )}
 
         {user.token && profileDialog && (
-          <div className="hidden md:flex flex-col absolute right-10 rounded-lg top-11 w-[120px] bg-gray-50 drop-shadow-md  justify-center ">
+          <div className="hidden md:flex flex-col absolute right-3 rounded-sm top-12 p-2 w-[150px] bg-gray-50 drop-shadow-md  justify-center ">
             <Link
               to={`/${user.username}`}
               onClick={() => {
@@ -234,6 +240,13 @@ export default function Navbar() {
               <User size={16} className="mt-1" />
               <p>Profile</p>
             </Link>
+            <Link
+                to="/requests"
+                onClick={() => setIsOpen(false)}
+              className="flex gap-1 hover:text-[#768cca] px-2 py-1 text-md transition duration-200 "
+              >
+                <CheckCircle size={18} className="mt-1" /> Requests
+              </Link>
             <Link
               onClick={() => {
                 setProfileDialog((prev) => !prev);

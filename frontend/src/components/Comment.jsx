@@ -49,8 +49,8 @@ function Comment() {
   }
 
   return (
-    <div className="mt-5 bg-white p-6 rounded-2xl shadow-sm w-full border border-[#E5E7EB]">
-      <h1 className="text-2xl font-semibold text-[#111827] mb-4">
+    <div className="mt-3 bg-white p-3 rounded-2xl shadow-sm  w-full border border-[#E5E7EB]">
+      <h1 className="text-2xl font-semibold text-[#111827] mb-2">
         Responses ({comments.length})
       </h1>
 
@@ -59,12 +59,12 @@ function Comment() {
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Add your comment"
-        className="w-full mt-2 focus:outline-none border border-[#E5E7EB] rounded-xl p-3 text-[16px] text-[#111827]"
+        className="w-full mt-1 focus:outline-none border border-[#E5E7EB] rounded-lg p-3 text-[15px] text-[#111827]"
       />
 
       <button
         onClick={handleComment}
-        className="mt-3 px-5 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white rounded-xl shadow-sm hover:opacity-90"
+        className="mt-3 px-3 py-2 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-sm text-white rounded-md shadow-sm hover:opacity-90"
       >
         Add Comment
       </button>

@@ -15,6 +15,8 @@ import EditProfile from "./components/EditProfile";
 import Settings from "./components/Settings";
 import { useSelector } from "react-redux";
 import Search from "./components/Search";
+import FollowRequests from "./components/FollowRequests";
+import FollowersTabPage from "./components/FollowersTabPage";
 function App() {
   const user=useSelector((slice)=>slice.user);
   return (
@@ -32,6 +34,8 @@ function App() {
         {/* <AnimatePresence mode="wait"> */}
           <Routes>
             <Route path="/" element={<Navbar />}>
+                                              <Route path="/requests" element={<FollowRequests />}></Route>
+
                           <Route path="/home" element={<HomePage />}></Route>
               <Route path="/" element={user.token?<HomePage/>:<GetStarted />}></Route>
               <Route path="/add-blog" element={<AddBlog />}></Route>
@@ -44,6 +48,8 @@ function App() {
                             <Route path="/:username/liked-blogs" element={<Profile/>}></Route>
                             <Route path="/:username/draft-blogs" element={<Profile/>}></Route>
                             <Route path="/:username/private-blogs" element={<Profile/>}></Route>
+                            <Route path="/followers/:username" element={<FollowersTabPage />}></Route>
+                            <Route path="/following/:username" element={<FollowersTabPage />}></Route>
 
               <Route
                 path="/signin"

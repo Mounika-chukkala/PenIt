@@ -383,10 +383,10 @@ async function getUserById(req, res) {
   try {
     const username = req.params.username;
     const user = await User.findOne({username})
-      .populate("blogs following likeBlogs saveBlogs")
+      .populate("blogs  following likeBlogs saveBlogs")
       .populate({
-        path: "followers following",
-        select: "name username profilePic",
+        path: "followers following followRequests",
+        select: "name username profilePic bio",
       })
       .populate({
         path: "blogs likeBlogs saveBlogs",
@@ -509,38 +509,51 @@ async function deleteUser(req, res) {
   }
 }
 
+
+
 // async function followUser(req, res) {
 //   try {
-//     const followerId = req.user;
+//     const followerId = req.user; // This should be req.user.id ideally
 //     const { id } = req.params;
 
 //     const user = await User.findById(id);
+//     const follower = await User.findById(followerId);
 
-//     if (!user) {
-//       return res.status(500).json({
-//         message: "User is not found",
-//       });
+//     if (!user || !follower) {
+//       return res.status(404).json({ message: "User not found" });
 //     }
 
 //     if (!user.followers.includes(followerId)) {
-//       await User.findByIdAndUpdate(id, { $set: { followers: followerId } });
+//       // ✅ Add follower
+//       await User.findByIdAndUpdate(id, {
+//         $addToSet: { followers: followerId }
+//       });
 
-//       await User.findByIdAndUpdate(followerId, { $set: { following: id } });
-//     //  const user=await User.findById(followerId);
+//       await User.findByIdAndUpdate(followerId, {
+//         $addToSet: { following: id }
+//       });
+
+//       const updatedUser = await User.findById(id); // To get updated follower count
 //       return res.status(200).json({
 //         success: true,
 //         message: "Followed successfully",
-//         // followers:user.followers,
+//         followers: updatedUser.followers,
 //       });
 //     } else {
-//       await User.findByIdAndUpdate(id, { $unset: { followers: followerId } });
+//       // ✅ Remove follower
+//       await User.findByIdAndUpdate(id, {
+//         $pull: { followers: followerId }
+//       });
 
-//       await User.findByIdAndUpdate(followerId, { $unset: { following: id } });
+//       await User.findByIdAndUpdate(followerId, {
+//         $pull: { following: id }
+//       });
+
+//       const updatedUser = await User.findById(id);
 //       return res.status(200).json({
 //         success: true,
 //         message: "Unfollowed successfully",
-//                 // followers:user.followers,
-
+//         followers: updatedUser.followers,
 //       });
 //     }
 //   } catch (error) {
@@ -550,55 +563,118 @@ async function deleteUser(req, res) {
 //   }
 // }
 
+
 async function followUser(req, res) {
+  const followerId = req.user;
+  const { id: targetUserId } = req.params;
+
   try {
-    const followerId = req.user; // This should be req.user.id ideally
-    const { id } = req.params;
+    const targetUser = await User.findById(targetUserId);
+    const currentUser = await User.findById(followerId);
 
-    const user = await User.findById(id);
-    const follower = await User.findById(followerId);
-
-    if (!user || !follower) {
+    if (!targetUser || !currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!user.followers.includes(followerId)) {
-      // ✅ Add follower
-      await User.findByIdAndUpdate(id, {
-        $addToSet: { followers: followerId }
-      });
+    if (targetUser.private) {
+      if (targetUser.followRequests.some((f)=>f._id==followerId)) {
+        await User.findByIdAndUpdate(targetUserId, {
+          $pull: { followRequests: followerId }
+        });
 
-      await User.findByIdAndUpdate(followerId, {
-        $addToSet: { following: id }
-      });
+        await User.findByIdAndUpdate(followerId, {
+          $pull: { requested: targetUserId }
+        });
 
-      const updatedUser = await User.findById(id); // To get updated follower count
-      return res.status(200).json({
-        success: true,
-        message: "Followed successfully",
-        followers: updatedUser.followers,
-      });
+        return res.status(200).json({ message: "Follow request withdrawn", status: "unfollow" });
+      }
+        else if(targetUser.followers.some((f)=>f._id==followerId)){
+        await User.findByIdAndUpdate(targetUserId, {
+          $pull: { followers: followerId }
+        });
+
+        await User.findByIdAndUpdate(followerId, {
+          $pull: { following: targetUserId }
+        });
+                return res.status(200).json({ message: "unfollowed successfully", status: "unfollow" });
+
+      }
+     else {
+       await User.findByIdAndUpdate(targetUserId, {
+          $addToSet: { followRequests: followerId }
+        });
+
+        await User.findByIdAndUpdate(followerId, {
+          $addToSet: { requested: targetUserId }
+        });
+        return res.status(200).json({ message: "Follow request sent", status: "requested" });
+
+      }
     } else {
-      // ✅ Remove follower
-      await User.findByIdAndUpdate(id, {
-        $pull: { followers: followerId }
-      });
+      if (!targetUser.followers.some((f)=>f._id==followerId)) {
+        await User.findByIdAndUpdate(targetUserId, {
+          $addToSet: { followers: followerId }
+        });
 
-      await User.findByIdAndUpdate(followerId, {
-        $pull: { following: id }
-      });
+        await User.findByIdAndUpdate(followerId, {
+          $addToSet: { following: targetUserId }
+        });
 
-      const updatedUser = await User.findById(id);
-      return res.status(200).json({
-        success: true,
-        message: "Unfollowed successfully",
-        followers: updatedUser.followers,
-      });
+        return res.status(200).json({ message: "Followed successfully", status: "following" });
+      }
+      else{
+         await User.findByIdAndUpdate(targetUserId, {
+          $pull: { followers: followerId }
+        });
+
+        await User.findByIdAndUpdate(followerId, {
+          $pull: { following: targetUserId }
+        });
+
+        return res.status(200).json({ message: "unfllowed successfully", status: "unfollow" });
+      }
     }
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
+
+    // return res.status(200).json({ message: "Already following", status: "following" });
+
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+}
+
+
+async function handleFollowRequest(req, res) {
+  const userId = req.user;
+  const { requesterId, action } = req.body; // action: "accept" or "reject"
+
+  try {
+    if (action === "accept") {
+      await User.findByIdAndUpdate(userId, {
+        $pull: { followRequests: requesterId },
+        $addToSet: { followers: requesterId }
+      });
+
+      await User.findByIdAndUpdate(requesterId, {
+        $pull: { requested: userId },
+        $addToSet: { following: userId }
+      });
+
+      return res.status(200).json({ message: "Request accepted" });
+    } else if (action === "reject") {
+      await User.findByIdAndUpdate(userId, {
+        $pull: { followRequests: requesterId }
+      });
+
+      await User.findByIdAndUpdate(requesterId, {
+        $pull: { requested: userId }
+      });
+
+      return res.status(200).json({ message: "Request rejected" });
+    }
+
+    res.status(400).json({ message: "Invalid action" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 }
 
@@ -607,7 +683,7 @@ async function followUser(req, res) {
 async function changeSavedLikedBlog(req, res) {
   try {
     const userId = req.user;
-    const { showLikedBlogs, showSavedBlogs,private:isPrivate } = req.body;
+    const { showLikedBlogs, showSavedBlogs,private:isPrivate ,showFollowers} = req.body;
 
     const user = await User.findById(userId);
 
@@ -617,7 +693,7 @@ async function changeSavedLikedBlog(req, res) {
       });
     }
 
-    await User.findByIdAndUpdate(userId, { showSavedBlogs, showLikedBlogs,private: isPrivate, });
+    await User.findByIdAndUpdate(userId, { showSavedBlogs, showLikedBlogs,private: isPrivate,showFollowers });
 
     return res.status(200).json({
       success: true,
@@ -629,6 +705,17 @@ async function changeSavedLikedBlog(req, res) {
     });
   }
 }
+// async function getMyProfile(req, res)  {
+//   try {
+//     console.log(req)
+//     const user = await User.findById(req.user)
+//       .select("-password")
+//       .populate("followRequests", "username email"); // Optional
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(500).json({ message: err });
+//   }
+// };
 
 
 async function searchUsers(req, res){
@@ -670,5 +757,7 @@ module.exports = {
   googleAuth,
   followUser,
   searchUsers,
+  handleFollowRequest,
   changeSavedLikedBlog,
+  // getMyProfile
 };

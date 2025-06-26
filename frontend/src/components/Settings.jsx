@@ -11,12 +11,14 @@ function Settings() {
     showLikedBlogs,
     showSavedBlogs,
     private: isPrivate,
+    showFollowers
   } = useSelector((state) => state.user);
 
   const [data, setData] = useState({
     showLikedBlogs,
     showSavedBlogs,
     private: isPrivate || false,
+    showFollowers
   });
 
   const navigate = useNavigate();
@@ -108,7 +110,25 @@ function Settings() {
             <option value="true">Yes</option>
           </select>
         </div>
-
+{/* Show Followers */}
+<div className="space-y-2">
+          <label className="block text-gray-700 font-semibold text-md">
+            Show following and  followers?
+          </label>
+          <select
+            value={data.showFollowers}
+            className="w-full p-2 rounded-xl border border-gray-300 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                showFollowers: e.target.value === "true",
+              }))
+            }
+          >
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
         {/* Update Button */}
         <div className="text-center">
           <button

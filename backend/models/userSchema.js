@@ -86,6 +86,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+     showFollowers: {
+      type: Boolean,
+      default: true,
+    },
     showSavedBlogs: {
       type: Boolean,
       default: false,
