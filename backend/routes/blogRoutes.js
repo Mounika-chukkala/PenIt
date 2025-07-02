@@ -5,10 +5,10 @@ const {
   getBlogs,
   getBlog,
   updateBlog,
-  deleteBlog,
   likeBlog,
   saveBlog,
   searchBlogs,
+  deleteBlog,
 getMyBlogs,
 getRecommendedBlogs
 } = require("../controllers/blogController");

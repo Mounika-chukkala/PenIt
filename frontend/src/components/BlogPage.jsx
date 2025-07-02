@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useParams, useLocation, Navigate } from "react-router-dom";
+import { Link, useParams, useLocation, Navigate, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Heart, MessageCircle, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, MoreHorizontal } from "lucide-react";
 import { addSelectedBlog, removeSelectedBlog } from "../utils/selectedBlog";
 import { motion } from "framer-motion";
 import Comment from "./Comment";
@@ -13,7 +13,10 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { formatDate } from "../utils/formatDate";
 
+
+
 function BlogPage() {
+const navigate=useNavigate();
   const { id } = useParams();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -30,14 +33,29 @@ function BlogPage() {
   const [isFollow, setIsFollow] = useState(
     blogData?.creator?.followers?.some((f) => f._id == userId) || false
   );
+async function handleDeleteBlog(){
+    try{
+        const res=await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/blogs/${blogData._id}`,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+        toast.success(res.data.message);
+        navigate("/")
+    }
+    catch(error){
+            toast.error(error.response?.data?.message || "Failed to delete blog");
 
+    }
+}
   async function fetchBlogById() {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`
       );
-      console.log("res", res);
+      // console.log("res", res);
       setBlogData(res.data.blog);
+      // console.log(res)
       setBlogLike(res.data.blog.likes.length);
       if (res.data.blog.likes.includes(userId)) {
         setIsLike(true);
@@ -116,9 +134,14 @@ function BlogPage() {
               className="space-y-4"
             >
               {/* 1E3A8A */}
+              <div className="w-full flex justify-between">
               <h1 className="text-4xl font-bold leading-tight text-blue/80 font-sans">
                 {blogData.title}
               </h1>
+              {token && user?.email === blogData.creator.email && 
+              <MoreHorizontal size={15} className="mt-2"/>
+
+}</div>
 
               <div className="flex justify-between items-center text-sm text-[#475569]">
                 <div className="flex items-center gap-3">
@@ -199,26 +222,47 @@ function BlogPage() {
                   />
                 </motion.div>
               )}
-
+{/* {blogData.tags && blogData.tags.length > 0 && (
+  <div className="flex gap-2 mt-2">
+    {blogData.tags.map((tag, idx) => (
+      <span key={idx} className="px-2 py-1 text-xs bg-gray-200 rounded">
+       # {tag}
+      </span>
+    ))}
+  </div> */}
+{/* )} */}
               <motion.section
                 className="prose lg:prose-lg prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[#1F2937]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
+                 
                 <div
                   className="blog-content-container"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
+
+               
               </motion.section>
 
               {token && user?.email === blogData.creator.email && (
-                <div className="flex justify-end pt-10">
+                <div className="flex gap-3 justify-end pt-10">
+                   <motion.button
+                      whileHover={{ scale: 0.95 }}
+                      onClick={handleDeleteBlog}
+                      whileTap={{ scale: 0.75 }}
+                      className="px-2 py-1 rounded-md cursor-pointer bg-slate-200 font-semibold hover:opacity-90 transition"
+                    >
+                       Delete Blog
+                    </motion.button>
+                  
+                  
                   <Link to={`/edit/${blogData.blogId}`}>
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-4 py-1 rounded-md bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
+                      whileHover={{ scale: 0.95 }}
+                      whileTap={{ scale: 0.75 }}
+                      className="px-2 py-1 rounded-md cursor-pointer bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold hover:opacity-90 transition"
                     >
                        Edit Blog
                     </motion.button>

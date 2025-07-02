@@ -14,6 +14,7 @@ import {
   Feather,
   Search,
   CheckCircle,
+  Trash,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../utils/userSlice";
@@ -30,7 +31,19 @@ export default function Navbar() {
     dispatch(logout());
     navigate("/signin");
   };
-
+async function handleDeleteAccount(){
+  try {
+    const res=await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/delete-account`,{
+      headers:{
+        Authorization:`Bearer ${user.token}`
+      }
+    })
+    toast.success(res.data.message);
+handleLogout();
+    } catch (error) {
+    toast.error(error.response.data.message);
+  }
+}
   return (
     <>
       <nav className="bg-white shadow-sm px-6 py-2 flex justify-between items-center border-b border-gray-200 sticky top-0 z-50">
@@ -153,7 +166,7 @@ export default function Navbar() {
 
         {/* Mobile Dropdown */}
         {isOpen && (
-          <div className="absolute top-10 right-15 p-3  bg-white shadow-lg rounded-sm  w-40 z-50 md:hidden font-sans font-medium text-[#111827] border border-gray-200">
+          <div className="absolute top-10 right-2 p-3  bg-white shadow-lg rounded-sm  w-40 z-50 md:hidden font-sans font-medium text-[#111827] border border-gray-200">
             <ul className="flex flex-col gap-4">
               <Link
                 to="/home"
@@ -210,6 +223,14 @@ export default function Navbar() {
                   >
                     <LogOut size={16} className="mt-1" /> Log Out
                   </div>
+                   <div
+                    onClick={() => {
+                      handleDeleteAccount();
+                      setIsOpen(false);
+                    }}
+                    className="flex items-center gap-3 cursor-pointer hover:text-[#2563EB] transition duration-200"
+                  >
+                    <Trash size={16} className="mt-1 " /><p className="text-[13px] mt-1 text-red-500 "> Delete Account</p>                  </div>
                 </>
               ) : (
                 <>
@@ -265,7 +286,16 @@ export default function Navbar() {
               className="flex text-md gap-1 px-2 py-1 hover:text-[#768cca] transition duration-200"
             >
               <LogOut size={16} className="mt-1" /> Log Out
-            </div>{" "}
+            </div>
+             <div
+              onClick={() => {
+                handleDeleteAccount();
+                setProfileDialog((prev) => !prev);
+              }}
+              className="flex text-md gap-1 px-2 py-1 cursor-pointer hover:text-[#768cca] transition duration-200"
+            >
+              <Trash size={16} className="mt-1 mr-1" stroke="red" /><p className="text-[12px] text-red-500 mt-1"> Delete Account
+            </p></div>
           </div>
         )}
       </nav>

@@ -142,7 +142,7 @@ setRecommendedBlogs(res.data.blogs);
         </section>
       ):(
         RecommendedBlogs.length>0 &&
-        <div className="flex flex-col w-[80%] my-10 ">
+        <div className="flex flex-col w-[80%] my-5 ">
           {console.log(RecommendedBlogs)}
         <h1 className="text-xl font-bold text-left my-3">Recommended Blogs for you</h1>
       

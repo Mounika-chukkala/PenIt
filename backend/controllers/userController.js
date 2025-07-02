@@ -1,4 +1,6 @@
 const User = require("../models/userSchema");
+const Blog=require("../models/blogSchema")
+const Comment=require("../models/commentSchema")
 const bcrypt = require("bcrypt");
 const { generateJWT, verifyJWT } = require("../utils/generateToken");
 const transporter  = require("../utils/transporter");
@@ -510,61 +512,6 @@ async function deleteUser(req, res) {
   }
 }
 
-
-
-// async function followUser(req, res) {
-//   try {
-//     const followerId = req.user; // This should be req.user.id ideally
-//     const { id } = req.params;
-
-//     const user = await User.findById(id);
-//     const follower = await User.findById(followerId);
-
-//     if (!user || !follower) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     if (!user.followers.includes(followerId)) {
-//       // ✅ Add follower
-//       await User.findByIdAndUpdate(id, {
-//         $addToSet: { followers: followerId }
-//       });
-
-//       await User.findByIdAndUpdate(followerId, {
-//         $addToSet: { following: id }
-//       });
-
-//       const updatedUser = await User.findById(id); // To get updated follower count
-//       return res.status(200).json({
-//         success: true,
-//         message: "Followed successfully",
-//         followers: updatedUser.followers,
-//       });
-//     } else {
-//       // ✅ Remove follower
-//       await User.findByIdAndUpdate(id, {
-//         $pull: { followers: followerId }
-//       });
-
-//       await User.findByIdAndUpdate(followerId, {
-//         $pull: { following: id }
-//       });
-
-//       const updatedUser = await User.findById(id);
-//       return res.status(200).json({
-//         success: true,
-//         message: "Unfollowed successfully",
-//         followers: updatedUser.followers,
-//       });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// }
-
-
 async function followUser(req, res) {
   const followerId = req.user;
   const { id: targetUserId } = req.params;
@@ -643,7 +590,6 @@ async function followUser(req, res) {
   }
 }
 
-
 async function handleFollowRequest(req, res) {
   const userId = req.user;
   const { requesterId, action } = req.body; // action: "accept" or "reject"
@@ -680,7 +626,6 @@ async function handleFollowRequest(req, res) {
 }
 
 
-
 async function changeSavedLikedBlog(req, res) {
   try {
     const userId = req.user;
@@ -706,18 +651,6 @@ async function changeSavedLikedBlog(req, res) {
     });
   }
 }
-// async function getMyProfile(req, res)  {
-//   try {
-//     console.log(req)
-//     const user = await User.findById(req.user)
-//       .select("-password")
-//       .populate("followRequests", "username email"); // Optional
-//     res.status(200).json(user);
-//   } catch (err) {
-//     res.status(500).json({ message: err });
-//   }
-// };
-
 
 async function searchUsers(req, res){
   try {
@@ -754,6 +687,48 @@ async function updateInterests(req, res) {
 };
 
 
+async function deleteAccount(req,res){
+  try {
+  const userId = req.user._id;
+
+  await Blog.deleteMany({ creator: userId });
+
+  await Comment.deleteMany({ user: userId });
+
+  await Note.deleteMany({ user: userId });
+
+  await Blog.updateMany(
+    { likes: userId },
+    { $pull: { likes: userId } }
+  );
+
+  await Blog.updateMany(
+    { totalSaves: userId },
+    { $pull: { totalSaves: userId } }
+  );
+
+  await User.updateMany(
+    { followers: userId },
+    { $pull: { followers: userId } }
+  );
+
+  await User.updateMany(
+    { following: userId },
+    { $pull: { following: userId } }
+  );
+
+  await User.findByIdAndDelete(userId);
+
+  res.status(200).json({ message: "Account deleted successfully" });
+} catch (error) {
+  console.error("Error deleting account:", error);
+  res.status(500).json({ message: "Failed to delete account" });
+}
+
+}
+
+
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -767,6 +742,5 @@ module.exports = {
   searchUsers,
   handleFollowRequest,
   changeSavedLikedBlog,
-  updateInterests
-  // getMyProfile
+  updateInterests,deleteAccount
 };

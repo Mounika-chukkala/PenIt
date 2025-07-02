@@ -159,8 +159,7 @@ async function getBlog(req, res) {
         populate: {
           path: "user",
           select: "name  email",
-        },
-              
+        },  
       })
       .populate({
           path: "creator",
@@ -588,7 +587,22 @@ try {
 
 }
 
+async function deleteBlog(req,res){
+   try {
+    const blogId = req.params.id;
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    await Comment.deleteMany({ blogId });
+    await Blog.findByIdAndDelete(blogId);
 
+    res.status(200).json({ message: "Blog and all related data deleted successfully" });
+  } catch (error) {
+    console.error("Delete blog error:", error);
+    res.status(500).json({ message: "Failed to delete blog", error: error.message });
+  }
+}
 
 async function getRecommendedBlogs (req, res) {
   try{
@@ -597,10 +611,25 @@ async function getRecommendedBlogs (req, res) {
   const interests = user.interests|| [];
 const lowerInterests = interests.map(i => i.toLowerCase());
 
+// const blogs = await Blog.find({
+//   tags: { $in: lowerInterests },
+//   draft: false,
+//   private: false
+// })
+
 const blogs = await Blog.find({
-  tags: { $in: lowerInterests },
-  draft: false,
-  private: false
+  $and: [
+    {
+      $or: [
+        { tags: { $in: lowerInterests } },
+        { title: { $regex: lowerInterests.join("|"), $options: "i" } },
+        { description: { $regex: lowerInterests.join("|"), $options: "i" } },
+        { content: { $regex: lowerInterests.join("|"), $options: "i" } }
+      ]
+    },
+    { draft: false },
+    { private: false }
+  ]
 }).populate({
         path: "creator",
         select: "-password",
@@ -608,7 +637,7 @@ const blogs = await Blog.find({
       .populate({
         path: "likes",
         select: "email name",
-      }).sort({ createdAt: -1 })
+      }).sort({ createdAt: -1 }).limit(10);
 
       // console.log(blogs)
      

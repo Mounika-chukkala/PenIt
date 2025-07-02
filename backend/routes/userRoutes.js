@@ -13,7 +13,8 @@ const {
   searchUsers,
   changeSavedLikedBlog,
   handleFollowRequest,
-  updateInterests
+  updateInterests,
+  deleteAccount
   // getMyProfile
 } = require("../controllers/userController");
 const verifyUser = require("../middlewares/auth");
@@ -46,5 +47,5 @@ route.get("/search-users", searchUsers)
 // route.get('/users/me', verifyUser, getMyProfile);
 route.patch("/change-saved-liked-blog-visibility" , verifyUser , changeSavedLikedBlog)
 route.put("/user/update-interests", verifyUser, updateInterests);
-
+route.delete("/delete-account", verifyUser, deleteAccount);
 module.exports = route;
