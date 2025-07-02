@@ -18,6 +18,7 @@ import { formatDate } from "../utils/formatDate";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleSaveBlog } from "../utils/blogUtils";
 import usePagination from "../hooks/UsePagination";
+import DisplayBlogs from "../components/DisplayBlogs";
 
 const slides = [
   {
@@ -43,24 +44,33 @@ const slides = [
 function HomePage() {
   const [displayedBlogs, setDisplayedBlogs] = useState([]);
   // const [searchTerm, setSearchTerm] = useState("");
-  const { id: userId, token } = useSelector((slice) => slice.user);
+  const { id: userId, token,interests } = useSelector((slice) => slice.user);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [page, setPage] = useState(1);
   const { blogs, hasMore, isLoading } = usePagination("blogs", {}, 4, page);
-function handleTag(){
-
+  const [RecommendedBlogs,setRecommendedBlogs]=useState([]);
+async function handleRecommendedBlogs(){
+const res=await axios.get(`${import.meta.env.VITE_BACKEND_URL}/recommended`,{
+  headers:{
+    Authorization:`Bearer ${token}`
+  }
+})
+// console.log("res",res)
+setRecommendedBlogs(res.data.blogs);
 }
   useEffect(() => {
     setDisplayedBlogs(blogs);
-  }, [blogs]);
+    handleRecommendedBlogs();
+    
+  }, [blogs,interests]);
 
   const handleSort = (type) => {
     let sorted = [...blogs];
     if (type === "latest") {
-      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).reverse();
+      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (type === "likes") {
-      sorted.sort((a, b) => b.likes.length - a.likes.length).reverse();
+      sorted.sort((a, b) => b.likes.length - a.likes.length);
     }
     setDisplayedBlogs(sorted);
   };
@@ -86,7 +96,7 @@ function handleTag(){
         ></path>
       </svg>
 
-      {!userId && (
+      {!userId ? (
         <section className="relative w-full max-w-5xl h-[380px] sm:h-[420px] mt-12 px-6 flex items-center justify-center overflow-hidden rounded-xl shadow-xl bg-gradient-to-br from-[#1c2a57] via-[#254e9a] to-[#2f6de3]">
           <AnimatePresence mode="wait">
             {slides.map(
@@ -130,6 +140,83 @@ function handleTag(){
             ))}
           </div>
         </section>
+      ):(
+        RecommendedBlogs.length>0 &&
+        <div className="flex flex-col w-[80%] my-10 ">
+          {console.log(RecommendedBlogs)}
+        <h1 className="text-xl font-bold text-left my-3">Recommended Blogs for you</h1>
+      
+        {/* <DisplayBlogs blogs={RecommendedBlogs}/> */}
+        {RecommendedBlogs?.map((blog, index) => (
+                <motion.div
+                  key={blog._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.06 }}
+                  className="w-full"
+                >
+                  <div className="flex gap-4 flex-col sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
+                    <img
+                      src={blog.image}
+                      alt="blog"
+                      className="w-full sm:w-[100px] h-[200px] sm:h-[100px] object-cover rounded-md"
+                    />
+                    <div className="flex flex-col sm:w-[60%] flex-grow">
+                      <div className="flex items-center gap-2 text-sm text-[#60a5fa] mb-1">
+                        <img
+                          src={
+                            blog.creator.profilePic ||
+                            `https://api.dicebear.com/9.x/initials/svg?seed=${blog.creator.name}`
+                          }
+                          alt="creator"
+                          className="w-5 h-5 rounded-full"
+                        />
+                        <Link to={`/${blog.creator.username}`} className="hover:underline">
+                          {blog.creator.name}
+                        </Link>
+                      </div>
+                      <h3 className="text-lg text-[#dbeafe] font-semibold line-clamp-1">
+                        {blog.title}
+                      </h3>
+                      <div className="flex  flex-wrap w-[90%] sm:w-[85%]">
+                        <p className="text-xs text-[#cbd5e1] mt-1  line-clamp-2">
+                          {blog.description}
+                        </p>
+                        <Link to={`/blog/${blog.blogId}`} className="ml-1 text-blue-400 text-xs mt-1">
+                          <span>...continue</span>
+                        </Link>
+                      </div>
+                      <div className="mt-3 flex gap-4 text-xs text-[#93c5fd]">
+                        <span>{formatDate(blog.createdAt)}</span>
+                        <span className="flex items-center gap-1">
+                          <Heart
+                            size={14}
+                            fill={blog.likes.some((user) => user._id === userId) ? "#2563EB" : "none"}
+                            className="text-[#2563EB]"
+                          />
+                          {blog.likes.length}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle size={14} className="text-[#2563EB]" />
+                          {blog.comments.length}
+                        </span>
+                        <Bookmark
+                          size={14}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSaveBlog(blog._id, token);
+                          }}
+                          fill={blog.totalSaves?.includes(userId) ? "#2563EB" : "none"}
+                          className="text-[#2563EB] cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+              {/* {console.log(RecommendedBlogs)} */}
+        
+        </div>
       )}
 
       <div className="w-full max-w-6xl px-4 sm:px-6 mt-10 mb-20 z-10">
@@ -241,12 +328,12 @@ function handleTag(){
 <div className="text-center w-full flex justify-end gap-1">
             <button disabled={page==1}>
 <ChevronLeft size={30}  onClick={() => setPage((prev) => prev - 1)}
-                  className={`rounded-full ${page==1 ? "text-slate-600": "text-white"} font-extrabold text-3xl`}/>
+                  className={`rounded-full ${page==1 ? "text-slate-600": "text-white"} cursor-pointer font-extrabold text-3xl`}/>
                 </button>    
                 <button disabled={!hasMore}>
 
 <ChevronRight size={30}  onClick={() => setPage((prev) => prev + 1)}
-                  className={` ${!hasMore ? "text-slate-600": "text-white"} font-extrabold  text-3xl`} />        
+                  className={` ${!hasMore ? "text-slate-600": "text-white"} font-extrabold cursor-pointer text-3xl`} />        
                   </button>
               </div>
           </div>

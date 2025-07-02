@@ -14,16 +14,18 @@ const userSlice=createSlice({
 
     reducers:{
 login(state,action){
-// state.name=action.payload.name;
-// state.email=action.payload.email;
-// state.token=action.payload.token;
-// localStorage.setItem("user",JSON.stringify(action.payload))
-// return action.payload;
 localStorage.setItem(
         "user",
         JSON.stringify({ followers: [], following: [], ...action.payload })
       );
       return { followers: [], following: [], ...action.payload };
+},
+addInterest(state,action){
+if (state) {
+    // Overwrite interests completely with new array from param
+    state.interests = action.payload;
+    localStorage.setItem("user", JSON.stringify(state));
+  }
 }
     ,
     logout(state,action ){
@@ -60,5 +62,5 @@ localStorage.setItem(
 })
 
 
-export const {login,logout,updateUser,updateData}=userSlice.actions;
+export const {login,logout,updateUser,updateData,addInterest}=userSlice.actions;
 export default userSlice.reducer;

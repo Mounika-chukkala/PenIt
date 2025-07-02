@@ -9,7 +9,8 @@ const {
   likeBlog,
   saveBlog,
   searchBlogs,
-getMyBlogs
+getMyBlogs,
+getRecommendedBlogs
 } = require("../controllers/blogController");
 const upload=require("../utils/multer")
 
@@ -43,6 +44,8 @@ route.post(
 //   createBlog
 // );
 route.get("/blogs", getBlogs);
+route.get("/recommended",verifyUser, getRecommendedBlogs);
+
 route.get("/blogs/:blogId", getBlog);
 route.patch(
   "/blogs/:id",

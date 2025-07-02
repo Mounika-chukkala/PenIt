@@ -274,7 +274,7 @@ async function login(req, res) {
 
     const checkForexistingUser = await User.findOne({ email })
     .select(
-      "password isVerify name email  profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
+      "password isVerify name email interests profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
     )
     // .populate("blogs", "title");
 
@@ -349,6 +349,7 @@ const sendingEmail=await transporter.sendMail({
         showSavedBlogs: checkForexistingUser.showSavedBlogs,
         followers: checkForexistingUser.followers,
         following: checkForexistingUser.following,
+        interests:checkForexistingUser.interests,
         token,
       },
     });
@@ -683,7 +684,7 @@ async function handleFollowRequest(req, res) {
 async function changeSavedLikedBlog(req, res) {
   try {
     const userId = req.user;
-    const { showLikedBlogs, showSavedBlogs,private:isPrivate ,showFollowers} = req.body;
+    const { showLikedBlogs, showSavedBlogs,private:isPrivate ,showFollowers,interests} = req.body;
 
     const user = await User.findById(userId);
 
@@ -693,7 +694,7 @@ async function changeSavedLikedBlog(req, res) {
       });
     }
 
-    await User.findByIdAndUpdate(userId, { showSavedBlogs, showLikedBlogs,private: isPrivate,showFollowers });
+    await User.findByIdAndUpdate(userId, { showSavedBlogs, showLikedBlogs,private: isPrivate,showFollowers,interests });
 
     return res.status(200).json({
       success: true,
@@ -745,6 +746,13 @@ async function searchUsers(req, res){
   }
 };
 
+async function updateInterests(req, res) {
+  const userId = req.user;
+  const { interests } = req.body;
+  await User.findByIdAndUpdate(userId, { interests });
+  res.json({ message: "Interests updated successfully!" });
+};
+
 
 module.exports = {
   createUser,
@@ -759,5 +767,6 @@ module.exports = {
   searchUsers,
   handleFollowRequest,
   changeSavedLikedBlog,
+  updateInterests
   // getMyProfile
 };

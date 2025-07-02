@@ -90,6 +90,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+     interests: [
+      {type:String,
+        default:[],
+      }]
+    ,
     showSavedBlogs: {
       type: Boolean,
       default: false,

@@ -12,6 +12,7 @@ function usePagination(path, queryParams = {}, limit = 4, page = 1) {
   useEffect(() => {
     async function fetchData() {
       try {
+        
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/${path}`, {
           params: { ...queryParams, limit, page },
         });

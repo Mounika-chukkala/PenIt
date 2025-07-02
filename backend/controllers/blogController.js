@@ -588,6 +588,43 @@ try {
 
 }
 
+
+
+async function getRecommendedBlogs (req, res) {
+  try{
+  const userId = req.user;
+  const user = await User.findById(userId);
+  const interests = user.interests|| [];
+const lowerInterests = interests.map(i => i.toLowerCase());
+
+const blogs = await Blog.find({
+  tags: { $in: lowerInterests },
+  draft: false,
+  private: false
+}).populate({
+        path: "creator",
+        select: "-password",
+      })
+      .populate({
+        path: "likes",
+        select: "email name",
+      }).sort({ createdAt: -1 })
+
+      // console.log(blogs)
+     
+    return res.status(200).json({
+      message: "Blogs fetched Successfully",
+      blogs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
   createBlog,
   deleteBlog,
@@ -598,5 +635,6 @@ module.exports = {
   getMyBlogs,
       saveBlog,
     searchBlogs,
+getRecommendedBlogs
 };
 

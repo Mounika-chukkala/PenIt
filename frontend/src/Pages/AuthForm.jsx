@@ -27,7 +27,7 @@ function AuthForm({ type }) {
         `${import.meta.env.VITE_BACKEND_URL}/${type}`,
         userData
       );
-
+console.log(res)
       if (!res.data.success) {
         toast.error(res.data.message);
       } else {
@@ -50,7 +50,13 @@ function AuthForm({ type }) {
             // }
             )
           );
-          navigate("/home");
+          if (!res.data.user.interests || res.data.user.interests.length === 0) {
+  navigate("/select-interests");
+} else {
+  navigate("/home");
+}
+
+          // navigate("/home");
         }
       }
     } catch (error) {
@@ -77,7 +83,13 @@ function AuthForm({ type }) {
           res.data.user
         )
       );
-      navigate("/home");
+      // navigate("/home");
+      if (res.data.user.interests && user.interests.length === 0) {
+  navigate("/select-interests");
+} else {
+  navigate("/home");
+}
+
       toast.success(res.data.message);
     } catch (error) {
       console.log(error);

@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import Search from "./components/Search";
 import FollowRequests from "./components/FollowRequests";
 import FollowersTabPage from "./components/FollowersTabPage";
+import SelectInterests from "./components/SelectInterests";
 function App() {
   const user=useSelector((slice)=>slice.user);
   return (
@@ -56,7 +57,7 @@ function App() {
                 element={<AuthForm type={"signin"} />}
               ></Route>
                                       <Route path="/edit-profile" element={<EditProfile />}></Route>
-
+<Route path="/select-interests" element={<SelectInterests />} />
               <Route
                 path="/signup"
                 element={<AuthForm type={"signup"} />}
