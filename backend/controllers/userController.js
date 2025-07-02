@@ -93,7 +93,6 @@ const sendingEmail=await transporter.sendMail({
 }
 
     const hashedPass = await bcrypt.hash(password, 10);
-    // const username = email.split("@")[0] + 123;
    const username = email.split("@")[0] + randomUUID();
 
     const newUser = await User.create({
@@ -278,7 +277,6 @@ async function login(req, res) {
     .select(
       "password isVerify name email interests profilePic username bio showLikedBlogs showSavedBlogs followers following googleAuth"
     )
-    // .populate("blogs", "title");
 
     if (!checkForexistingUser) {
       return res.status(400).json({
@@ -423,14 +421,11 @@ async function getUserById(req, res) {
 
 async function updateUser(req, res) {
   try {
-    // db call
     const id = req.params.id;
 
     const { name, username, bio } = req.body;
 
-    // const image = req.file;
-
-    //validation
+   
 
     const user = await User.findById(id);
 
@@ -583,7 +578,6 @@ async function followUser(req, res) {
       }
     }
 
-    // return res.status(200).json({ message: "Already following", status: "following" });
 
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -592,8 +586,7 @@ async function followUser(req, res) {
 
 async function handleFollowRequest(req, res) {
   const userId = req.user;
-  const { requesterId, action } = req.body; // action: "accept" or "reject"
-
+  const { requesterId, action } = req.body; 
   try {
     if (action === "accept") {
       await User.findByIdAndUpdate(userId, {
@@ -666,7 +659,7 @@ async function searchUsers(req, res){
     };
 
     const users = await User.find(query)
-      .select("-password") // don't send password hash
+      .select("-password")
       .limit(parseInt(limit))
       .skip(skip);
 
@@ -721,7 +714,6 @@ async function deleteAccount(req,res){
 
   res.status(200).json({ message: "Account deleted successfully" });
 } catch (error) {
-  console.error("Error deleting account:", error);
   res.status(500).json({ message: "Failed to delete account" });
 }
 

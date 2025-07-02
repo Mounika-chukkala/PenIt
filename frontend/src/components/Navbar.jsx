@@ -192,13 +192,7 @@ handleLogout();
                     <Pen size={16} /> Write
                   </Link>
 
-                  {/* <Link
-                    to="/my-blogs"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
-                  >
-                    <NotebookPen size={16} /> My Blogs
-                  </Link> */}
+               
                   <Link
                     to="/search"
                     onClick={() => setIsOpen(false)}

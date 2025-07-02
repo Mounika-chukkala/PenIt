@@ -43,7 +43,6 @@ function Comment() {
       dispatch(setComments(res.data.comment));
       setComment("");
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data.message);
     }
   }
@@ -157,7 +156,6 @@ function DisplayComments({
       toast.success(res.data.message);
       dispatch(setUpdatedComment(res.data.updatedComment));
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data.message);
     } finally {
       setUpdatedCommentContent("");
@@ -174,7 +172,6 @@ function DisplayComments({
       toast.success(res.data.message);
       dispatch(removeCommentandReplies(id));
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data.message);
     } finally {
       setUpdatedCommentContent("");

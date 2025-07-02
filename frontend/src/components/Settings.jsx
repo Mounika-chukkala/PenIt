@@ -23,7 +23,6 @@ function Settings() {
     showFollowers,
     interests: userInterests.length ? userInterests : [],
   });
-// console.log(userInterests)
   const [newInterest, setNewInterest] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editedInterest, setEditedInterest] = useState("");
@@ -31,7 +30,6 @@ function Settings() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Initialize interests from userInterests on first render
   useEffect(() => {
     setData((prev) => ({
       ...prev,
@@ -50,8 +48,6 @@ function Settings() {
           },
         }
       );
-console.log(data)
-      // Update Redux slice
       dispatch(updateData(["visibility", data]));
       dispatch(addInterest(data.interests))
       toast.success(res.data.message);

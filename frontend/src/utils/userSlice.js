@@ -22,7 +22,6 @@ localStorage.setItem(
 },
 addInterest(state,action){
 if (state) {
-    // Overwrite interests completely with new array from param
     state.interests = action.payload;
     localStorage.setItem("user", JSON.stringify(state));
   }
@@ -33,9 +32,7 @@ if (state) {
   return { token: null }; 
     },
     updateUser(state, action) {
-        // console.log(action.payload);
       const updatedUser = { ...state, ...action.payload };
-      // console.log("updateduser :",updatedUser)
       localStorage.setItem("user", JSON.stringify(updatedUser));
       return updatedUser;
     },

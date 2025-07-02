@@ -27,7 +27,6 @@ function AuthForm({ type }) {
         `${import.meta.env.VITE_BACKEND_URL}/${type}`,
         userData
       );
-console.log(res)
       if (!res.data.success) {
         toast.error(res.data.message);
       } else {
@@ -35,19 +34,9 @@ console.log(res)
         if (type === "signup") {
           navigate("/signin");
         } else {
-          console.log("res data user", res.data.user);
           dispatch(
             login( res.data.user
-              // {
-            //   name: res.data.user.name,
-            //   email: res.data.user.email,
-            //   token: res.data.user.token,
-            //   id: res.data.user.id,
-            //   bio: res.data.user.bio,
-            //   profilePic: res.data.user.profilePic,
-            //   username: res.data.user.username,
-            //   blogs: res.data.user.blogs,
-            // }
+          
             )
           );
           if (!res.data.user.interests || res.data.user.interests.length === 0) {
@@ -56,18 +45,16 @@ console.log(res)
   navigate("/home");
 }
 
-          // navigate("/home");
         }
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message)
     }
   }
 
   async function handleGoogleAuth() {
     try {
       let data = await googleAuth();
-      // console.log(data.user.accessToken)
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/google-auth`,
         {
@@ -76,14 +63,10 @@ console.log(res)
       );
       dispatch(
         login(
-          // name: res.data.user.name,
-          // email: res.data.user.email,
-          // token: res.data.user.token,
-          // id: res.data.user.id,
+         
           res.data.user
         )
       );
-      // navigate("/home");
       if (res.data.user.interests && user.interests.length === 0) {
   navigate("/select-interests");
 } else {
@@ -92,7 +75,6 @@ console.log(res)
 
       toast.success(res.data.message);
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data.message);
     }
   }
@@ -100,9 +82,6 @@ console.log(res)
   return (
     <motion.div
       key={location.pathname}
-      // initial={{ opacity: 0, y: 40 }}
-      // animate={{ opacity: 1, y: 0 }}
-      // transition={{ duration: 1 }}
       className="min-h-screen bg-[#F9FAFB] flex justify-center items-center px-4 font-sans text-[#111827]"
     >
       <motion.div

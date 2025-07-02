@@ -23,7 +23,6 @@ function ProfilePage() {
     const [followerSection,setFollowerSection]=useState("following");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-// const [refresh, setRefresh] = useState(false);
   function renderComponent() {
     if (location.pathname === `/${username}`) {
   if (userData.private) {
@@ -77,8 +76,6 @@ function ProfilePage() {
         );
         const user=res.data.user;
         setUserData(user);
-        // some((f)=>f._id==
-        // some((f)=>f._id==
           if (user?.followers?.some((f)=>f._id==userId)) {
         setInitialStatus("following");
       } else if (user?.followRequests?.some((f)=>f._id==userId)) {
@@ -88,8 +85,7 @@ function ProfilePage() {
         setInitialStatus("follow")
       }
       } catch (error) {
-        console.log(error)
-        // toast.error(error.response.data.message);
+        toast.error(error.response.data.message);
       }
     }
   useEffect(() => {
@@ -228,33 +224,6 @@ function ProfilePage() {
                   </button>
                 </Link>
               ) : (
-                // <button
-                //   // onClick={() =>
-                //   //   handleFollowCreator(userData?._id, token, dispatch)
-                //   // }
-                //   onClick={async () => {
-                //     try {
-                //       // const updatedFollowers =
-                //        await handleFollowCreator(
-                //         userData?._id,
-                //         token,
-                //         dispatch
-                //       );
-                //       // setUserData((prev) => ({
-                //       //   ...prev,
-                //       //   followers: updatedFollowers,
-                //       // }));
-                //           setRefresh((prev) => !prev); 
-                //     } catch (error) {
-                //       toast.error("Follow failed");
-                //     }
-                //   }}
-                //   className={`${userData.followers?.some((f) => f._id == userId)?"bg-green-600":"bg-[#2563EB]"} px-4 py-1 rounded-full text-white text-xs shadow-sm hover:bg-[#252d44] w-full`}
-                // >
-                //   {!userData.followers?.some((f) => f._id == userId)
-                //     ? "Follow"
-                //     : "Following"}
-                // </button>
  <FollowButton
             targetUserId={userData._id}
             isPrivate={userData.private}

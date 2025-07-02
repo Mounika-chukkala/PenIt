@@ -18,7 +18,6 @@ function AddBlog() {
     image: null,
     content: "",
     tags:[], 
-    // ["React","Nde js", "Hello", "data structures", "lotus"],
     draft: false,
   });
   const imagesRef = useRef([]);
@@ -74,7 +73,6 @@ function AddBlog() {
     formData.append("draft",isDraft);
     formData.append("tags", JSON.stringify(blogData.tags));
 formData.append("private", isPrivate);
-console.log("formData",formData)
     try {
       const res = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`,
@@ -109,7 +107,6 @@ formData.append("private", isPrivate);
     imagesRef.current.forEach((image) => {
       formData.append("images", image);
     });
-// console.log(formData)
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/blogs`,
@@ -216,11 +213,7 @@ e.target.value=""
               <input
                 placeholder="Add related tags (optional)..."
                 className="w-[80%] mt-3  mx-auto block text-sm resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
-                // value={blogData.tags}
-//                 onChange={(e) =>
-//                   // setBlogData({ ...blogData, tags: e.target.value })
-// // setTag(e.target.value)
-//                 }
+                
                 onKeyDown={handleKeyDown}
               />
              <div className="flex sm:flex-row  ml-5 md:ml-14 flex-col justify-between">
@@ -247,11 +240,7 @@ e.target.value=""
               ))}
             </div>
 
-            {/* <div           className=" flex w-[80%] mx-auto  text-sm resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
->
-        <h1 >Draft</h1>
-        <select></select>
-        </div> */}
+           
 
             <DraftToggleSwitch
               isDraft={isDraft}
@@ -282,15 +271,10 @@ e.target.value=""
             setBlogData({ ...blogData, description: e.target.value })
           }
         />
-        {/* <div
-          id="editorjs"
-          className="min-h-[300px] w-[80%] mx-auto mt-6 border border-[#E5E7EB] rounded-xl p-4 bg-white"
-        /> */}
+     
         <div className="min-h-[300px] w-full mx-auto mt-6 ">
-          {/* <h1 className="font-medium text-slate-800 text-xl py-3">Your content goes here...</h1> */}
           <RichTextEditor value={content} onChange={setContent} />
         </div>
-        {/* Submit Button */}
         <motion.button
           type="submit"
           whileHover={{ scale: 1.03 }}

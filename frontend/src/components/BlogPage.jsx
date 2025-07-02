@@ -53,9 +53,7 @@ async function handleDeleteBlog(){
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`
       );
-      // console.log("res", res);
       setBlogData(res.data.blog);
-      // console.log(res)
       setBlogLike(res.data.blog.likes.length);
       if (res.data.blog.likes.includes(userId)) {
         setIsLike(true);
@@ -222,15 +220,7 @@ async function handleDeleteBlog(){
                   />
                 </motion.div>
               )}
-{/* {blogData.tags && blogData.tags.length > 0 && (
-  <div className="flex gap-2 mt-2">
-    {blogData.tags.map((tag, idx) => (
-      <span key={idx} className="px-2 py-1 text-xs bg-gray-200 rounded">
-       # {tag}
-      </span>
-    ))}
-  </div> */}
-{/* )} */}
+
               <motion.section
                 className="prose lg:prose-lg prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[#1F2937]"
                 initial={{ opacity: 0 }}

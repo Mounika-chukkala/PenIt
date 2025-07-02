@@ -20,7 +20,6 @@ export default async function googleAuth(){
     try {
         
         let data=await signInWithPopup(auth,provider)
-        // console.log(data)
         return data;
     } catch (error) {
         console.log(error)

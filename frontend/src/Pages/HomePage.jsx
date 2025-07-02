@@ -56,7 +56,6 @@ const res=await axios.get(`${import.meta.env.VITE_BACKEND_URL}/recommended`,{
     Authorization:`Bearer ${token}`
   }
 })
-// console.log("res",res)
 setRecommendedBlogs(res.data.blogs);
 }
   useEffect(() => {
@@ -143,10 +142,8 @@ setRecommendedBlogs(res.data.blogs);
       ):(
         RecommendedBlogs.length>0 &&
         <div className="flex flex-col w-[80%] my-5 ">
-          {console.log(RecommendedBlogs)}
         <h1 className="text-xl font-bold text-left my-3">Recommended Blogs for you</h1>
       
-        {/* <DisplayBlogs blogs={RecommendedBlogs}/> */}
         {RecommendedBlogs?.map((blog, index) => (
                 <motion.div
                   key={blog._id}
@@ -214,7 +211,6 @@ setRecommendedBlogs(res.data.blogs);
                   </div>
                 </motion.div>
               ))}
-              {/* {console.log(RecommendedBlogs)} */}
         
         </div>
       )}
@@ -309,22 +305,7 @@ setRecommendedBlogs(res.data.blogs);
                 </motion.div>
               ))}
             </div>
-            {/* <div className="flex w-full justify-end gap-2 mt-10 self-start">
-              <button
-                onClick={() => setPage((prev) => prev - 1)}
-                className={`rounded-3xl text-black w-20 ${page > 1 ? "bg-blue-300" : "bg-slate-300"} p-1`}
-                disabled={page === 1}
-              >
-                Prev
-              </button>
-              <button
-                onClick={() => setPage((prev) => prev + 1)}
-                className={`rounded-3xl text-black w-20 ${hasMore ? "bg-blue-300" : "bg-slate-400"} p-1`}
-                disabled={!hasMore}
-              >
-                Next
-              </button>
-            </div> */}
+         
 <div className="text-center w-full flex justify-end gap-1">
             <button disabled={page==1}>
 <ChevronLeft size={30}  onClick={() => setPage((prev) => prev - 1)}
@@ -344,7 +325,6 @@ setRecommendedBlogs(res.data.blogs);
                  <div className="flex flex-wrap">
                             {["React","Mounika","Node Js","Express","MongoDb","HTML","CSS","JavaScript","Java","Python"].map((tag, index) => (
                              <Link to={`/search?q=${tag}`}>
-                              {/* .toLowerCase().replace(" ","-") */}
                                 <p   key={index} className="text-xs border m-1 cursor-pointer py-2 px-4 rounded-2xl hover:bg-blue-500 hover:opacity-80
  text-white">{tag}</p>
                               </Link>

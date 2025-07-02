@@ -1,4 +1,3 @@
-// components/FollowButton.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -20,7 +19,6 @@ const {token}=useSelector((state)=>state.user);
       toast.success(res.data.message)
     } catch (err) {
       toast.success(err.response.data.message)
-      console.error(err);
     }
   };
 
@@ -34,7 +32,6 @@ const {token}=useSelector((state)=>state.user);
           ? "bg-yellow-400/30 text-black"
           : "bg-blue-600 text-white"
       }`}
-      // disabled={status === "requested" || status === "following"}
     >
       {status === "following"
         ? "Following"

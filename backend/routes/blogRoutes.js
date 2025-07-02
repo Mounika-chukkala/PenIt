@@ -34,15 +34,9 @@ route.post(
   "/blogs",
   verifyUser,
   upload.fields([{ name: "image" }, { name: "images" }]),
-// upload.single('image'),
   createBlog
 );
-// route.post(
-//   "/blogs",
-//   verifyUser,
-//   upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
-//   createBlog
-// );
+
 route.get("/blogs", getBlogs);
 route.get("/recommended",verifyUser, getRecommendedBlogs);
 
@@ -51,7 +45,6 @@ route.patch(
   "/blogs/:id",
   verifyUser,
   upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
-  // upload.single('image'),
   updateBlog
 );
 route.delete("/blogs/:id", verifyUser, deleteBlog);
@@ -74,7 +67,6 @@ route.patch("/blogs/like-comment/:id",verifyUser,likeComment)
 route.post("/comment/:parentCommentId/:id",verifyUser,addNestedComment)
 
 
-// route.patch()
 route.patch("/save-blog/:id",verifyUser,saveBlog)
 
 

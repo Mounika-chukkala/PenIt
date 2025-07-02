@@ -6,7 +6,6 @@ import { Bookmark, Heart, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 function DisplayBlogs({ blogs }) {
   const { token, id: userId } = useSelector((state) => state.user);
-  // console.log(blogs)
   return (
     <div className="w-full">
       {blogs.length > 0 ? (

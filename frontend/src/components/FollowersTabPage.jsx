@@ -38,7 +38,6 @@ function FollowersTabPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 min-h-screen bg-white text-[#111827]">
-      {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-2">
         <Link to={`/${username}`} className="hover:underline">
           {userData?.name || "User"}
@@ -46,7 +45,6 @@ function FollowersTabPage() {
         &gt; Followers
       </div>
 
-      {/* Tabs */}
       <div className="flex space-x-4  my-4">
         <button
           className={`pb-2 font-medium cursor-pointer text-sm ${
@@ -70,12 +68,10 @@ function FollowersTabPage() {
         </button>
       </div>
 
-      {/* Count */}
       <h2 className="text-xl font-semibold mb-4">
         {usersList.length.toLocaleString()} {activeTab}
       </h2>
 
-      {/* List or Skeleton */}
       <div className="space-y-4">
         {loading
           ? Array(5)

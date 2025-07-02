@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { Heart, MessageCircle } from "lucide-react";
 import { formatDate } from "../utils/formatDate";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const MyBlogsPage = () => {
   const { id: userId, token } = useSelector((state) => state.user);
@@ -45,7 +46,7 @@ const MyBlogsPage = () => {
           avgLikes: blogs.length ? (totalLikes / blogs.length).toFixed(1) : 0,
         });
       } catch (err) {
-        console.error("Failed to fetch blogs", err);
+toast.error(err.response.data.message)
       }
     }
 

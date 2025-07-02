@@ -19,59 +19,64 @@ import FollowRequests from "./components/FollowRequests";
 import FollowersTabPage from "./components/FollowersTabPage";
 import SelectInterests from "./components/SelectInterests";
 function App() {
-  const user=useSelector((slice)=>slice.user);
+  const user = useSelector((slice) => slice.user);
   return (
     <div className="w-screen h-screen overflow-x-hidden">
-      <div
-        className="min-h-screen" 
-        // bg-cover bg-center "
-        // style={{
-        //   backgroundImage:
-        //     "url('https://wallpapers.com/images/high/pastel-mint-green-wallpaper-h49dbyfgz38o3mu3.webp')",
-        // }}
-      >
-        {/* <div className="absolute inset-0 bg-[#bbb]/10 backdrop-blur-sm z-0"> */}
+      <div className="min-h-screen">
+        <Routes>
+          <Route path="/" element={<Navbar />}>
+            <Route path="/requests" element={<FollowRequests />}></Route>
 
-        {/* <AnimatePresence mode="wait"> */}
-          <Routes>
-            <Route path="/" element={<Navbar />}>
-                                              <Route path="/requests" element={<FollowRequests />}></Route>
+            <Route path="/home" element={<HomePage />}></Route>
+            <Route
+              path="/"
+              element={user.token ? <HomePage /> : <GetStarted />}
+            ></Route>
+            <Route path="/add-blog" element={<AddBlog />}></Route>
+            <Route path="/my-blogs" element={<MyBlogs />}></Route>
+            <Route
+              path="/verify-email/:verificationToken"
+              element={<VerifyUser />}
+            ></Route>
+            <Route path="/settings" element={<Settings />}></Route>
+            <Route
+              path="/:username"
+              element={<Profile key={window.location.pathname} />}
+            ></Route>
+            <Route path="/:username/saved-blogs" element={<Profile />}></Route>
+            <Route path="/:username/liked-blogs" element={<Profile />}></Route>
+            <Route path="/:username/draft-blogs" element={<Profile />}></Route>
+            <Route
+              path="/:username/private-blogs"
+              element={<Profile />}
+            ></Route>
+            <Route
+              path="/followers/:username"
+              element={<FollowersTabPage />}
+            ></Route>
+            <Route
+              path="/following/:username"
+              element={<FollowersTabPage />}
+            ></Route>
 
-                          <Route path="/home" element={<HomePage />}></Route>
-              <Route path="/" element={user.token?<HomePage/>:<GetStarted />}></Route>
-              <Route path="/add-blog" element={<AddBlog />}></Route>
-              <Route path="/my-blogs" element={<MyBlogs />}></Route>
-              {/* <Route path="/profile" element={<Profile />}></Route> */}
-              <Route path="/verify-email/:verificationToken" element={<VerifyUser/>}></Route>
-              <Route path="/settings" element={<Settings/>}></Route>
-                            <Route path="/:username" element={<Profile key={window.location.pathname}/>}></Route>
-                            <Route path="/:username/saved-blogs" element={<Profile/>}></Route>
-                            <Route path="/:username/liked-blogs" element={<Profile/>}></Route>
-                            <Route path="/:username/draft-blogs" element={<Profile/>}></Route>
-                            <Route path="/:username/private-blogs" element={<Profile/>}></Route>
-                            <Route path="/followers/:username" element={<FollowersTabPage />}></Route>
-                            <Route path="/following/:username" element={<FollowersTabPage />}></Route>
+            <Route
+              path="/signin"
+              element={<AuthForm type={"signin"} />}
+            ></Route>
+            <Route path="/edit-profile" element={<EditProfile />}></Route>
+            <Route path="/select-interests" element={<SelectInterests />} />
+            <Route
+              path="/signup"
+              element={<AuthForm type={"signup"} />}
+            ></Route>
+            <Route path="/search" element={<Search />}></Route>
 
-              <Route
-                path="/signin"
-                element={<AuthForm type={"signin"} />}
-              ></Route>
-                                      <Route path="/edit-profile" element={<EditProfile />}></Route>
-<Route path="/select-interests" element={<SelectInterests />} />
-              <Route
-                path="/signup"
-                element={<AuthForm type={"signup"} />}
-              ></Route>
-              <Route path="/search" element={<Search />}></Route>
+            <Route path="/add-blog" element={<AddBlog />}></Route>
+            <Route path="/edit/:id" element={<AddBlog />}></Route>
 
-
-              <Route path="/add-blog" element={<AddBlog />}></Route>
-              <Route path="/edit/:id" element={<AddBlog />}></Route>
-
-              <Route path="/blog/:id" element={<BlogPage />}></Route>
-            </Route>
-          </Routes>
-        {/* </AnimatePresence> */}
+            <Route path="/blog/:id" element={<BlogPage />}></Route>
+          </Route>
+        </Routes>
       </div>
     </div>
   );

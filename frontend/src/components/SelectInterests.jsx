@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { addInterest } from "../utils/userSlice";
+import toast from "react-hot-toast";
 
 function SelectInterests() {
   const dispatch = useDispatch();
@@ -77,7 +78,7 @@ function SelectInterests() {
       dispatch(addInterest(selectedInterests));
       navigate("/home");
     } catch (err) {
-      console.log(err);
+toast.error(error.response.data.message)
     }
   };
 

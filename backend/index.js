@@ -16,7 +16,6 @@ app.get("/",(req,res)=>{
     res.send("Hello ,welcome to Pen It")
 })
 app.use("/api/v1",userRoute);
-// app.use("/api/v1/notes",noteRoutes);
 
 app.use("/api/v1",blogRoute);
 app.listen(PORT,()=>{

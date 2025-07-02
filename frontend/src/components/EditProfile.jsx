@@ -53,7 +53,6 @@ export default function EditProfile() {
       toast.success(res.data.message);
       navigate(`/${user.username}`);
     } catch (error) {
-      console.error("Failed to update profile", error);
       toast.error(error.response.data.message);
     }
   };

@@ -29,7 +29,6 @@ async function addComment(req, res) {
   })
  }   );
  
-    // const addComment = 
     await Blog.findByIdAndUpdate(id, {
       $push: { comments: newComment._id },
     });
@@ -49,7 +48,6 @@ async function deleteComment(req, res) {
   try {
     const user = req.user;
     const { id } = req.params;
-    // const { comment } = req.body;
     const comment = await Comment.findById(id).populate({
       path:"blog",
       select:"creator"
@@ -81,9 +79,7 @@ if(comment.parentComment){
 
 }
 await deleteCommentAndReplies(id);
-    // await Comment.deleteMany({_id:{$in:comment.replies}})
-
-    // const addComment = 
+   
     await Blog.findByIdAndUpdate(comment.blog._id, {
       $pull: { comments: id },
     });
@@ -151,7 +147,6 @@ async function likeComment(req, res) {
 
     if (!comment.likes.includes(user)) {
       await Comment.findByIdAndUpdate(id, { $push: { likes: user } });
-    //   await User.findByIdAndUpdate(user, { $push: { likeBlogs: id } });
       return res.status(200).json({
         success: true,
         message: "Comment Liked successfully",
@@ -159,7 +154,6 @@ async function likeComment(req, res) {
       });
     } else {
       await Comment.findByIdAndUpdate(id, { $pull: { likes: user } });
-    //   await User.findByIdAndUpdate(user, { $pull: { likeBlogs: id } });
       return res.status(200).json({
         success: true,
         message: "Comment DisLiked successfully",
