@@ -5,14 +5,14 @@ const userRoute=require("./routes/userRoutes")
 const blogRoute=require("./routes/blogRoutes")
 // const noteRoutes = require("./routes/notesRoutes");
 const cloudinaryConfig  = require("./config/cloudinaryConfig")
-const { PORT } = require("./config/dotenv.config")
+const { PORT, FRONTEND_URL } = require("./config/dotenv.config")
 // const dotenv=require("dotenv")
 // dotenv.config();
 const port=PORT || 5000
 const app=express()
 app.use(express.json());
-app.use(cors());
-// app.use(cors({origin:"http://localhost:5173/"}));
+// app.use(cors());
+app.use(cors({origin:FRONTEND_URL}));
 app.get("/",(req,res)=>{
     res.send("Hello ,welcome to Pen It")
 })
