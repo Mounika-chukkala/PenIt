@@ -360,7 +360,6 @@ function HomePage() {
               <div className="flex flex-wrap">
                 {[
                   "React",
-                  "Mounika",
                   "Node Js",
                   "Express",
                   "MongoDb",
