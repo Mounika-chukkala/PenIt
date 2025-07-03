@@ -1,4 +1,4 @@
-import logo from "../assets/logo.png";
+
 import React, { useState } from "react";
 import { Link, useNavigate, Outlet } from "react-router-dom";
 import {
@@ -66,7 +66,7 @@ export default function Navbar() {
             }}
             aria-label="Brand name"
           >
-            <img src={logo} className="w-7" />
+            <img src="./logo.png" alt="" className="w-7" />
             {/* <Feather className="mt-1" size={22} stroke= "#1E3A8A"/> */}
             <p className="text-2xl">PenIt</p>
           </div>
