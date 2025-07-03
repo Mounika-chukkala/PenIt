@@ -152,7 +152,7 @@ function HomePage() {
                 transition={{ delay: index * 0.06 }}
                 className="w-full"
               >
-                <div className="flex gap-4 flex-col sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
+                <div className="flex gap-4 flex-col sm:items-center sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
                   <img
                     src={blog.image}
                     alt="blog"
@@ -257,7 +257,7 @@ function HomePage() {
                   transition={{ delay: index * 0.06 }}
                   className="w-full"
                 >
-                  <div className="flex gap-4 flex-col sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
+                  <div className="flex gap-4 flex-col sm:items-center sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
                     <img
                       src={blog.image}
                       alt="blog"
