@@ -60,7 +60,7 @@ function AuthForm({ type }) {
         }
       );
       dispatch(login(res.data.user));
-      if (res.data.user.interests && user.interests.length === 0) {
+      if (!res.data.user.interests || user.interests.length === 0) {
         navigate("/select-interests");
       } else {
         navigate("/home");
