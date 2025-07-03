@@ -14,7 +14,7 @@ cd backend
 npm install
 npm run start
 # frontend
-cd frontend
-npm install 
-npm run start
-n
+cd frontend /n
+npm install /n
+npm run start /n
+
