@@ -34,21 +34,19 @@ function AuthForm({ type }) {
         if (type === "signup") {
           navigate("/signin");
         } else {
-          dispatch(
-            login( res.data.user
-          
-            )
-          );
-          if (!res.data.user.interests || res.data.user.interests.length === 0) {
-  navigate("/select-interests");
-} else {
-  navigate("/home");
-}
-
+          dispatch(login(res.data.user));
+          if (
+            !res.data.user.interests ||
+            res.data.user.interests.length === 0
+          ) {
+            navigate("/select-interests");
+          } else {
+            navigate("/home");
+          }
         }
       }
     } catch (error) {
-      toast.error(error.response.data.message)
+      toast.error(error.response.data.message);
     }
   }
 
@@ -61,17 +59,12 @@ function AuthForm({ type }) {
           accessToken: data.user.accessToken,
         }
       );
-      dispatch(
-        login(
-         
-          res.data.user
-        )
-      );
+      dispatch(login(res.data.user));
       if (res.data.user.interests && user.interests.length === 0) {
-  navigate("/select-interests");
-} else {
-  navigate("/home");
-}
+        navigate("/select-interests");
+      } else {
+        navigate("/home");
+      }
 
       toast.success(res.data.message);
     } catch (error) {

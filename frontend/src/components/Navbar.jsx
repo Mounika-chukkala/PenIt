@@ -31,19 +31,22 @@ export default function Navbar() {
     dispatch(logout());
     navigate("/signin");
   };
-async function handleDeleteAccount(){
-  try {
-    const res=await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/delete-account`,{
-      headers:{
-        Authorization:`Bearer ${user.token}`
-      }
-    })
-    toast.success(res.data.message);
-handleLogout();
+  async function handleDeleteAccount() {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/delete-account`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      toast.success(res.data.message);
+      handleLogout();
     } catch (error) {
-    toast.error(error.response.data.message);
+      toast.error(error.response.data.message);
+    }
   }
-}
   return (
     <>
       <nav className="bg-white shadow-sm px-6 py-2 flex justify-between items-center border-b border-gray-200 sticky top-0 z-50">
@@ -175,12 +178,12 @@ handleLogout();
               >
                 <Home size={18} /> Home
               </Link>
- <Link
+              <Link
                 to="/requests"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
               >
-                <CheckCircle size={18}  /> Requests
+                <CheckCircle size={18} /> Requests
               </Link>
               {user.token ? (
                 <>
@@ -192,7 +195,6 @@ handleLogout();
                     <Pen size={16} /> Write
                   </Link>
 
-               
                   <Link
                     to="/search"
                     onClick={() => setIsOpen(false)}
@@ -217,14 +219,19 @@ handleLogout();
                   >
                     <LogOut size={16} className="mt-1" /> Log Out
                   </div>
-                   <div
+                  <div
                     onClick={() => {
                       handleDeleteAccount();
                       setIsOpen(false);
                     }}
                     className="flex items-center gap-3 cursor-pointer hover:text-[#2563EB] transition duration-200"
                   >
-                    <Trash size={16} className="mt-1 " /><p className="text-[13px] mt-1 text-red-500 "> Delete Account</p>                  </div>
+                    <Trash size={16} className="mt-1 " />
+                    <p className="text-[13px] mt-1 text-red-500 ">
+                      {" "}
+                      Delete Account
+                    </p>{" "}
+                  </div>
                 </>
               ) : (
                 <>
@@ -256,12 +263,12 @@ handleLogout();
               <p>Profile</p>
             </Link>
             <Link
-                to="/requests"
-                onClick={() => setIsOpen(false)}
+              to="/requests"
+              onClick={() => setIsOpen(false)}
               className="flex gap-1 hover:text-[#768cca] px-2 py-1 text-md transition duration-200 "
-              >
-                <CheckCircle size={18} className="mt-1" /> Requests
-              </Link>
+            >
+              <CheckCircle size={18} className="mt-1" /> Requests
+            </Link>
             <Link
               onClick={() => {
                 setProfileDialog((prev) => !prev);
@@ -281,15 +288,16 @@ handleLogout();
             >
               <LogOut size={16} className="mt-1" /> Log Out
             </div>
-             <div
+            <div
               onClick={() => {
                 handleDeleteAccount();
                 setProfileDialog((prev) => !prev);
               }}
               className="flex text-md gap-1 px-2 py-1 cursor-pointer hover:text-[#768cca] transition duration-200"
             >
-              <Trash size={16} className="mt-1 mr-1" stroke="red" /><p className="text-[12px] text-red-500 mt-1"> Delete Account
-            </p></div>
+              <Trash size={16} className="mt-1 mr-1" stroke="red" />
+              <p className="text-[12px] text-red-500 mt-1"> Delete Account</p>
+            </div>
           </div>
         )}
       </nav>

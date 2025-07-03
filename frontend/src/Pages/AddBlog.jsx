@@ -17,7 +17,7 @@ function AddBlog() {
     description: "",
     image: null,
     content: "",
-    tags:[], 
+    tags: [],
     draft: false,
   });
   const imagesRef = useRef([]);
@@ -41,9 +41,9 @@ function AddBlog() {
         image: res.data.blog.image,
         content: res.data.blog.content,
         tags: res.data.blog.tags,
-        draft: res.data.blog.draft ,
+        draft: res.data.blog.draft,
       });
-      setIsDraft(res.data.blog.draft)
+      setIsDraft(res.data.blog.draft);
       setContent(res.data.blog.content);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to fetch blog");
@@ -70,9 +70,9 @@ function AddBlog() {
     formData.append("description", blogData.description);
     formData.append("content", JSON.stringify(content));
     formData.append("image", blogData.image);
-    formData.append("draft",isDraft);
+    formData.append("draft", isDraft);
     formData.append("tags", JSON.stringify(blogData.tags));
-formData.append("private", isPrivate);
+    formData.append("private", isPrivate);
     try {
       const res = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`,
@@ -88,9 +88,8 @@ formData.append("private", isPrivate);
       navigate(`/blog/${id}`);
     } catch (error) {
       toast.error("Update failed");
-      
-    // toast.error("check your internet connection dude.")
 
+      // toast.error("check your internet connection dude.")
     }
   }
   async function handleBlogCreation(e) {
@@ -102,7 +101,7 @@ formData.append("private", isPrivate);
     formData.append("content", JSON.stringify(content));
     formData.append("draft", isDraft);
     formData.append("tags", JSON.stringify(blogData.tags));
-formData.append("private", isPrivate);
+    formData.append("private", isPrivate);
 
     imagesRef.current.forEach((image) => {
       formData.append("images", image);
@@ -120,13 +119,11 @@ formData.append("private", isPrivate);
       toast.success(res.data.message);
       navigate("/");
     } catch (error) {
-    if(error.response.data.message.includes("secure_url")){
-      toast.error("check your internet connection dude.")
-    }
-    else{
-      toast.error(error.response?.data?.message || "Failed to post blog");
-
-    }
+      if (error.response.data.message.includes("secure_url")) {
+        toast.error("check your internet connection dude.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to post blog");
+      }
     }
   }
 
@@ -137,23 +134,23 @@ formData.append("private", isPrivate);
     setBlogData((prev) => ({ ...prev, tags: updatedTags }));
   }
 
-async function handleKeyDown(e){
- if(e.code=="Space") e.preventDefault();
+  async function handleKeyDown(e) {
+    if (e.code == "Space") e.preventDefault();
 
-if(e.code=="Enter" && e.target.value.trim()!==""){
-        e.preventDefault()
-if(blogData?.tags?.length>10){
-  e.target.value=""
+    if (e.code == "Enter" && e.target.value.trim() !== "") {
+      e.preventDefault();
+      if (blogData?.tags?.length > 10) {
+        e.target.value = "";
 
-  return toast.error("You can only add upto 10 tags.Limit reached")
- }
-        await setBlogData((prev)=>({...prev,tags:[...prev.tags,e.target.value.trim(
-
-).toLowerCase()]}))
-e.target.value=""
-}
-}
-
+        return toast.error("You can only add upto 10 tags.Limit reached");
+      }
+      await setBlogData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, e.target.value.trim().toLowerCase()],
+      }));
+      e.target.value = "";
+    }
+  }
 
   return token == null ? (
     <Navigate to="/signin" />
@@ -213,16 +210,16 @@ e.target.value=""
               <input
                 placeholder="Add related tags (optional)..."
                 className="w-[80%] mt-3  mx-auto block text-sm resize-none outline-none placeholder:text-[#9CA3AF] text-[#374151] font-serif"
-                
                 onKeyDown={handleKeyDown}
               />
-             <div className="flex sm:flex-row  ml-5 md:ml-14 flex-col justify-between">
-               <p className="text-[10px] opacity-60">
-                * Click on Enter to add tag
-              </p>
-               <p className="text-[10px]   opacity-60">
-{10-blogData?.tags.length || 0} Tags remaining              </p>
-             </div>
+              <div className="flex sm:flex-row  ml-5 md:ml-14 flex-col justify-between">
+                <p className="text-[10px] opacity-60">
+                  * Click on Enter to add tag
+                </p>
+                <p className="text-[10px]   opacity-60">
+                  {10 - blogData?.tags.length || 0} Tags remaining{" "}
+                </p>
+              </div>
             </>
             <div className="flex flex-wrap ml-5 md:ml-14">
               {blogData?.tags?.map((tag, index) => (
@@ -240,25 +237,19 @@ e.target.value=""
               ))}
             </div>
 
-           
-
-            <DraftToggleSwitch
-              isDraft={isDraft}
-              setIsDraft={setIsDraft}
-              
-            />
+            <DraftToggleSwitch isDraft={isDraft} setIsDraft={setIsDraft} />
             <div className="flex items-center gap-2 ml-5 md:ml-14 mt-2">
-  <input
-    type="checkbox"
-    checked={isPrivate}
-    disabled={isDraft}
-    onChange={() => setIsPrivate(!isPrivate)}
-    className="w-4 h-4"
-  />
-  <label className="text-sm text-gray-700 font-medium">
-    Publish this blog privately
-  </label>
-</div>
+              <input
+                type="checkbox"
+                checked={isPrivate}
+                disabled={isDraft}
+                onChange={() => setIsPrivate(!isPrivate)}
+                className="w-4 h-4"
+              />
+              <label className="text-sm text-gray-700 font-medium">
+                Publish this blog privately
+              </label>
+            </div>
           </div>
         </div>
         <textarea
@@ -271,7 +262,7 @@ e.target.value=""
             setBlogData({ ...blogData, description: e.target.value })
           }
         />
-     
+
         <div className="min-h-[300px] w-full mx-auto mt-6 ">
           <RichTextEditor value={content} onChange={setContent} />
         </div>
@@ -281,14 +272,14 @@ e.target.value=""
           whileTap={{ scale: 0.97 }}
           className="block mx-auto mt-10 px-8 py-3 bg-gradient-to-r from-[#1E3A8A] to-[#2563EB] text-white font-semibold text-base rounded-full shadow-lg"
         >
-{isDraft
-  ? "Save as draft"
-  : id
-  ? "Update Blog"
-  : isPrivate
-  ? "Publish Privately"
-  : "Publish Blog"}
-          </motion.button>
+          {isDraft
+            ? "Save as draft"
+            : id
+            ? "Update Blog"
+            : isPrivate
+            ? "Publish Privately"
+            : "Publish Blog"}
+        </motion.button>
       </div>
       <div className="flex justify-center items-center gap-2 mt-7 text-slate-700 text-sm">
         <Info size={16} /> Please note that the blog will be same as the preview

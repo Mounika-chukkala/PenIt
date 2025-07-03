@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useEffect, useState } from "react";
 import {
   Heart,
@@ -44,25 +40,27 @@ const slides = [
 function HomePage() {
   const [displayedBlogs, setDisplayedBlogs] = useState([]);
   // const [searchTerm, setSearchTerm] = useState("");
-  const { id: userId, token,interests } = useSelector((slice) => slice.user);
+  const { id: userId, token, interests } = useSelector((slice) => slice.user);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [page, setPage] = useState(1);
   const { blogs, hasMore, isLoading } = usePagination("blogs", {}, 4, page);
-  const [RecommendedBlogs,setRecommendedBlogs]=useState([]);
-async function handleRecommendedBlogs(){
-const res=await axios.get(`${import.meta.env.VITE_BACKEND_URL}/recommended`,{
-  headers:{
-    Authorization:`Bearer ${token}`
+  const [RecommendedBlogs, setRecommendedBlogs] = useState([]);
+  async function handleRecommendedBlogs() {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/recommended`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    setRecommendedBlogs(res.data.blogs);
   }
-})
-setRecommendedBlogs(res.data.blogs);
-}
   useEffect(() => {
     setDisplayedBlogs(blogs);
     handleRecommendedBlogs();
-    
-  }, [blogs,interests]);
+  }, [blogs, interests]);
 
   const handleSort = (type) => {
     let sorted = [...blogs];
@@ -139,80 +137,94 @@ setRecommendedBlogs(res.data.blogs);
             ))}
           </div>
         </section>
-      ):(
-        RecommendedBlogs.length>0 &&
-        <div className="flex flex-col w-[80%] my-5 ">
-        <h1 className="text-xl font-bold text-left my-3">Recommended Blogs for you</h1>
-      
-        {RecommendedBlogs?.map((blog, index) => (
-                <motion.div
-                  key={blog._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.06 }}
-                  className="w-full"
-                >
-                  <div className="flex gap-4 flex-col sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
-                    <img
-                      src={blog.image}
-                      alt="blog"
-                      className="w-full sm:w-[100px] h-[200px] sm:h-[100px] object-cover rounded-md"
-                    />
-                    <div className="flex flex-col sm:w-[60%] flex-grow">
-                      <div className="flex items-center gap-2 text-sm text-[#60a5fa] mb-1">
-                        <img
-                          src={
-                            blog.creator.profilePic ||
-                            `https://api.dicebear.com/9.x/initials/svg?seed=${blog.creator.name}`
-                          }
-                          alt="creator"
-                          className="w-5 h-5 rounded-full"
-                        />
-                        <Link to={`/${blog.creator.username}`} className="hover:underline">
-                          {blog.creator.name}
-                        </Link>
-                      </div>
-                      <h3 className="text-lg text-[#dbeafe] font-semibold line-clamp-1">
-                        {blog.title}
-                      </h3>
-                      <div className="flex  flex-wrap w-[90%] sm:w-[85%]">
-                        <p className="text-xs text-[#cbd5e1] mt-1  line-clamp-2">
-                          {blog.description}
-                        </p>
-                        <Link to={`/blog/${blog.blogId}`} className="ml-1 text-blue-400 text-xs mt-1">
-                          <span>...continue</span>
-                        </Link>
-                      </div>
-                      <div className="mt-3 flex gap-4 text-xs text-[#93c5fd]">
-                        <span>{formatDate(blog.createdAt)}</span>
-                        <span className="flex items-center gap-1">
-                          <Heart
-                            size={14}
-                            fill={blog.likes.some((user) => user._id === userId) ? "#2563EB" : "none"}
-                            className="text-[#2563EB]"
-                          />
-                          {blog.likes.length}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle size={14} className="text-[#2563EB]" />
-                          {blog.comments.length}
-                        </span>
-                        <Bookmark
+      ) : (
+        RecommendedBlogs.length > 0 && (
+          <div className="flex flex-col w-[80%] my-5 ">
+            <h1 className="text-xl font-bold text-left my-3">
+              Recommended Blogs for you
+            </h1>
+
+            {RecommendedBlogs?.map((blog, index) => (
+              <motion.div
+                key={blog._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.06 }}
+                className="w-full"
+              >
+                <div className="flex gap-4 flex-col sm:flex-row justify-center py-4 px-2 w-full hover:bg-slate-300/5">
+                  <img
+                    src={blog.image}
+                    alt="blog"
+                    className="w-full sm:w-[100px] h-[200px] sm:h-[100px] object-cover rounded-md"
+                  />
+                  <div className="flex flex-col sm:w-[60%] flex-grow">
+                    <div className="flex items-center gap-2 text-sm text-[#60a5fa] mb-1">
+                      <img
+                        src={
+                          blog.creator.profilePic ||
+                          `https://api.dicebear.com/9.x/initials/svg?seed=${blog.creator.name}`
+                        }
+                        alt="creator"
+                        className="w-5 h-5 rounded-full"
+                      />
+                      <Link
+                        to={`/${blog.creator.username}`}
+                        className="hover:underline"
+                      >
+                        {blog.creator.name}
+                      </Link>
+                    </div>
+                    <h3 className="text-lg text-[#dbeafe] font-semibold line-clamp-1">
+                      {blog.title}
+                    </h3>
+                    <div className="flex  flex-wrap w-[90%] sm:w-[85%]">
+                      <p className="text-xs text-[#cbd5e1] mt-1  line-clamp-2">
+                        {blog.description}
+                      </p>
+                      <Link
+                        to={`/blog/${blog.blogId}`}
+                        className="ml-1 text-blue-400 text-xs mt-1"
+                      >
+                        <span>...continue</span>
+                      </Link>
+                    </div>
+                    <div className="mt-3 flex gap-4 text-xs text-[#93c5fd]">
+                      <span>{formatDate(blog.createdAt)}</span>
+                      <span className="flex items-center gap-1">
+                        <Heart
                           size={14}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleSaveBlog(blog._id, token);
-                          }}
-                          fill={blog.totalSaves?.includes(userId) ? "#2563EB" : "none"}
-                          className="text-[#2563EB] cursor-pointer"
+                          fill={
+                            blog.likes.some((user) => user._id === userId)
+                              ? "#2563EB"
+                              : "none"
+                          }
+                          className="text-[#2563EB]"
                         />
-                      </div>
+                        {blog.likes.length}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MessageCircle size={14} className="text-[#2563EB]" />
+                        {blog.comments.length}
+                      </span>
+                      <Bookmark
+                        size={14}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSaveBlog(blog._id, token);
+                        }}
+                        fill={
+                          blog.totalSaves?.includes(userId) ? "#2563EB" : "none"
+                        }
+                        className="text-[#2563EB] cursor-pointer"
+                      />
                     </div>
                   </div>
-                </motion.div>
-              ))}
-        
-        </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )
       )}
 
       <div className="w-full max-w-6xl px-4 sm:px-6 mt-10 mb-20 z-10">
@@ -261,7 +273,10 @@ setRecommendedBlogs(res.data.blogs);
                           alt="creator"
                           className="w-5 h-5 rounded-full"
                         />
-                        <Link to={`/${blog.creator.username}`} className="hover:underline">
+                        <Link
+                          to={`/${blog.creator.username}`}
+                          className="hover:underline"
+                        >
                           {blog.creator.name}
                         </Link>
                       </div>
@@ -272,7 +287,10 @@ setRecommendedBlogs(res.data.blogs);
                         <p className="text-xs text-[#cbd5e1] mt-1  line-clamp-2">
                           {blog.description}
                         </p>
-                        <Link to={`/blog/${blog.blogId}`} className="ml-1 text-blue-400 text-xs mt-1">
+                        <Link
+                          to={`/blog/${blog.blogId}`}
+                          className="ml-1 text-blue-400 text-xs mt-1"
+                        >
                           <span>...continue</span>
                         </Link>
                       </div>
@@ -281,7 +299,11 @@ setRecommendedBlogs(res.data.blogs);
                         <span className="flex items-center gap-1">
                           <Heart
                             size={14}
-                            fill={blog.likes.some((user) => user._id === userId) ? "#2563EB" : "none"}
+                            fill={
+                              blog.likes.some((user) => user._id === userId)
+                                ? "#2563EB"
+                                : "none"
+                            }
                             className="text-[#2563EB]"
                           />
                           {blog.likes.length}
@@ -296,7 +318,11 @@ setRecommendedBlogs(res.data.blogs);
                             e.preventDefault();
                             handleSaveBlog(blog._id, token);
                           }}
-                          fill={blog.totalSaves?.includes(userId) ? "#2563EB" : "none"}
+                          fill={
+                            blog.totalSaves?.includes(userId)
+                              ? "#2563EB"
+                              : "none"
+                          }
                           className="text-[#2563EB] cursor-pointer"
                         />
                       </div>
@@ -305,32 +331,56 @@ setRecommendedBlogs(res.data.blogs);
                 </motion.div>
               ))}
             </div>
-         
-<div className="text-center w-full flex justify-end gap-1">
-            <button disabled={page==1}>
-<ChevronLeft size={30}  onClick={() => setPage((prev) => prev - 1)}
-                  className={`rounded-full ${page==1 ? "text-slate-600": "text-white"} cursor-pointer font-extrabold text-3xl`}/>
-                </button>    
-                <button disabled={!hasMore}>
 
-<ChevronRight size={30}  onClick={() => setPage((prev) => prev + 1)}
-                  className={` ${!hasMore ? "text-slate-600": "text-white"} font-extrabold cursor-pointer text-3xl`} />        
-                  </button>
-              </div>
+            <div className="text-center w-full flex justify-end gap-1">
+              <button disabled={page == 1}>
+                <ChevronLeft
+                  size={30}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  className={`rounded-full ${
+                    page == 1 ? "text-slate-600" : "text-white"
+                  } cursor-pointer font-extrabold text-3xl`}
+                />
+              </button>
+              <button disabled={!hasMore}>
+                <ChevronRight
+                  size={30}
+                  onClick={() => setPage((prev) => prev + 1)}
+                  className={` ${
+                    !hasMore ? "text-slate-600" : "text-white"
+                  } font-extrabold cursor-pointer text-3xl`}
+                />
+              </button>
+            </div>
           </div>
 
           <div className="w-full  md:w-[30%] p-2">
             <div>
               <h1 className="font-bold pb-1">Recommended Topics</h1>
-                 <div className="flex flex-wrap">
-                            {["React","Mounika","Node Js","Express","MongoDb","HTML","CSS","JavaScript","Java","Python"].map((tag, index) => (
-                             <Link to={`/search?q=${tag}`}>
-                                <p   key={index} className="text-xs border m-1 cursor-pointer py-2 px-4 rounded-2xl hover:bg-blue-500 hover:opacity-80
- text-white">{tag}</p>
-                              </Link>
-                            ))}
-                          </div>
-              
+              <div className="flex flex-wrap">
+                {[
+                  "React",
+                  "Mounika",
+                  "Node Js",
+                  "Express",
+                  "MongoDb",
+                  "HTML",
+                  "CSS",
+                  "JavaScript",
+                  "Java",
+                  "Python",
+                ].map((tag, index) => (
+                  <Link to={`/search?q=${tag}`}>
+                    <p
+                      key={index}
+                      className="text-xs border m-1 cursor-pointer py-2 px-4 rounded-2xl hover:bg-blue-500 hover:opacity-80
+ text-white"
+                    >
+                      {tag}
+                    </p>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>

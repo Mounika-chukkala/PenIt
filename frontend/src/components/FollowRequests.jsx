@@ -44,7 +44,9 @@ const FollowRequests = () => {
   return (
     <div className="mt-4 w-[60%] mx-auto">
       <h2 className="text-lg font-semibold my-2">Follow Requests</h2>
-      {requests.length === 0 && <p className="text-sm text-gray-500">No requests</p>}
+      {requests.length === 0 && (
+        <p className="text-sm text-gray-500">No requests</p>
+      )}
 
       {requests.map((request) => (
         <div
@@ -54,10 +56,9 @@ const FollowRequests = () => {
           <div className="flex items-center gap-3">
             <UserRound className="w-5 h-5 text-gray-600" />
             <div className="flex flex-col">
-            <span className="text-sm font-medium">{request.name}</span>
+              <span className="text-sm font-medium">{request.name}</span>
 
-                          <span className="text-xs text-slate-500">{request.bio}</span>
-
+              <span className="text-xs text-slate-500">{request.bio}</span>
             </div>
           </div>
           <div className="flex gap-2">

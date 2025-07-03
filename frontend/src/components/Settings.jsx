@@ -40,16 +40,18 @@ function Settings() {
   async function handleSave() {
     try {
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/change-saved-liked-blog-visibility`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/change-saved-liked-blog-visibility`,
         data,
         {
           headers: {
-            Authorization:`Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       dispatch(updateData(["visibility", data]));
-      dispatch(addInterest(data.interests))
+      dispatch(addInterest(data.interests));
       toast.success(res.data.message);
       navigate(-1);
     } catch (error) {
@@ -115,14 +117,16 @@ function Settings() {
   ) : (
     <div className="w-full px-4 py-10 min-h-[calc(100vh-100px)] flex justify-center items-start bg-gray-50">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8 space-y-6">
-        <h1 className="text-xl font-bold text-gray-800 mb-4">Account Settings</h1>
+        <h1 className="text-xl font-bold text-gray-800 mb-4">
+          Account Settings
+        </h1>
 
         {/* Interests */}
         <div className="space-y-2">
           <label className="block text-gray-700 font-semibold text-md">
             Your Interests
           </label>
-          
+
           <div className="flex gap-2 mt-2">
             <input
               type="text"

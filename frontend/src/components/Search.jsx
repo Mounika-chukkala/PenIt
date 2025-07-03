@@ -1,32 +1,3 @@
-// // Search.jsx (Parent Component that handles routing and input)
-// import React from "react";
-// import { useSearchParams } from "react-router-dom";
-// import SearchBlogs from "./SearchBlogs";
-
-// function Search() {
-//   const [searchParams] = useSearchParams();
-//   const query = searchParams.get("q");
-
-//   return (
-//     <div className="w-full px-4 py-8 bg-[#F9FAFB] min-h-screen">
-//       <div className="max-w-3xl mx-auto space-y-6">
-//         {!query ? (
-//           <h2 className="text-center text-xl text-gray-500">
-//             Enter a query in the search bar to begin.
-//           </h2>
-//         ) : (
-//           <SearchBlogs query={query} />
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Search;
-
-
-
-
 import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import SearchBlogs from "./SearchBlogs";

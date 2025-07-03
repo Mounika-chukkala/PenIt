@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -46,7 +44,7 @@ const MyBlogsPage = () => {
           avgLikes: blogs.length ? (totalLikes / blogs.length).toFixed(1) : 0,
         });
       } catch (err) {
-toast.error(err.response.data.message)
+        toast.error(err.response.data.message);
       }
     }
 

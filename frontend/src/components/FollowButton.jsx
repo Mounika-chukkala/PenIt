@@ -3,22 +3,23 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
-const FollowButton = ({ targetUserId, isPrivate, initialStatus ,refresh}) => {
+const FollowButton = ({ targetUserId, isPrivate, initialStatus, refresh }) => {
   const [status, setStatus] = useState(initialStatus); // "following", "requested", "none"
-const {token}=useSelector((state)=>state.user);
+  const { token } = useSelector((state) => state.user);
   const handleFollow = async () => {
     try {
-       const res = await axios.patch(
-      `${import.meta.env.VITE_BACKEND_URL}/follow/${targetUserId}`, {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-    );
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/follow/${targetUserId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setStatus(res.data.status);
       refresh();
-      toast.success(res.data.message)
+      toast.success(res.data.message);
     } catch (err) {
-      toast.success(err.response.data.message)
+      toast.success(err.response.data.message);
     }
   };
 

@@ -11,9 +11,11 @@ function FollowersTabPage() {
   const [activeTab, setActiveTab] = useState("followers");
   const [usersList, setUsersList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { id: loggedInUserId, token, following } = useSelector(
-    (state) => state.user
-  );
+  const {
+    id: loggedInUserId,
+    token,
+    following,
+  } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +27,9 @@ function FollowersTabPage() {
         );
         const user = res.data.user;
         setUserData(user);
-        setUsersList(activeTab === "followers" ? user.followers : user.following);
+        setUsersList(
+          activeTab === "followers" ? user.followers : user.following
+        );
       } catch (error) {
         toast.error(error?.response?.data?.message || "Error loading data");
       } finally {

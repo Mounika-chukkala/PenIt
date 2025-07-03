@@ -8,24 +8,26 @@ const admin=require("firebase-admin")
 const dotenv=require("dotenv")
 const {getAuth}=require("firebase-admin/auth")
 dotenv.config();
+import { FIREBASE_ADMIN_TYPE,FIREBASE_PROJECT_ID,FIREBASE_PRIVATE_KEY_ID,FIREBASE_PRIVATE_KEY,FIREBASE_CLIENT_EMAIL,FIREBASE_CLIENT_ID,FIREBASE_AUTH_URI,FIREBASE_TOKEN_URI,FIREBASE_AUTH_PROVIDER,FIREBASE_CLIENT_CERT_URL,FIREBASE_UNIVERSE_DOMAIN, EMAIL_USER, FRONTEND_URL } from "../config/dotenv.config";
 admin.initializeApp({
   credential: admin.credential.cert({
-  "type": process.env.FIREBASE_ADMIN_TYPE,
-  "project_id": process.env.FIREBASE_PROJECT_ID,
-  "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
-  "private_key": process.env.FIREBASE_PRIVATE_KEY,
-  "client_email":process.env.FIREBASE_CLIENT_EMAIL,
-  "client_id": process.env.FIREBASE_CLIENT_ID,
-  "auth_uri":  process.env. FIREBASE_AUTH_URI,
-  "token_uri": process.env.FIREBASE_TOKEN_URI,
-  "auth_provider_x509_cert_url":process.env.FIREBASE_AUTH_PROVIDER,
-  "client_x509_cert_url": process.env.FIREBASE_CLIENT_CERT_URL,
-  "universe_domain":process.env.FIREBASE_UNIVERSE_DOMAIN
+  "type": FIREBASE_ADMIN_TYPE,
+  "project_id": FIREBASE_PROJECT_ID,
+  "private_key_id": FIREBASE_PRIVATE_KEY_ID,
+  "private_key": FIREBASE_PRIVATE_KEY,
+  "client_email":FIREBASE_CLIENT_EMAIL,
+  "client_id": FIREBASE_CLIENT_ID,
+  "auth_uri":   FIREBASE_AUTH_URI,
+  "token_uri": FIREBASE_TOKEN_URI,
+  "auth_provider_x509_cert_url":FIREBASE_AUTH_PROVIDER,
+  "client_x509_cert_url": FIREBASE_CLIENT_CERT_URL,
+  "universe_domain":FIREBASE_UNIVERSE_DOMAIN
 }
 )
 
 });
 const ShortUniqueId = require("short-unique-id");
+const { FIREBASE_ADMIN_TYPE, FIREBASE_PROJECT_ID } = require("../config/dotenv.config");
 const { randomUUID } = new ShortUniqueId({ length: 7 });
 
 
@@ -74,13 +76,13 @@ if(checkForexistingUser){
  
 
 const sendingEmail=await transporter.sendMail({
-  from:"mounikach178@gmail.com",
+  from:EMAIL_USER,
   to:email,
   subject:"Email verification",
   text:"Please verify yout email",
   html:`<p>Hey ${name}</p>
   <h1> Click on the link to verify your email</h1>
-  <a href="http://localhost:5173/verify-email/${verificationToken}">verify Email</a>`
+  <a href="${FRONTEND_URL}/verify-email/${verificationToken}">verify Email</a>`
 })
 
   return res.status(200).json({
@@ -109,13 +111,13 @@ const sendingEmail=await transporter.sendMail({
  
 
 const sendingEmail=await transporter.sendMail({
-  from:"mounikach178@gmail.com",
+  from:EMAIL_USER,
   to:email,
   subject:"Email verification",
   text:"Please verify yout email",
   html:`<p>Hey ${name}</p>
   <h1> Click on the link to verify your email</h1>
-  <a href="http://localhost:5173/verify-email/${verificationToken}">verify Email</a>`
+  <a href="${FRONTEND_URL}/verify-email/${verificationToken}">verify Email</a>`
 })
 
 const user={email:newUser.email,name:newUser.name,id:newUser._id,token:verificationToken};
@@ -311,13 +313,13 @@ async function login(req, res) {
     });
 
 const sendingEmail=await transporter.sendMail({
-  from:"mounikach178@gmail.com",
+  from:EMAIL_USER,
   to:checkForexistingUser.email,
   subject:"Email verification",
   text:"Please verify yout email",
   html:`<p>Hey ${checkForexistingUser.name}</p>
   <h1> Click on the link to verify your email</h1>
-  <a href="http://localhost:5173/verify-email/${verificationToken}">verify Email</a>`
+  <a href="${FRONTEND_URL}/verify-email/${verificationToken}">verify Email</a>`
 })
       return res.status(400).json({
         success: false,
