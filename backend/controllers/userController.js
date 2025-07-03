@@ -202,6 +202,7 @@ async function googleAuth(req, res) {
             showLikedBlogs: user.showLikedBlogs,
             showSavedBlogs: user.showSavedBlogs,
             bio: user.bio,
+            interests:user.interests,
             followers: user.followers,
             following: user.following,
             token,

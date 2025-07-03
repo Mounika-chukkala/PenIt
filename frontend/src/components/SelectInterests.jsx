@@ -78,7 +78,7 @@ function SelectInterests() {
       dispatch(addInterest(selectedInterests));
       navigate("/home");
     } catch (err) {
-toast.error(error.response.data.message)
+toast.error(err.response.data.message)
     }
   };
 
