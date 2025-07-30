@@ -78,7 +78,7 @@ function AuthForm({ type }) {
       key={location.pathname}
       className="min-h-screen relative bg-[#F9FAFB] w-full flex justify-center items-center px-4 font-sans text-[#111827]"
     >
-      <div classname="text-center absolute right-0">
+      <div classname="text-center absolute top-0">
       <p classname="text-sm">Sample login details: </p>
       <p  classname="text-sm">Email: mounika@gmail.com</p>
       <p  classname="text-sm">Password : 123456 </p>
