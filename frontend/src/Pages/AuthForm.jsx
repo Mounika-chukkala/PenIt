@@ -76,12 +76,12 @@ function AuthForm({ type }) {
   return (
     <motion.div
       key={location.pathname}
-      className="min-h-screen bg-[#F9FAFB] flex justify-center items-center px-4 font-sans text-[#111827]"
+      className="min-h-screen relative bg-[#F9FAFB] flex justify-center items-center px-4 font-sans text-[#111827]"
     >
-      <div classname="text-center">
-      <p>Sample login details: </p>
-      <p>Email: mounika@gmail.com</p>
-      <p>Password : 123456 </p>
+      <div classname="text-center absolute right-0">
+      <p classname="text-sm">Sample login details: </p>
+      <p  classname="text-sm">Email: mounika@gmail.com</p>
+      <p  classname="text-sm">Password : 123456 </p>
       </div>
       <motion.div
         initial={{ opacity: 0, x: 50 }}
