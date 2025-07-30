@@ -216,7 +216,7 @@ export default function Navbar() {
                       handleLogout();
                       setIsOpen(false);
                     }}
-                    className="flex items-center gap-3 hover:text-[#2563EB] transition duration-200"
+                    className="flex items-center gap-3 cursor-pointer hover:text-[#2563EB] transition duration-200"
                   >
                     <LogOut size={16} className="mt-1" /> Log Out
                   </div>
@@ -285,7 +285,7 @@ export default function Navbar() {
                 handleLogout();
                 setProfileDialog((prev) => !prev);
               }}
-              className="flex text-md gap-1 px-2 py-1 hover:text-[#768cca] transition duration-200"
+              className="flex text-md gap-1 px-2 py-1 cursor-pointer hover:text-[#768cca] transition duration-200"
             >
               <LogOut size={16} className="mt-1" /> Log Out
             </div>

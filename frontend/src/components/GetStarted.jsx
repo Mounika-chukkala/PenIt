@@ -11,7 +11,9 @@ const GetStarted = () => {
           Start your blogging journey with a clean canvas and a voice that
           echoes across minds.
         </p>
-
+<p className="mt-4 text-sm font-serif font-light text-black">
+          To know more about this platform feel free to go through this documentation.<a className="text-blue-900" href="https://docs.google.com/document/d/1DtOrILSUbw3uUP0cDK0ww6LhkeUozVrDpLAn7s50-l8/edit?usp=sharing">Click here</a>
+        </p>
         <div className="mt-10 flex justify-center gap-6 flex-wrap">
           <a
             href="/signup"

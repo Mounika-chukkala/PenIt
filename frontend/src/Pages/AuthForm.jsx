@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
-import googleAuth from "../utils/firebase";
+// import googleAuth from "../utils/firebase";
 
 function AuthForm({ type }) {
   const [userData, setUserData] = useState({
@@ -78,16 +78,16 @@ function AuthForm({ type }) {
       key={location.pathname}
       className="min-h-screen relative bg-[#F9FAFB] w-full flex justify-center items-center px-4 font-sans text-[#111827]"
     >
-      <div classname="text-center absolute top-0">
-      <p classname="text-sm">Sample login details: </p>
-      <p  classname="text-sm">Email: mounika@gmail.com</p>
-      <p  classname="text-sm">Password : 123456 </p>
+      <div className=" absolute lg:right-15 lg:bottom-25 bottom-0 right-2">
+      <p className="text-sm text-slate-800">Sample login details: </p>
+      <p  className="text-sm text-slate-800">Email: mounika@gmail.com</p>
+      <p  className="text-sm text-slate-800">Password : 123456 </p>
       </div>
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.3, duration: 1 }}
-        className="bg-white p-6 sm:p-8 rounded-2xl shadow-md w-full max-w-sm border border-[#E5E7EB]"
+        className= "mb-4 bg-white p-6 sm:p-8 rounded-2xl shadow-md w-full max-w-sm border border-[#E5E7EB]"
       >
         <h2 className="text-2xl font-semibold text-center mb-2 text-[#1E3A8A]">
           {type === "signup" ? "Create Account" : "Welcome Back"}

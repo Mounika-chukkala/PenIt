@@ -138,7 +138,7 @@ function HomePage() {
           </div>
         </section>
       ) : (
-        RecommendedBlogs.length > 0 && (
+        RecommendedBlogs?.length > 0 && (
           <div className="flex flex-col w-[80%] my-5 ">
             <h1 className="text-xl font-bold text-left my-3">
               Recommended Blogs for you
