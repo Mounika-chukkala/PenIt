@@ -76,9 +76,9 @@ function AuthForm({ type }) {
   return (
     <motion.div
       key={location.pathname}
-      className="min-h-screen relative bg-[#F9FAFB] w-full flex justify-center items-center px-4 font-sans text-[#111827]"
+      className="h-[calc(100vh-100px)] relative bg-[#F9FAFB] w-full flex justify-center items-center px-4 font-sans text-[#111827]"
     >
-      <div className=" absolute lg:right-15 lg:bottom-25 bottom-0 right-2">
+      <div className=" absolute lg:right-15 lg:bottom-10 bottom-0 right-2">
       <p className="text-sm text-slate-800">Sample login details: </p>
       <p  className="text-sm text-slate-800">Email: mounika@gmail.com</p>
       <p  className="text-sm text-slate-800">Password : 123456 </p>
