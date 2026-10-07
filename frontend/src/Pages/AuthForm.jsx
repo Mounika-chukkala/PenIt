@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { login } from "../utils/userSlice";
-// import googleAuth from "../utils/firebase";
+import googleAuth from "../utils/firebase";
 
 function AuthForm({ type }) {
   const [userData, setUserData] = useState({
