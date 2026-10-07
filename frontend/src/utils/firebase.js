@@ -17,12 +17,13 @@ const auth=getAuth(app);
 
 const provider=new GoogleAuthProvider();
 export default async function googleAuth(){
-    try {
-        
-        let data=await signInWithPopup(auth,provider)
-        return data;
-    } catch (error) {
-        console.log(error)
-        return null
-    }
+      try {
+    const data = await signInWithPopup(auth, provider);
+    console.log("Google login successful:", data);
+    return data;
+  } catch (error) {
+    console.error("🔥 Firebase Google Auth Error:", error);
+    throw error;
+  }
+
 }
